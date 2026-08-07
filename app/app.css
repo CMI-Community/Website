@@ -1,0 +1,60 @@
+:root {
+  color-scheme: light;
+  font-family: "Noto Sans SC", system-ui, sans-serif;
+  color: #161714;
+  background: #efefe9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { min-width: 320px; }
+button, input, textarea { font: inherit; }
+a { color: inherit; }
+
+.system-state {
+  min-height: 100svh;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.system-state__eyebrow {
+  margin: 0;
+  font: 500 0.75rem/1 "DM Mono", monospace;
+  letter-spacing: 0.18em;
+}
+
+.system-state h1 { margin: 0; font-size: clamp(2rem, 8vw, 5rem); }
+.system-state p:not(.system-state__eyebrow) { max-width: 34rem; margin: 0; color: #55574f; }
+.system-state a { justify-self: center; margin-top: .5rem; }
+
+.archive-unavailable {
+  position: fixed;
+  z-index: 50;
+  inset: auto 1rem 1rem;
+  max-width: 34rem;
+  margin: auto;
+  padding: .8rem 1rem;
+  background: #161714;
+  color: #fff;
+  border-radius: .4rem;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 25%);
+}
+
+.archive-unavailable strong,
+.archive-unavailable span { display: block; }
+.archive-unavailable span { margin-top: .25rem; opacity: .75; font-size: .85rem; }
+
+.policy-page {
+  width: min(46rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 5rem 0;
+  line-height: 1.75;
+}
+
+.policy-page h1 { font-size: clamp(2.4rem, 8vw, 5rem); line-height: 1; }
+.policy-page h2 { margin-top: 2.5rem; }

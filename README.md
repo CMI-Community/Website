@@ -1,50 +1,56 @@
-# CMI Community Website
+# CMI 官网
 
-CMI 社区官方网站的开发仓库。
+CMI Community 的公开官网与社区平台代码库。当前 `v0.1` 地基版本先把既有海报墙迁入可长期维护的全栈架构，根路径暂时跳转到 `/archive/posters`；新首页、完整管理后台和社区关系功能不在这一阶段。
 
-## Stack
+## 这份开源许可允许什么
 
-- React
-- Vite
-- TypeScript
-- ESLint
+代码、组件、页面布局、设计系统和架构文档使用 [Apache License 2.0](./LICENSE)。你可以复制、修改和发布这些技术与页面设计，但必须保留许可证和 NOTICE，并替换 CMI 的名称、Logo、口号、域名、账号、社区文字、照片、海报及用户内容。
 
-## Local Setup
+Apache-2.0 不授予 CMI 品牌或内容的使用权。完整边界见 [BRAND.md](./BRAND.md)。如果你要搭建自己的社区网站，最简单的判断是：**可以复用官网的技术与布局，不可以把 CMI 品牌和社区内容当作模板素材继续使用。**
+
+## 技术地基
+
+- React Router 全栈 SSR + TypeScript
+- Cloudflare Workers + D1 + R2
+- Better Auth：邀请制邮箱注册、Google/GitHub OAuth、邮箱验证与账号关联
+- Resend：验证与密码重置邮件
+- Vitest、D1 migration smoke、Playwright、Wrangler dry-run
+- GitHub Actions：PR 全量检查，`main` 自动部署 staging，production 环境人工批准
+
+Node.js 版本统一为 24.x LTS。安装与本地运行：
 
 ```bash
 nvm use
-npm install
+npm ci
+cp .dev.vars.example .dev.vars
+npm run db:migrate:local
 npm run dev
 ```
 
-Default local URL:
+检查完整地基：
+
+```bash
+npm run check
+npm run test:e2e
+```
+
+## 目录边界
 
 ```text
-http://localhost:5173
+app/modules/        领域模块（identity、publishing、media、poster-wall 等）
+app/shared/         设计系统、权限、数据库、可观测性等共享能力
+workers/            Worker 入口、认证与服务端 API
+migrations/         D1 唯一迁移历史
+docs/adr/           不可隐式改写的架构决策
+scripts/            公开目录清洗、迁移验证与边界检查
 ```
 
-## Scripts
+运营内容以后以 D1 为唯一发布源；仓库 Markdown/MDX 只保存固定原则、品牌政策、隐私和开发文档。历史海报原图、5.7GB 私有归档、SQLite、后台记录和生成输出永不进入本仓库。
 
-```bash
-npm run lint
-npm run typecheck
-npm run build
-npm run preview
-```
+## 参与
 
-## Requirements Workflow
+公开需求、内容纠错与贡献使用 GitHub Issues / Discussions。提交代码前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)、[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) 和 [SECURITY.md](./SECURITY.md)。内部运营优先级可以在 Linear 管理，但外部贡献者不需要 Linear 账号。
 
-Linear is the source of truth for product requirements. GitHub is the source of truth for implementation.
+## 当前状态
 
-- Linear project: <https://linear.app/cmi-community/project/cmi-community-website-官网-32eac175cbd5>
-- GitHub repository: <https://github.com/CMI-Community/Website>
-
-Start each meaningful change from a Linear issue. Use the issue identifier in the branch name and PR description.
-
-Example:
-
-```bash
-git switch -c cmi-71-information-architecture
-```
-
-See [docs/requirements-workflow.md](docs/requirements-workflow.md) for the full workflow.
+这是公开地基版本，不代表官网完整产品已经完成。生产发布、数据迁移与回滚说明记录在 [docs/operations](./docs/operations/)；安全问题请不要公开创建 Issue。

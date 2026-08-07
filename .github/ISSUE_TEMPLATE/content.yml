@@ -1,0 +1,24 @@
+name: 内容纠错
+description: 报告公开页面中的事实、署名、来源或展示错误
+title: "[Content]: "
+labels: [content]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: 页面地址
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: 需要纠正的内容
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 可公开核对的依据
+      description: 请提供来源链接；涉及私密授权材料时改用维护者私密渠道。
+    validations:
+      required: true

@@ -1,19 +1,22 @@
-## Linear Issue
+## 为什么
 
-<!-- Example: CMI-71 https://linear.app/cmi-community/issue/CMI-71/... -->
+<!-- 说明用户问题或维护问题，不要只复述改动。 -->
 
-## Summary
+## 改了什么
 
-<!-- What changed and why? -->
+<!-- 明确范围；如果有意不做某些事情，也写在这里。 -->
 
-## Verification
+## 验证
 
-- [ ] `npm run lint`
-- [ ] `npm run typecheck`
-- [ ] `npm run build`
-- [ ] Browser check: desktop
-- [ ] Browser check: mobile
+- [ ] `npm run check`
+- [ ] 涉及页面或用户路径时运行 `npm run test:e2e`
+- [ ] 公共 API 没有新增内部路径、哈希、证据或授权状态
+- [ ] 没有提交 Secret、个人数据、原始归档或生成输出
 
-## Notes
+## 发布与回滚
 
-<!-- Screenshots, tradeoffs, follow-ups, or deferred scope. -->
+<!-- 是否需要 migration、Secret、R2 资产、域名变更？失败时如何回滚？ -->
+
+## 截图或证据
+
+<!-- UI 改动请提供桌面与 390px；接口改动请提供最小请求/响应。 -->

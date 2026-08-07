@@ -1,0 +1,9 @@
+# Copy to .dev.vars for local development. Never commit real values.
+BETTER_AUTH_SECRET=replace-with-at-least-32-random-characters
+BETTER_AUTH_URL=http://localhost:5173
+RESEND_API_KEY=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+BOOTSTRAP_ADMIN_EMAIL=

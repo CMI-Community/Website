@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 社区讨论 / Community discussion
+    url: https://github.com/CMI-Community/Website/discussions
+    about: 尚未形成明确任务的想法，请先在 Discussions 讨论。
+  - name: 私密安全报告
+    url: https://github.com/CMI-Community/Website/security/advisories/new
+    about: 漏洞、泄露凭据或个人数据请勿提交公开 Issue。
