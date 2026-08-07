@@ -30,6 +30,9 @@
         "BETTER_AUTH_URL": "https://staging.cmi.community",
         "ASSET_BASE_URL": "https://assets.cmi.community"
       },
+      "routes": [
+        { "pattern": "staging.cmi.community", "custom_domain": true }
+      ],
       "d1_databases": [
         {
           "binding": "DB",
