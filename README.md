@@ -17,6 +17,8 @@ Apache-2.0 不授予 CMI 品牌或内容的使用权。完整边界见 [BRAND.md
 - Vitest、D1 migration smoke、Playwright、Wrangler dry-run
 - GitHub Actions：PR 全量检查，`main` 自动部署 staging，production 环境人工批准
 
+认证邮件复用社区现有的 Resend 账户和已验证发信域名 `auth.cmiswap.com`，发件人为 `CMI Community <community@auth.cmiswap.com>`。这只共享邮件投递通道；CMI 官网仍使用独立的 D1、会话、OAuth 应用和权限数据，不与 CMI Swap 合并用户数据库。
+
 Node.js 版本统一为 24.x LTS。安装与本地运行：
 
 ```bash

@@ -9,7 +9,8 @@
   "vars": {
     "APP_ENV": "development",
     "BETTER_AUTH_URL": "http://localhost:5173",
-    "ASSET_BASE_URL": "http://localhost:5173/local-assets"
+    "ASSET_BASE_URL": "http://localhost:5173/local-assets",
+    "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
   },
   "d1_databases": [
     {
@@ -28,7 +29,8 @@
       "vars": {
         "APP_ENV": "staging",
         "BETTER_AUTH_URL": "https://staging.cmi.community",
-        "ASSET_BASE_URL": "https://assets.cmi.community"
+        "ASSET_BASE_URL": "https://assets.cmi.community",
+        "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
       },
       "routes": [
         { "pattern": "staging.cmi.community", "custom_domain": true }
@@ -50,7 +52,8 @@
       "vars": {
         "APP_ENV": "production",
         "BETTER_AUTH_URL": "https://cmi.community",
-        "ASSET_BASE_URL": "https://assets.cmi.community"
+        "ASSET_BASE_URL": "https://assets.cmi.community",
+        "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
       },
       "routes": [
         { "pattern": "cmi.community", "custom_domain": true },

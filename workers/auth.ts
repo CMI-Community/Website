@@ -17,7 +17,7 @@ async function deliverAuthEmail(
   }
 
   const result = await new Resend(env.RESEND_API_KEY).emails.send({
-    from: "CMI Community <auth@cmi.community>",
+    from: env.AUTH_EMAIL_FROM,
     ...message,
   });
   if (result.error) throw new Error(`Resend rejected auth email: ${result.error.name}`);
