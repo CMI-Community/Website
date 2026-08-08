@@ -2,6 +2,14 @@
 
 CMI Community 的公开官网与社区平台代码库。当前 `v0.1` 地基版本先把既有海报墙迁入可长期维护的全栈架构，根路径暂时跳转到 `/archive/posters`；新首页、完整管理后台和社区关系功能不在这一阶段。
 
+## 从这里开始协作
+
+- [Project Workpad](./docs/project-workpad.md)：当前状态、正在做什么、风险、待决定事项和下一步。
+- [三位一体可追溯协作协议](./docs/collaboration/traceability.md)：任务、思考和过程分别记录在哪里，以及 T1/T2/T3 的升级规则。
+- [AGENTS.md](./AGENTS.md)：所有开发者和 AI 在开始、实施和交付任务时共同遵守的公开规则。
+
+工作台是唯一动态总览；GitHub Issues 是任务权威源，ADR/Experiment 保存可复核的决策依据，PR/Release Record 保存实施和发布证据。仓库不保存完整聊天或模型内部推理。
+
 ## 这份开源许可允许什么
 
 代码、组件、页面布局、设计系统和架构文档使用 [Apache License 2.0](./LICENSE)。你可以复制、修改和发布这些技术与页面设计，但必须保留许可证和 NOTICE，并替换 CMI 的名称、Logo、口号、域名、账号、社区文字、照片、海报及用户内容。
@@ -51,8 +59,8 @@ scripts/            公开目录清洗、迁移验证与边界检查
 
 ## 参与
 
-公开需求、内容纠错与贡献使用 GitHub Issues / Discussions。提交代码前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)、[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) 和 [SECURITY.md](./SECURITY.md)。内部运营优先级可以在 Linear 管理，但外部贡献者不需要 Linear 账号。
+公开需求、内容纠错与贡献使用 GitHub Issues / Discussions。提交代码前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)、[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) 和 [SECURITY.md](./SECURITY.md)。内部运营优先级可以在 Linear 管理，但外部贡献者不需要 Linear 账号。每个可执行任务都关联 Issue；分支、决策记录和 PR 合同见协作协议。
 
 ## 当前状态
 
-这是公开地基版本，不代表官网完整产品已经完成。生产发布、数据迁移与回滚说明记录在 [docs/operations](./docs/operations/)；安全问题请不要公开创建 Issue。
+这是公开地基版本，不代表官网完整产品已经完成。生产操作流程见 [docs/operations](./docs/operations/)，每次持久发布证据见 [Release Records](./docs/releases/README.md)；安全问题请不要公开创建 Issue。

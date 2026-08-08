@@ -44,3 +44,5 @@ flowchart LR
 ## 发布与回滚
 
 PR 必须通过 `foundation` 检查。`main` 自动部署 staging；production GitHub Environment 需要人工批准。新 Worker 接管生产后，旧 Worker 与旧 D1 在稳定观察期保持可回滚且不删除。
+
+每次 production 发布的持久证据记录在 [Release Records](./releases/README.md)；任务、决策和实施过程遵循[三位一体可追溯协作协议](./collaboration/traceability.md)。

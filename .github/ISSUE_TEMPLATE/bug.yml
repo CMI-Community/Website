@@ -31,6 +31,27 @@ body:
     attributes:
       label: 环境
       placeholder: "生产 / staging；浏览器和设备"
+  - type: textarea
+    id: impact
+    attributes:
+      label: 影响与验收条件
+      description: 谁受影响，以及怎样确认问题已经真正解决？
+    validations:
+      required: true
+  - type: textarea
+    id: rollback
+    attributes:
+      label: 风险与回滚
+      description: 修复可能影响什么，失败时如何恢复？没有时写“无”。
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: 关联 Issue、Experiment 或 ADR
+      description: 没有时写“无”。
+    validations:
+      required: true
   - type: checkboxes
     id: boundary
     attributes:

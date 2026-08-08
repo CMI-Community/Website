@@ -1,0 +1,37 @@
+name: 维护任务
+description: 依赖、测试、文档、清理和非功能性维护
+title: "[Maintenance]: "
+labels: [maintenance, "status:ready"]
+body:
+  - type: textarea
+    id: baseline
+    attributes:
+      label: 当前基线与维护原因
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 范围与非范围
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收条件
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: 依赖、风险与回滚
+      description: 没有时写“无”。
+    validations:
+      required: true
+  - type: dropdown
+    id: trace_level
+    attributes:
+      label: 建议留痕等级
+      options: [T1, T2, T3]
+    validations:
+      required: true
