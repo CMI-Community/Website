@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL ?? "https://staging.cmi.community";
+const expectedEnvironment = new URL(externalBaseURL).hostname === "cmi.community" ? "production" : "staging";
+
 test("staging keeps the poster archive as the temporary entry point", async ({ page, request }) => {
   const root = await request.get("/", { maxRedirects: 0 });
   expect(root.status()).toBe(308);
@@ -10,14 +13,28 @@ test("staging keeps the poster archive as the temporary entry point", async ({ p
   await expect(page.locator("main")).toBeVisible();
 });
 
-test("staging health and unauthenticated state are explicit", async ({ request }) => {
+test("deployment health and unauthenticated state are explicit", async ({ request }) => {
   const health = await request.get("/api/v1/health");
   expect(health.ok()).toBeTruthy();
-  await expect(health.json()).resolves.toMatchObject({ ok: true, environment: "staging" });
+  await expect(health.json()).resolves.toMatchObject({ ok: true, environment: expectedEnvironment });
 
   const me = await request.get("/api/v1/me");
   expect(me.status()).toBe(401);
   await expect(me.json()).resolves.toMatchObject({ error: { code: "AUTH_REQUIRED" } });
+});
+
+test("Google and GitHub have clickable login entries", async ({ request }) => {
+  for (const [provider, host] of [
+    ["google", "accounts.google.com"],
+    ["github", "github.com"],
+  ] as const) {
+    const response = await request.get(`/login/${provider}?returnTo=/archive/posters`, {
+      maxRedirects: 0,
+    });
+    expect(response.status()).toBe(302);
+    expect(new URL(response.headers().location).hostname).toBe(host);
+    expect(response.headers()["set-cookie"]).toBeTruthy();
+  }
 });
 
 test("the public poster projection contains 180 safe records", async ({ request }) => {
