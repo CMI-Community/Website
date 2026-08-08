@@ -1,0 +1,40 @@
+name: 问题报告
+description: 报告可以稳定复现的网站或接口问题
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 请勿在公开 Issue 中提交凭据、邮箱名单、个人数据或未公开内容。
+  - type: textarea
+    id: observed
+    attributes:
+      label: 实际发生了什么
+      description: 包含页面或接口路径、时间和可见错误。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你期待什么
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 最小复现步骤
+      placeholder: "1. 打开…\n2. 点击…\n3. 看到…"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      placeholder: "生产 / staging；浏览器和设备"
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: 公开边界
+      options:
+        - label: 我确认这里没有 Secret、个人数据或未公开社区内容。
+          required: true

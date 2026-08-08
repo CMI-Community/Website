@@ -1,24 +1,22 @@
 {
+  "extends": "./tsconfig.json",
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "react-router.config.ts",
+    "playwright.config.ts",
+    "tests/**/*.ts",
+    "scripts/**/*.mjs",
+    "app/shared/auth/roles.ts",
+    "app/modules/publishing/public-content.ts"
+  ],
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "target": "es2023",
-    "lib": ["ES2023"],
-    "module": "esnext",
+    "composite": true,
     "types": ["node"],
-    "skipLibCheck": true,
-
-    /* Bundler mode */
+    "lib": ["ES2024", "DOM"],
+    "target": "ES2024",
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-
-    /* Linting */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
-  },
-  "include": ["vite.config.ts"]
+    "allowJs": true
+  }
 }

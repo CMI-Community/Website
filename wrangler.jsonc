@@ -1,0 +1,75 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "cmi-community-platform-staging",
+  "main": "./workers/app.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "upload_source_maps": true,
+  "vars": {
+    "APP_ENV": "development",
+    "BETTER_AUTH_URL": "http://localhost:5173",
+    "ASSET_BASE_URL": "http://localhost:5173/local-assets",
+    "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cmi-community-platform-local",
+      "database_id": "local",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    { "binding": "MEDIA", "bucket_name": "cmi-community-public-assets" }
+  ],
+  "env": {
+    "staging": {
+      "name": "cmi-community-platform-staging",
+      "vars": {
+        "APP_ENV": "staging",
+        "BETTER_AUTH_URL": "https://staging.cmi.community",
+        "ASSET_BASE_URL": "https://assets.cmi.community",
+        "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
+      },
+      "routes": [
+        { "pattern": "staging.cmi.community", "custom_domain": true }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "cmi-community-platform-staging",
+          "database_id": "9d410c1e-02c6-4ad5-b3c0-ed4638219d94",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        { "binding": "MEDIA", "bucket_name": "cmi-community-public-assets-staging" }
+      ]
+    },
+    "production": {
+      "name": "cmi-community-platform",
+      "vars": {
+        "APP_ENV": "production",
+        "BETTER_AUTH_URL": "https://cmi.community",
+        "ASSET_BASE_URL": "https://assets.cmi.community",
+        "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
+      },
+      "routes": [
+        { "pattern": "cmi.community", "custom_domain": true },
+        { "pattern": "www.cmi.community", "custom_domain": true }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "cmi-community-platform",
+          "database_id": "5f8d6201-07b8-4291-8282-d470bcd49fb2",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        { "binding": "MEDIA", "bucket_name": "cmi-community-public-assets" }
+      ]
+    }
+  }
+}

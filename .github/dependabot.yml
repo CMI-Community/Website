@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Bangkok
+    open-pull-requests-limit: 5
+    groups:
+      react-router-cloudflare:
+        patterns:
+          - react-router
+          - "@react-router/*"
+          - "@cloudflare/*"
+          - wrangler
+          - vite
+      test-tooling:
+        dependency-type: development
+        patterns:
+          - "@playwright/*"
+          - vitest
+          - eslint
+          - "eslint-*"
+          - typescript
+          - "typescript-*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:30"
+      timezone: Asia/Bangkok

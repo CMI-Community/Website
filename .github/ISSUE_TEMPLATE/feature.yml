@@ -1,0 +1,29 @@
+name: 功能建议
+description: 描述真实场景、参与角色和可以验证的结果
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: scene
+    attributes:
+      label: 真实场景
+      description: 谁在什么情境下遇到了什么阻力？
+    validations:
+      required: true
+  - type: textarea
+    id: loop
+    attributes:
+      label: 如何形成闭环
+      description: 参与角色、报名或交换、内容沉淀、验证方式、风险与后续分别是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: success
+    attributes:
+      label: 完成后如何判断有效
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 本次不做什么

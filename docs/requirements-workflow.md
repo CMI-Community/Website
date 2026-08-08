@@ -1,60 +1,25 @@
-# Requirements Workflow
+# 需求与贡献工作流
 
-This project uses Linear to drive CMI Community website development.
+## 公开入口
 
-## Tools
+GitHub Issues 是公开、可执行需求与内容纠错的唯一入口；GitHub Discussions 用于尚未收敛的想法和社区对话。外部贡献者不需要 Linear 账号，也不需要知道内部运营排期。
 
-- Linear project: <https://linear.app/cmi-community/project/cmi-community-website-官网-32eac175cbd5>
-- GitHub repository: <https://github.com/CMI-Community/Website>
+## 内部优先级
 
-## Source of Truth
+CMI 团队可以在 Linear 管理内部运营优先级、负责人和非公开依赖。Linear 不替代公开 Issue，也不成为外部贡献的门槛。涉及公开协作的决定需要回写 GitHub Issue、PR 或 ADR。
 
-- Linear owns product intent: user need, scope, priority, acceptance criteria, and status.
-- GitHub owns implementation: code, branches, commits, pull requests, release notes, and deployment history.
-- Repository docs preserve durable decisions that should remain visible outside Linear.
+## 可以开始开发的条件
 
-## Issue Readiness
+- 有真实用户或社区场景，而不只是功能名称；
+- 范围和暂不处理的部分清楚；
+- 验收结果可以检查；
+- 文案、图片、品牌、权限、合规或外部服务依赖已经标明；
+- 涉及公开内容时，来源、创作者、许可与隐私边界可以被维护者核对。
 
-An issue is ready for development when it has:
+## 完成标准
 
-- Clear user or community scenario.
-- Page, module, content, or technical scope.
-- Acceptance criteria that can be checked.
-- Known dependencies, including copy, images, brand assets, approvals, or external services.
-
-## Branch Naming
-
-Use the Linear identifier at the front of the branch name:
-
-```text
-cmi-71-information-architecture
-cmi-72-homepage-visual-direction
-```
-
-For generated Linear branch names, keep the issue identifier and shorten the rest if needed.
-
-## Pull Requests
-
-Every PR should include:
-
-- Linked Linear issue.
-- Summary of the user-facing or workflow change.
-- Verification commands and browser checks.
-- Screenshots or recordings for visual changes.
-- Follow-up issues when scope is intentionally deferred.
-
-## Status Flow
-
-Use the CMI team status flow:
-
-```text
-Backlog -> Todo -> In Progress -> In Review -> Done
-```
-
-## Definition of Done
-
-- `npm run lint` passes.
-- `npm run typecheck` passes.
-- `npm run build` passes.
-- Visual or interaction changes are checked in a browser at desktop and mobile widths.
-- The Linear issue is updated with delivery notes.
+- `npm run check` 通过；
+- 涉及用户路径时 `npm run test:e2e` 通过；
+- UI 在桌面与 390px 检查；
+- 变更具有迁移和回滚说明；
+- 公开 Issue / PR 留下可复核的交付证据。
