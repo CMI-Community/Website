@@ -23,7 +23,9 @@ test("deployment health and unauthenticated state are explicit", async ({ reques
   await expect(me.json()).resolves.toMatchObject({ error: { code: "AUTH_REQUIRED" } });
 });
 
-test("Google and GitHub have clickable login entries", async ({ request }) => {
+test("Google and GitHub have clickable login entries", async ({ request }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "one remote OAuth check is sufficient");
+
   for (const [provider, host] of [
     ["google", "accounts.google.com"],
     ["github", "github.com"],
