@@ -11,6 +11,13 @@ body:
     validations:
       required: true
   - type: textarea
+    id: goal
+    attributes:
+      label: 目标
+      description: 完成后谁会得到什么可验证改善？
+    validations:
+      required: true
+  - type: textarea
     id: loop
     attributes:
       label: 如何形成闭环
@@ -26,4 +33,28 @@ body:
   - type: textarea
     id: scope
     attributes:
-      label: 本次不做什么
+      label: 范围与非范围
+      description: 明确本次做什么，以及有意不做什么。
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依赖与关联记录
+      description: 外部服务、内容、权限、相关 Issue、Experiment 或 ADR；没有时写“无”。
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: 风险、停止与回滚条件
+      description: 哪些结果会停止、撤销或回滚这项工作？
+    validations:
+      required: true
+  - type: dropdown
+    id: trace_level
+    attributes:
+      label: 建议留痕等级
+      options: [T1, T2, T3]
+    validations:
+      required: true

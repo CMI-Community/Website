@@ -1,0 +1,46 @@
+name: 实验
+description: 为可撤销尝试定义假设、基线、变量和停止条件
+title: "[Experiment]: "
+labels: [experiment, "status:ready"]
+body:
+  - type: textarea
+    id: scene
+    attributes:
+      label: 真实场景与当前基线
+      description: 谁遇到什么问题，目前可观察到什么？
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: 可证伪假设
+      description: 改变什么后，预计哪个可测结果会怎样变化？
+    validations:
+      required: true
+  - type: textarea
+    id: variable
+    attributes:
+      label: 变量与不变边界
+      description: 只改变什么，明确不改变什么。
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: 成功、停止与最长运行条件
+    validations:
+      required: true
+  - type: textarea
+    id: cleanup
+    attributes:
+      label: 数据、资源与回滚
+      description: 失败或结束后如何撤销、清理和保留证据？
+    validations:
+      required: true
+  - type: input
+    id: related
+    attributes:
+      label: 关联 Issue 或 ADR
+      placeholder: "#N / ADR NNNN / 无"
+    validations:
+      required: true

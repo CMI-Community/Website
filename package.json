@@ -1,6 +1,6 @@
 {
   "name": "cmi-community-website",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "CMI Community official website and community platform.",
   "type": "module",
@@ -12,7 +12,8 @@
     "build": "react-router build",
     "build:staging": "CLOUDFLARE_ENV=staging react-router build",
     "build:production": "CLOUDFLARE_ENV=production react-router build",
-    "check": "npm run lint && npm run typecheck && npm run test && npm run build && npm run deploy:dry-run",
+    "check": "npm run lint && npm run check:trace && npm run typecheck && npm run test && npm run build && npm run deploy:dry-run",
+    "check:trace": "node scripts/check-traceability.mjs",
     "dev": "react-router dev",
     "preview": "npm run build && vite preview",
     "typegen": "wrangler types --env-interface CloudflareEnv && react-router typegen",

@@ -1,0 +1,44 @@
+name: 架构决策
+description: 讨论数据、权限、公共接口、平台或难回滚的长期变化
+title: "[Architecture]: "
+labels: [architecture, "status:needs-decision"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: 上下文与问题
+      description: 当前已经验证的事实、约束和需要决定的问题是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: drivers
+    attributes:
+      label: 决策驱动因素
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: 备选方案
+      description: 至少包含保持现状，并写出优点与代价。
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收条件
+    validations:
+      required: true
+  - type: textarea
+    id: migration
+    attributes:
+      label: 迁移、回滚与推翻条件
+    validations:
+      required: true
+  - type: input
+    id: related
+    attributes:
+      label: 关联 Issue、Experiment 或现有 ADR
+      placeholder: "#N / EXP-YYYY-NNN / ADR NNNN / 无"
+    validations:
+      required: true

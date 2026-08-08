@@ -36,6 +36,14 @@ jobs:
       - name: Lint and public-boundary scan
         run: npm run lint
 
+      - name: Traceability gate
+        run: npm run check:trace
+        env:
+          TRACE_EVENT_NAME: ${{ github.event_name }}
+          TRACE_PR_BODY: ${{ github.event.pull_request.body || '' }}
+          TRACE_PR_AUTHOR: ${{ github.event.pull_request.user.login || github.actor }}
+          TRACE_PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+
       - name: Typecheck
         run: npm run typecheck
 

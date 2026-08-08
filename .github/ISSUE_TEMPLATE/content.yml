@@ -22,3 +22,17 @@ body:
       description: 请提供来源链接；涉及私密授权材料时改用维护者私密渠道。
     validations:
       required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收与回滚
+      description: 修改后如何核对；如果依据存在争议，如何恢复或暂缓展示？
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 公开安全
+      options:
+        - label: 我确认没有提交私密授权材料、个人数据或未公开社区内容。
+          required: true

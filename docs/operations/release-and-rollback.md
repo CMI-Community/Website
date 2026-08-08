@@ -7,6 +7,7 @@
 3. 对迁移先做本地验证，再应用 staging；迁移必须向前兼容旧 Worker 的回滚窗口。
 4. 验证公共目录没有本地路径、哈希、内部证据、授权判断或未发布内容。
 5. 在 GitHub production Environment 审批 deployment。
+6. 从 [Release Record 模板](../releases/template.md) 建立本次发布记录，只写配置项名称，不写 Secret 值。
 
 ## 生产验收
 
@@ -19,3 +20,5 @@
 ## 回滚
 
 若任一核心验收失败，把 `cmi.community` 和 `www` 的自定义域名重新绑定旧 `cmi-community-site` Worker。不要删除新 D1、旧 D1 或 R2 对象；记录失败部署版本、数据写入窗口和恢复时间。确认新旧留言数据差异后再决定是否向前迁移。
+
+回滚必须更新对应 [Release Record](../releases/README.md)，并关联新的 Bug/Incident Issue。失败发布、迁移和验证证据不从 Git 历史删除。
