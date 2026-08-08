@@ -1,16 +1,17 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-08 15:22 Asia/Bangkok
+Last updated: 2026-08-08 15:30 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
-- Current milestone: [v0.1.1 — Context Foundation](https://github.com/CMI-Community/Website/milestone/1)
-- Current focus: [#11 建立三位一体可追溯协作地基](https://github.com/CMI-Community/Website/issues/11)
-- Next step: 完成协作文档、记录模板和 `check:trace`，通过 PR 与 required CI 发布 `v0.1.1`。
+- Status: `Shipped`
+- Current milestone: [v0.1.1 — Context Foundation](https://github.com/CMI-Community/Website/milestone/1) 已完成。
+- Current focus: 无活动开发任务；[#11 三位一体可追溯协作地基](https://github.com/CMI-Community/Website/issues/11) 已交付。
+- Next step: 在开始下一产品阶段前创建新的 GitHub Issue，并按 T1/T2/T3 选择记录等级。
 - Latest production runtime release: [v0.1.0-foundation](https://github.com/CMI-Community/Website/releases/tag/v0.1.0-foundation)
+- Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
@@ -18,6 +19,7 @@ Last updated: 2026-08-08 15:22 Asia/Bangkok
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker 提供服务，根路径暂时进入 `/archive/posters`。
 - `VERIFIED`：当前公共档案为 180 张海报；新 D1 保留 3 条留言和 2 条投票；首位管理员已建立，一次性 bootstrap Secret 已删除。
+- `VERIFIED`：三位一体工作台、T1/T2/T3 记录和 required traceability gate 已通过真实 PR CI。
 - `ASSUMED`：旧 Worker 与旧反馈 D1 继续保留到明确结束稳定观察期；删除前必须另建 Issue 并给出回滚替代方案。
 
 ## Project Goal
@@ -60,7 +62,7 @@ Last updated: 2026-08-08 15:22 Asia/Bangkok
 
 ### Now
 
-- [ ] [#11 建立三位一体可追溯协作地基](https://github.com/CMI-Community/Website/issues/11)
+- 暂无；可执行工作必须先创建 GitHub Issue。
 
 ### Next
 
@@ -72,6 +74,8 @@ Last updated: 2026-08-08 15:22 Asia/Bangkok
 
 ### Done
 
+- [x] [#11 建立三位一体可追溯协作地基](https://github.com/CMI-Community/Website/issues/11)
+- [x] [v0.1.1：任务、思考、过程协作地基](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 - [x] [v0.1.0-foundation：CMI 官网长期技术地基](https://github.com/CMI-Community/Website/releases/tag/v0.1.0-foundation)
 
 ## Risks And Open Questions
@@ -97,12 +101,14 @@ Last updated: 2026-08-08 15:22 Asia/Bangkok
 | 2026-08-08 | R2 公共海报资产 | `VERIFIED` | 180/180 可访问，公共目录不含内部字段 |
 | 2026-08-08 | 身份初始化 | `VERIFIED` | 1 位管理员、1 份 profile、1 条身份初始化审计；bootstrap Secret 已删除 |
 | 2026-08-08 | 三位一体结构与 PR 合同 | `VERIFIED` | T1/T2/T3、Dependabot、override、坏链接、状态、重复编号和公开边界自动测试通过 |
-| 2026-08-08 | `npm run check` | `VERIFIED` | lint、trace、typecheck、18 tests、D1 migration、SSR build 和 Wrangler staging dry-run通过 |
+| 2026-08-08 | `npm run check` | `VERIFIED` | lint、trace、typecheck、19 tests、D1 migration、SSR build 和 Wrangler staging dry-run通过 |
+| 2026-08-08 | PR #12 required CI | `VERIFIED` | trace gate、构建、dry-run、桌面与 390px smoke 全部通过；7 passed，1 skipped |
 
 ## Recent Updates
 
 - 2026-08-08 15:11 Asia/Bangkok：创建 Milestone、Issue #11 和完整标签体系，开始建立三位一体可追溯协作地基。
 - 2026-08-08 15:22 Asia/Bangkok：上下文骨架、记录模板和 CI 门禁完成首轮验证；第一次完整检查暴露并修正了检查器参数的 TypeScript 推断问题。
+- 2026-08-08 15:30 Asia/Bangkok：PR #12 首次 required CI 通过，补齐 `v0.1.1` Release Record，三位一体协作地基进入 Shipped 状态。
 - 2026-08-08：发布 `v0.1.0-foundation`，新平台接管生产域名，旧 Worker/D1 保留回滚。
 
 ## Handoff Notes
