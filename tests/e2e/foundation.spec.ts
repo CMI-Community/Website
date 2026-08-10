@@ -9,11 +9,29 @@ function d1(command: string): string {
   );
 }
 
-test("root preserves the poster-wall entry point", async ({ page }) => {
+test("root renders the formal community homepage with independent museum fallbacks", async ({ page, request }) => {
+  const response = await request.get("/", { maxRedirects: 0 });
+  expect(response.status()).toBe(200);
   await page.goto("/");
-  await expect(page).toHaveURL(/\/archive\/posters$/);
-  await expect(page.getByRole("heading", { name: "海报档案正在连接" })).toBeVisible();
-  await expect(page.getByText("公共资产暂时不可用")).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { name: "CMI Community", exact: true })).toBeVisible();
+  await expect(page.getByText("一个在清迈的华人数字游民社区")).toBeVisible();
+  await expect(page.locator(".home-social__item")).toHaveCount(7);
+  await expect(page.locator('.home-social__item[href="https://discord.gg/BbaPPTRr9d"]')).toBeVisible();
+  if (await page.locator(".photo-museum").count()) {
+    const primaryLanes = page.locator(
+      '.photo-museum__lane .photo-museum__set:not([aria-hidden="true"])',
+    );
+    await expect(primaryLanes).toHaveCount(7);
+    await expect(primaryLanes.locator(".photo-museum__card")).toHaveCount(528);
+  } else {
+    await expect(page.getByRole("heading", { name: "照片档案正在连接" })).toBeAttached();
+  }
+  if (await page.locator("#event-museum .cmi-poster-wall").count()) {
+    await expect(page.locator("#event-museum .cmi-poster-wall")).toBeAttached();
+  } else {
+    await expect(page.getByRole("heading", { name: "海报档案正在连接" })).toBeAttached();
+  }
 });
 
 test("foundation health and unauthenticated state are explicit", async ({ request }) => {
@@ -29,12 +47,20 @@ test("foundation health and unauthenticated state are explicit", async ({ reques
 });
 
 test("page fits the active viewport", async ({ page }) => {
-  await page.goto("/archive/posters");
+  await page.goto("/");
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth,
   }));
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+
+  await page.route("**/local-assets/**", (route) => route.abort());
+  await page.goto("/archive/posters");
+  const archiveDimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  expect(archiveDimensions.scrollWidth).toBeLessThanOrEqual(archiveDimensions.clientWidth + 1);
 });
 
 test("invite, verification and server-side publishing roles work end to end", async ({ request }, testInfo) => {

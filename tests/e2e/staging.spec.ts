@@ -3,14 +3,111 @@ import { expect, test } from "@playwright/test";
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL ?? "https://staging.cmi.community";
 const expectedEnvironment = new URL(externalBaseURL).hostname === "cmi.community" ? "production" : "staging";
 
-test("staging keeps the poster archive as the temporary entry point", async ({ page, request }) => {
+test("staging serves the formal three-screen homepage", async ({ page, request }) => {
   const root = await request.get("/", { maxRedirects: 0 });
-  expect(root.status()).toBe(308);
-  expect(root.headers().location).toBe("/archive/posters");
+  expect(root.status()).toBe(200);
 
   await page.goto("/");
-  await expect(page).toHaveURL(/\/archive\/posters$/);
-  await expect(page.locator("main")).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { name: "CMI Community", exact: true })).toBeVisible();
+  await expect(page.getByText("一个在清迈的华人数字游民社区")).toBeVisible();
+  await expect(page.locator(".home-social__item")).toHaveCount(7);
+  await expect(page.locator('.home-social__item[href="https://discord.gg/BbaPPTRr9d"]')).toBeVisible();
+  await expect(
+    page.locator('.home-social__item[href^="https://space.bilibili.com/3706956986452842"]'),
+  ).toBeVisible();
+});
+
+test("Photo Museum preserves every image and supports navigation and full-screen viewing", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.goto("/");
+  await page.locator('.home-museum-entries a[href="#photo-museum"]').click();
+  await expect(page.locator("#photo-museum")).toBeInViewport();
+  await expect(page.locator('.home-sticky-nav[data-visible="true"]')).toBeVisible();
+  await expect(page.locator('.home-sticky-nav a[aria-current="page"]')).toHaveAttribute(
+    "href",
+    "#photo-museum",
+  );
+  await page.getByRole("button", { name: "暂停流动" }).click();
+
+  const primaryLanes = page.locator(
+    '.photo-museum__lane .photo-museum__set:not([aria-hidden="true"])',
+  );
+  await expect(primaryLanes).toHaveCount(7);
+  await expect(primaryLanes.locator(".photo-museum__card")).toHaveCount(528);
+  const primaryPhotos = primaryLanes.locator(".photo-museum__card");
+  const visiblePhotoId = await primaryPhotos.evaluateAll((cards) => {
+    const card = cards.find((candidate) => {
+      const rect = candidate.getBoundingClientRect();
+      return rect.right > 0 && rect.left < window.innerWidth && rect.bottom > 0 && rect.top < window.innerHeight;
+    });
+    return card?.getAttribute("data-photo-id") ?? null;
+  });
+  expect(visiblePhotoId).toMatch(/^cmi-photo-\d{3}$/);
+  const visiblePhoto = primaryPhotos.filter({ has: page.locator(`img[src*="${visiblePhotoId}"]`) }).first();
+  const visibleImage = visiblePhoto.locator("img");
+  await expect(visibleImage).toBeVisible();
+  await expect.poll(() => visibleImage.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  expect(await visibleImage.evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
+  const thumbnailPath = await visibleImage.getAttribute("src");
+  expect(thumbnailPath).toMatch(/^\/media\/photo-museum\/v2\/thumbs\//);
+  const thumbnailResponse = await page.request.get(thumbnailPath!);
+  expect(thumbnailResponse.ok()).toBeTruthy();
+  expect(thumbnailResponse.headers()["content-type"]).toContain("image/webp");
+  expect(thumbnailResponse.headers()["cache-control"]).toContain("immutable");
+
+  await visiblePhoto.click();
+  const visiblePhotoNumber = Number(visiblePhotoId!.slice(-3));
+  const dialog = page.getByRole("dialog", { name: new RegExp(`照片 ${visiblePhotoNumber} / 528`) });
+  await expect(dialog).toBeVisible();
+  await expect.poll(() => dialog.locator("figure img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  await page.keyboard.press("ArrowRight");
+  const nextPhotoNumber = visiblePhotoNumber === 528 ? 1 : visiblePhotoNumber + 1;
+  await expect(page.getByRole("dialog", { name: new RegExp(`照片 ${nextPhotoNumber} / 528`) })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".photo-lightbox")).toHaveCount(0);
+
+  await page.locator('.home-sticky-nav a[href="#event-museum"]').click();
+  await expect(page.locator("#event-museum .cmi-poster-wall--homepage")).toBeInViewport();
+  await expect(page.locator("#event-museum .cmi-community-dock")).toHaveCount(0);
+  await expect(page.locator("#event-museum .cmi-wall-controls")).toBeAttached();
+});
+
+test("Photo Museum exposes both immutable WebP variants for all 528 records", async ({ request }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "one complete asset projection check is sufficient");
+  test.setTimeout(360_000);
+
+  const paths = Array.from({ length: 528 }, (_, index) => {
+    const id = `cmi-photo-${String(index + 1).padStart(3, "0")}`;
+    return [`/media/photo-museum/v2/thumbs/${id}.webp`, `/media/photo-museum/v2/full/${id}.webp`];
+  }).flat();
+  for (let offset = 0; offset < paths.length; offset += 8) {
+    const batchPaths = paths.slice(offset, offset + 8);
+    const responses = await Promise.all(batchPaths.map((path) => request.head(path)));
+    for (const [index, initialResponse] of responses.entries()) {
+      let response = initialResponse;
+      for (let attempt = 1; response.status() !== 200 && attempt < 4; attempt += 1) {
+        await response.dispose();
+        await new Promise((resolve) => setTimeout(resolve, attempt * 250));
+        response = await request.head(batchPaths[index]);
+      }
+      expect(response.status(), batchPaths[index]).toBe(200);
+      expect(response.headers()["content-type"], batchPaths[index]).toContain("image/webp");
+      expect(response.headers()["cache-control"], batchPaths[index]).toContain("immutable");
+      await response.dispose();
+    }
+  }
+});
+
+test("homepage has no horizontal overflow and honors reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#photo-museum");
+  await expect(page.locator('.photo-museum[data-paused="true"]')).toBeVisible();
+  const dimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
 });
 
 test("deployment health and unauthenticated state are explicit", async ({ request }) => {
@@ -60,6 +157,10 @@ test("poster UI and R2 images work at the active viewport", async ({ page }) => 
     clientWidth: document.documentElement.clientWidth,
   }));
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+  await expect(page.locator('.cmi-community-dock__item[href="https://discord.gg/BbaPPTRr9d"]')).toBeAttached();
+  await expect(
+    page.locator('.cmi-community-dock__item[href^="https://space.bilibili.com/3706956986452842"]'),
+  ).toBeAttached();
 });
 
 test("migrated feedback is visible and an uninvited signup is blocked", async ({ request }, testInfo) => {

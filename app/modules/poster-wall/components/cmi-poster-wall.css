@@ -877,6 +877,19 @@
   background: var(--paper);
 }
 
+.cmi-community-dock__item--featured {
+  color: #25150d;
+  background: var(--signal-pale);
+}
+
+.cmi-community-dock__item--featured small {
+  color: #7e351d;
+}
+
+.cmi-community-dock__item--featured:hover {
+  background: var(--signal);
+}
+
 .cmi-community-dock__item > svg,
 .cmi-community-dock__monogram {
   flex: none;

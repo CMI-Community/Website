@@ -1,6 +1,6 @@
 # CMI 官网
 
-CMI Community 的公开官网与社区平台代码库。当前 `v0.1` 地基版本先把既有海报墙迁入可长期维护的全栈架构，根路径暂时跳转到 `/archive/posters`；新首页、完整管理后台和社区关系功能不在这一阶段。
+CMI Community 的公开官网与社区平台代码库。根路径是由 Community Hero、Photo Museum 与 Event Museum 组成的正式首页；完整海报档案继续保留在 `/archive/posters`。平台建立在可长期维护的全栈架构上，完整管理后台和社区关系功能仍按独立阶段推进。
 
 ## 从这里开始协作
 
@@ -63,4 +63,4 @@ scripts/            公开目录清洗、迁移验证与边界检查
 
 ## 当前状态
 
-这是公开地基版本，不代表官网完整产品已经完成。生产操作流程见 [docs/operations](./docs/operations/)，每次持久发布证据见 [Release Records](./docs/releases/README.md)；安全问题请不要公开创建 Issue。
+官网地基、三屏首页和两个公共 Museum 已进入持续迭代，但不代表完整社区产品已经完成。生产操作流程见 [docs/operations](./docs/operations/)，每次持久发布证据见 [Release Records](./docs/releases/README.md)；安全问题请不要公开创建 Issue。

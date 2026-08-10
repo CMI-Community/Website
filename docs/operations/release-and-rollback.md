@@ -11,9 +11,9 @@
 
 ## 生产验收
 
-- `/` 308 到 `/archive/posters`；`www` 308 到裸域且保留 path/query。
+- `/` 直接 200 呈现 Community Hero、Photo Museum 与 Event Museum；`/archive/posters` 继续独立 200；`www` 308 到裸域且保留 path/query。
 - HTML、JS、CSS、`/api/v1/health` 与 R2 资产独立返回正常。
-- 180 张海报、LOFI、详情和匿名留言可用；390×844 无横向溢出。
+- 528 张照片的高密度轨道、全屏浏览与两档 WebP 可用；180 张海报、LOFI、详情和匿名留言可用；390×844 无横向溢出。
 - 两个隔离访客分别留言/投票，刷新后仍能看到一致共享状态。
 - 未受邀注册、RBAC、草稿隔离、revision 与 audit log符合测试矩阵。
 

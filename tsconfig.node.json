@@ -8,6 +8,8 @@
     "tests/**/*.ts",
     "scripts/**/*.mjs",
     "app/shared/auth/roles.ts",
+    "app/shared/community-socials.ts",
+    "app/modules/photo-museum/photo-catalog.ts",
     "app/modules/publishing/public-content.ts"
   ],
   "compilerOptions": {

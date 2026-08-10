@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { COMMUNITY_LINKS } from '../../../shared/community-socials'
 
 const DEFAULT_LINKS = {
-  xiaohongshu: 'https://www.xiaohongshu.com/user/profile/5f0eb478000000000100260e',
-  reddit: 'https://www.reddit.com/r/CMI_Community/',
-  github: 'https://github.com/orgs/CMI-Community/repositories',
-  wechat: 'LinkLinkGuan',
+  ...COMMUNITY_LINKS,
 }
 
 function DockIcon({ type }) {
+  if (type === 'discord') return <span className="cmi-community-dock__monogram">D+</span>
+  if (type === 'bilibili') return <span className="cmi-community-dock__monogram">B</span>
   if (type === 'official') return <span className="cmi-community-dock__monogram">CMI</span>
   if (type === 'xiaohongshu') return <span className="cmi-community-dock__monogram">RED</span>
   if (type === 'reddit') return <span className="cmi-community-dock__monogram">r/</span>
@@ -58,6 +58,14 @@ export function CommunityDock({ qrUrl, links = DEFAULT_LINKS }) {
     <nav className="cmi-community-dock" aria-label="找到 CMI 社区" ref={dockRef}>
       <div className="cmi-community-dock__label">找到 CMI</div>
       <div className="cmi-community-dock__items">
+        <a className="cmi-community-dock__item cmi-community-dock__item--featured" href={socialLinks.discord} target="_blank" rel="noreferrer">
+          <DockIcon type="discord" />
+          <span><b>Discord</b><small>新的线上阵地</small></span>
+        </a>
+        <a className="cmi-community-dock__item" href={socialLinks.bilibili} target="_blank" rel="noreferrer">
+          <DockIcon type="bilibili" />
+          <span><b>Bilibili</b><small>CMI 影像频道</small></span>
+        </a>
         <button type="button" className="cmi-community-dock__item" onClick={() => setQrOpen((value) => !value)} aria-expanded={qrOpen}>
           <DockIcon type="official" />
           <span><b>公众号</b><small>C M I</small></span>
