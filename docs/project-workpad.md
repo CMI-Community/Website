@@ -8,8 +8,8 @@ Last updated: 2026-08-10 12:30 Asia/Bangkok
 
 - Status: `Needs Review`
 - Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 进行中。
-- Current focus: [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)，T3，关联 [ADR 0005](./adr/0005-homepage-museums-and-public-photo-catalog.md)。
-- Next step: 审阅 [staging 首页](https://staging.cmi.community/) 并完成 PR review；production 继续等待内容负责人验收和人工批准。
+- Current focus: [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)，T3，实施见 [PR #14](https://github.com/CMI-Community/Website/pull/14)，关联 [ADR 0005](./adr/0005-homepage-museums-and-public-photo-catalog.md)。
+- Next step: 审阅 [staging 首页](https://staging.cmi.community/) 与 [PR #14](https://github.com/CMI-Community/Website/pull/14)；production 继续等待内容负责人验收和人工批准。
 - Latest production runtime release: [v0.1.0-foundation](https://github.com/CMI-Community/Website/releases/tag/v0.1.0-foundation)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -123,6 +123,7 @@ Last updated: 2026-08-10 12:30 Asia/Bangkok
 - 2026-08-08：发布 `v0.1.0-foundation`，新平台接管生产域名，旧 Worker/D1 保留回滚。
 - 2026-08-10 11:43 Asia/Bangkok：创建 Milestone v0.2.0、Issue #13 与 ADR 0005，开始三屏首页和 Photo Museum v1 实施。
 - 2026-08-10 12:30 Asia/Bangkok：完成三屏首页、Photo Museum v1、全站社交入口与 Event Museum 嵌入；上传 staging R2、部署 staging 并完成桌面与 390px 自动化和目视验收，进入 review。
+- 2026-08-10 12:30 Asia/Bangkok：创建 [PR #14](https://github.com/CMI-Community/Website/pull/14)，提交可审查实现、staging 证据、偏离记录与回滚合同；production 保持未部署。
 
 ## Handoff Notes
 
