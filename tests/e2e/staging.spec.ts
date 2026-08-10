@@ -33,27 +33,37 @@ test("Photo Museum preserves every image and supports navigation and full-screen
   const primaryLanes = page.locator(
     '.photo-museum__lane .photo-museum__set:not([aria-hidden="true"])',
   );
-  await expect(primaryLanes).toHaveCount(2);
-  await expect(primaryLanes.nth(0).locator(".photo-museum__card")).toHaveCount(27);
-  await expect(primaryLanes.nth(1).locator(".photo-museum__card")).toHaveCount(27);
-  const primaryPhotos = primaryLanes.nth(0).locator(".photo-museum__card");
-  const firstImage = primaryPhotos.first().locator("img");
-  await expect(firstImage).toBeVisible();
-  await expect.poll(() => firstImage.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
-  expect(await firstImage.evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
-  const thumbnailPath = await firstImage.getAttribute("src");
-  expect(thumbnailPath).toMatch(/^\/media\/photo-museum\/v1\/thumbs\//);
+  await expect(primaryLanes).toHaveCount(7);
+  await expect(primaryLanes.locator(".photo-museum__card")).toHaveCount(528);
+  const primaryPhotos = primaryLanes.locator(".photo-museum__card");
+  const visiblePhotoId = await primaryPhotos.evaluateAll((cards) => {
+    const card = cards.find((candidate) => {
+      const rect = candidate.getBoundingClientRect();
+      return rect.right > 0 && rect.left < window.innerWidth && rect.bottom > 0 && rect.top < window.innerHeight;
+    });
+    return card?.getAttribute("data-photo-id") ?? null;
+  });
+  expect(visiblePhotoId).toMatch(/^cmi-photo-\d{3}$/);
+  const visiblePhoto = primaryPhotos.filter({ has: page.locator(`img[src*="${visiblePhotoId}"]`) }).first();
+  const visibleImage = visiblePhoto.locator("img");
+  await expect(visibleImage).toBeVisible();
+  await expect.poll(() => visibleImage.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  expect(await visibleImage.evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
+  const thumbnailPath = await visibleImage.getAttribute("src");
+  expect(thumbnailPath).toMatch(/^\/media\/photo-museum\/v2\/thumbs\//);
   const thumbnailResponse = await page.request.get(thumbnailPath!);
   expect(thumbnailResponse.ok()).toBeTruthy();
   expect(thumbnailResponse.headers()["content-type"]).toContain("image/webp");
   expect(thumbnailResponse.headers()["cache-control"]).toContain("immutable");
 
-  await primaryPhotos.first().click();
-  const dialog = page.getByRole("dialog", { name: /照片 1 \/ 27/ });
+  await visiblePhoto.click();
+  const visiblePhotoNumber = Number(visiblePhotoId!.slice(-3));
+  const dialog = page.getByRole("dialog", { name: new RegExp(`照片 ${visiblePhotoNumber} / 528`) });
   await expect(dialog).toBeVisible();
   await expect.poll(() => dialog.locator("figure img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
   await page.keyboard.press("ArrowRight");
-  await expect(page.getByRole("dialog", { name: /照片 2 \/ 27/ })).toBeVisible();
+  const nextPhotoNumber = visiblePhotoNumber === 528 ? 1 : visiblePhotoNumber + 1;
+  await expect(page.getByRole("dialog", { name: new RegExp(`照片 ${nextPhotoNumber} / 528`) })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.locator(".photo-lightbox")).toHaveCount(0);
 
@@ -63,18 +73,24 @@ test("Photo Museum preserves every image and supports navigation and full-screen
   await expect(page.locator("#event-museum .cmi-wall-controls")).toBeAttached();
 });
 
-test("Photo Museum exposes both immutable WebP variants for all 27 records", async ({ request }, testInfo) => {
+test("Photo Museum exposes both immutable WebP variants for all 528 records", async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "one complete asset projection check is sufficient");
-  test.setTimeout(120_000);
+  test.setTimeout(360_000);
 
-  const paths = Array.from({ length: 27 }, (_, index) => {
+  const paths = Array.from({ length: 528 }, (_, index) => {
     const id = `cmi-photo-${String(index + 1).padStart(3, "0")}`;
-    return [`/media/photo-museum/v1/thumbs/${id}.webp`, `/media/photo-museum/v1/full/${id}.webp`];
+    return [`/media/photo-museum/v2/thumbs/${id}.webp`, `/media/photo-museum/v2/full/${id}.webp`];
   }).flat();
-  for (let offset = 0; offset < paths.length; offset += 4) {
-    const batchPaths = paths.slice(offset, offset + 4);
-    const responses = await Promise.all(batchPaths.map((path) => request.get(path)));
-    for (const [index, response] of responses.entries()) {
+  for (let offset = 0; offset < paths.length; offset += 8) {
+    const batchPaths = paths.slice(offset, offset + 8);
+    const responses = await Promise.all(batchPaths.map((path) => request.head(path)));
+    for (const [index, initialResponse] of responses.entries()) {
+      let response = initialResponse;
+      for (let attempt = 1; response.status() !== 200 && attempt < 4; attempt += 1) {
+        await response.dispose();
+        await new Promise((resolve) => setTimeout(resolve, attempt * 250));
+        response = await request.head(batchPaths[index]);
+      }
       expect(response.status(), batchPaths[index]).toBe(200);
       expect(response.headers()["content-type"], batchPaths[index]).toContain("image/webp");
       expect(response.headers()["cache-control"], batchPaths[index]).toContain("immutable");

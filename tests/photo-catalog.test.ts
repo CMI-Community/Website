@@ -72,6 +72,18 @@ describe("public Photo Museum catalog", () => {
     ).toThrow(/Duplicate photo ids/);
   });
 
+  it("accepts immutable versioned catalogs without weakening the public field boundary", () => {
+    const catalog = sanitizePhotoCatalog({
+      version: "photo-museum/v2",
+      count: 1,
+      photos: [photo()],
+    });
+    expect(catalog.version).toBe("photo-museum/v2");
+    expect(() =>
+      sanitizePhotoCatalog({ version: "photo-museum/latest", count: 1, photos: [photo()] }),
+    ).toThrow(/photo-museum\/vN/);
+  });
+
   it("requires the declared count and positive intrinsic dimensions", () => {
     expect(() =>
       sanitizePhotoCatalog({ version: "photo-museum/v1", count: 27, photos: [photo()] }),

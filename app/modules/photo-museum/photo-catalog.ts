@@ -8,14 +8,17 @@ export interface PhotoRecord {
   displayOrder: number;
 }
 
-export interface PhotoCatalogV1 {
-  version: "photo-museum/v1";
+export type PhotoCatalogVersion = `photo-museum/v${number}`;
+
+export interface PhotoCatalog {
+  version: PhotoCatalogVersion;
   count: number;
   photos: PhotoRecord[];
 }
 
 const PUBLIC_ID = /^[a-z0-9][a-z0-9-]{2,63}$/;
 const PUBLIC_IMAGE_PATH = /^(?:thumbs|full)\/[a-z0-9][a-z0-9-]{2,63}\.webp$/;
+const PUBLIC_CATALOG_VERSION = /^photo-museum\/v[1-9][0-9]*$/;
 
 function publicText(value: unknown, field: string): string {
   if (typeof value !== "string" || !value.trim()) {
@@ -31,14 +34,14 @@ function positiveInteger(value: unknown, field: string): number {
   return Number(value);
 }
 
-export function sanitizePhotoCatalog(input: unknown): PhotoCatalogV1 {
+export function sanitizePhotoCatalog(input: unknown): PhotoCatalog {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new Error("Photo catalog must be an object");
   }
 
   const source = input as Record<string, unknown>;
-  if (source.version !== "photo-museum/v1") {
-    throw new Error("Photo catalog version must be photo-museum/v1");
+  if (typeof source.version !== "string" || !PUBLIC_CATALOG_VERSION.test(source.version)) {
+    throw new Error("Photo catalog version must use photo-museum/vN");
   }
   if (!Array.isArray(source.photos) || source.photos.length === 0) {
     throw new Error("Photo catalog must contain photos");
@@ -85,7 +88,7 @@ export function sanitizePhotoCatalog(input: unknown): PhotoCatalogV1 {
   if (source.count !== photos.length) throw new Error("Photo catalog count does not match photos");
 
   return {
-    version: "photo-museum/v1",
+    version: source.version as PhotoCatalogVersion,
     count: photos.length,
     photos: photos.sort((a, b) => a.displayOrder - b.displayOrder),
   };

@@ -77,14 +77,14 @@ function canonicalRedirect(request: Request): Response | null {
 async function publicPhotoAsset(request: Request, env: CloudflareEnv): Promise<Response | null> {
   const url = new URL(request.url);
   const match = url.pathname.match(
-    /^\/media\/photo-museum\/v1\/(thumbs|full)\/([a-z0-9][a-z0-9-]{2,63}\.webp)$/,
+    /^\/media\/photo-museum\/(v[1-9][0-9]*)\/(thumbs|full)\/([a-z0-9][a-z0-9-]{2,63}\.webp)$/,
   );
   if (!match) return null;
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
   }
 
-  const object = await env.MEDIA.get(`photo-museum/v1/${match[1]}/${match[2]}`);
+  const object = await env.MEDIA.get(`photo-museum/${match[1]}/${match[2]}/${match[3]}`);
   if (!object) return new Response("Not found", { status: 404 });
   const headers = new Headers();
   object.writeHttpMetadata(headers);

@@ -15,6 +15,8 @@ interface PhotoMuseumProps {
   assetBase: string;
 }
 
+const LANE_COUNT = 7;
+
 function assetUrl(assetBase: string, path: string): string {
   return `${assetBase.replace(/\/$/, "")}/${path}`;
 }
@@ -68,15 +70,25 @@ function PhotoLane({
   photos,
   assetBase,
   direction,
+  laneIndex,
   onOpen,
 }: {
   photos: PhotoRecord[];
   assetBase: string;
   direction: "left" | "right";
+  laneIndex: number;
   onOpen: (photo: PhotoRecord, trigger: HTMLButtonElement) => void;
 }) {
+  const laneStyle = {
+    "--photo-lane-duration": `${Math.max(140, photos.length * 3.2)}s`,
+  } as CSSProperties;
+
   return (
-    <div className={`photo-museum__lane photo-museum__lane--${direction}`}>
+    <div
+      className={`photo-museum__lane photo-museum__lane--${direction}`}
+      data-lane={laneIndex + 1}
+      style={laneStyle}
+    >
       <div className="photo-museum__track">
         {[false, true].map((duplicate) => (
           <div
@@ -106,10 +118,9 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
     [photos],
   );
   const lanes = useMemo(
-    () => [
-      orderedPhotos,
-      [...orderedPhotos].reverse(),
-    ],
+    () => Array.from({ length: LANE_COUNT }, (_, laneIndex) =>
+      orderedPhotos.filter((_, photoIndex) => photoIndex % LANE_COUNT === laneIndex),
+    ),
     [orderedPhotos],
   );
   const [paused, setPaused] = useState(false);
@@ -146,7 +157,7 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
 
   const closePhoto = useCallback(() => {
     setSelectedIndex(null);
-    window.requestAnimationFrame(() => previousFocusRef.current?.focus());
+    window.requestAnimationFrame(() => previousFocusRef.current?.focus({ preventScroll: true }));
   }, []);
 
   const movePhoto = useCallback(
@@ -206,10 +217,8 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
   };
 
   const selectedPhoto = selectedIndex === null ? null : orderedPhotos[selectedIndex];
-  const rootStyle = { "--photo-duration": `${Math.max(120, orderedPhotos.length * 6)}s` } as CSSProperties;
-
   return (
-    <div className="photo-museum" data-paused={paused ? "true" : "false"} style={rootStyle}>
+    <div className="photo-museum" data-paused={paused ? "true" : "false"}>
       <header className="photo-museum__header">
         <div>
           <p>PHOTO MUSEUM · COMMUNITY MEMORY</p>
@@ -226,8 +235,16 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
       </header>
 
       <div className="photo-museum__viewport" aria-label="CMI Community 动态照片墙">
-        <PhotoLane photos={lanes[0]} assetBase={assetBase} direction="left" onOpen={openPhoto} />
-        <PhotoLane photos={lanes[1]} assetBase={assetBase} direction="right" onOpen={openPhoto} />
+        {lanes.map((lanePhotos, laneIndex) => (
+          <PhotoLane
+            photos={lanePhotos}
+            assetBase={assetBase}
+            direction={laneIndex % 2 === 0 ? "left" : "right"}
+            laneIndex={laneIndex}
+            onOpen={openPhoto}
+            key={`lane-${laneIndex + 1}`}
+          />
+        ))}
       </div>
 
       <footer className="photo-museum__footer">

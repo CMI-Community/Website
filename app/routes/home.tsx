@@ -4,7 +4,7 @@ import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.j
 import { PhotoMuseum } from "../modules/photo-museum/components/PhotoMuseum";
 import {
   sanitizePhotoCatalog,
-  type PhotoCatalogV1,
+  type PhotoCatalog,
 } from "../modules/photo-museum/photo-catalog";
 import { cloudflareContext } from "../shared/cloudflare-context";
 import { COMMUNITY_LINKS, COMMUNITY_SOCIALS, type CommunitySocial } from "../shared/community-socials";
@@ -34,6 +34,7 @@ interface PosterCatalog {
 type SectionId = "home" | "photo-museum" | "event-museum";
 
 const SECTION_IDS: SectionId[] = ["home", "photo-museum", "event-museum"];
+const PHOTO_MUSEUM_VERSION = "photo-museum/v2";
 
 export function meta() {
   const title = "CMI Community｜清迈华人数字游民社区";
@@ -55,10 +56,12 @@ export function meta() {
   ];
 }
 
-async function loadPhotoCatalog(env: CloudflareEnv): Promise<PhotoCatalogV1> {
-  const object = await env.MEDIA.get("photo-museum/v1/catalog.json");
+async function loadPhotoCatalog(env: CloudflareEnv): Promise<PhotoCatalog> {
+  const object = await env.MEDIA.get(`${PHOTO_MUSEUM_VERSION}/catalog.json`);
   if (!object) throw new Error("photo catalog missing");
-  return sanitizePhotoCatalog(await object.json());
+  const catalog = sanitizePhotoCatalog(await object.json());
+  if (catalog.version !== PHOTO_MUSEUM_VERSION) throw new Error("photo catalog version mismatch");
+  return catalog;
 }
 
 async function loadPosterCatalog(env: CloudflareEnv): Promise<PosterCatalog> {
@@ -87,7 +90,7 @@ export async function loader({ context }: Route.LoaderArgs) {
         ? {
             available: true as const,
             photos: photoResult.value.photos,
-            assetBase: "/media/photo-museum/v1",
+            assetBase: `/media/${PHOTO_MUSEUM_VERSION}`,
           }
         : { available: false as const, photos: [], assetBase: "" },
     eventMuseum:

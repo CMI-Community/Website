@@ -22,9 +22,8 @@ test("root renders the formal community homepage with independent museum fallbac
     const primaryLanes = page.locator(
       '.photo-museum__lane .photo-museum__set:not([aria-hidden="true"])',
     );
-    await expect(primaryLanes).toHaveCount(2);
-    await expect(primaryLanes.nth(0).locator(".photo-museum__card")).toHaveCount(27);
-    await expect(primaryLanes.nth(1).locator(".photo-museum__card")).toHaveCount(27);
+    await expect(primaryLanes).toHaveCount(7);
+    await expect(primaryLanes.locator(".photo-museum__card")).toHaveCount(528);
   } else {
     await expect(page.getByRole("heading", { name: "照片档案正在连接" })).toBeAttached();
   }

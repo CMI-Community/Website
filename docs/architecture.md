@@ -32,7 +32,7 @@ flowchart LR
 
 ## 路由与语言
 
-中文为默认且没有语言前缀。英文空间保留在 `/en/*`，但当前版本不制造不存在的英文内容。根路径 `/` 是带 `#home`、`#photo-museum`、`#event-museum` 深链的正式首页；`/archive/posters` 保留独立、完整的海报档案体验。Photo Museum 浏览器资产通过同域只读 `/media/photo-museum/v1/*` 投影读取当前环境的 R2。
+中文为默认且没有语言前缀。英文空间保留在 `/en/*`，但当前版本不制造不存在的英文内容。根路径 `/` 是带 `#home`、`#photo-museum`、`#event-museum` 深链的正式首页；`/archive/posters` 保留独立、完整的海报档案体验。Photo Museum 浏览器资产通过同域只读 `/media/photo-museum/vN/*` 投影读取当前环境的版本化 R2 目录。
 
 ## 内容的唯一真相源
 
