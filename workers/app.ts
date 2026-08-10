@@ -74,12 +74,35 @@ function canonicalRedirect(request: Request): Response | null {
   return Response.redirect(url.toString(), 308);
 }
 
+async function publicPhotoAsset(request: Request, env: CloudflareEnv): Promise<Response | null> {
+  const url = new URL(request.url);
+  const match = url.pathname.match(
+    /^\/media\/photo-museum\/v1\/(thumbs|full)\/([a-z0-9][a-z0-9-]{2,63}\.webp)$/,
+  );
+  if (!match) return null;
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
+  }
+
+  const object = await env.MEDIA.get(`photo-museum/v1/${match[1]}/${match[2]}`);
+  if (!object) return new Response("Not found", { status: 404 });
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("content-type", "image/webp");
+  headers.set("cache-control", "public, max-age=31536000, immutable");
+  headers.set("etag", object.httpEtag);
+  headers.set("x-content-type-options", "nosniff");
+  return new Response(request.method === "HEAD" ? null : object.body, { headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const redirect = canonicalRedirect(request);
     if (redirect) return redirect;
 
     const url = new URL(request.url);
+    const photoAsset = await publicPhotoAsset(request, env);
+    if (photoAsset) return photoAsset;
     const socialLogin = url.pathname.match(/^\/login\/(google|github)$/);
     if (socialLogin) {
       return socialLoginRedirect(request, env, ctx, socialLogin[1] as SocialProvider);

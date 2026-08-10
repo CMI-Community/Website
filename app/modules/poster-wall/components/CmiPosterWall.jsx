@@ -382,7 +382,7 @@ function DetailDrawer({ poster, assetBase, onClose }) {
  * @param {number} [props.initialFlipProbability=18] 每个节拍中，单张卡片触发翻动的概率百分比。
  * @param {number} [props.initialFlipBatchSize=3] 同一时刻允许翻动的最大卡片数。
  * @param {string} [props.officialAccountQrUrl='/social/cmi-official-account-qr.jpg'] CMI 公众号二维码。
- * @param {object} [props.socialLinks] 社区外部入口，可覆盖小红书、Reddit、GitHub 与微信号。
+ * @param {object} [props.socialLinks] 社区外部入口，可覆盖 Discord、Bilibili、小红书、Reddit、GitHub 与微信号。
  * @param {object} [props.feedbackRepository] 留言数据适配器；未传入时连接同域 Cloudflare D1 API。
  * @param {boolean} [props.showCommunityLinks=true] 是否展示左下角社区入口。
  * @param {boolean} [props.showFeedback=true] 是否展示导航栏留言入口。
@@ -392,6 +392,7 @@ function DetailDrawer({ poster, assetBase, onClose }) {
  * @param {boolean} [props.showControls=true] 是否展示内置控制器。
  * @param {string|number} [props.height='100svh'] 组件高度，可在官网板块中设为 `720px` 等值。
  * @param {(poster: object) => void} [props.onPosterSelect] 海报打开回调。
+ * @param {string} [props.className=''] 传给组件根节点的附加类名。
  */
 export function CmiPosterWall({
   posters,

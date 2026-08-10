@@ -1,26 +1,28 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-08 15:30 Asia/Bangkok
+Last updated: 2026-08-10 12:30 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `Shipped`
-- Current milestone: [v0.1.1 — Context Foundation](https://github.com/CMI-Community/Website/milestone/1) 已完成。
-- Current focus: 无活动开发任务；[#11 三位一体可追溯协作地基](https://github.com/CMI-Community/Website/issues/11) 已交付。
-- Next step: 在开始下一产品阶段前创建新的 GitHub Issue，并按 T1/T2/T3 选择记录等级。
+- Status: `Needs Review`
+- Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 进行中。
+- Current focus: [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)，T3，关联 [ADR 0005](./adr/0005-homepage-museums-and-public-photo-catalog.md)。
+- Next step: 审阅 [staging 首页](https://staging.cmi.community/) 并完成 PR review；production 继续等待内容负责人验收和人工批准。
 - Latest production runtime release: [v0.1.0-foundation](https://github.com/CMI-Community/Website/releases/tag/v0.1.0-foundation)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
-- 等待决定：无。
+- 等待决定：无；视觉、导航收束、照片全屏浏览和 Event Museum 嵌入范围已由内容负责人确认。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker 提供服务，根路径暂时进入 `/archive/posters`。
 - `VERIFIED`：当前公共档案为 180 张海报；新 D1 保留 3 条留言和 2 条投票；首位管理员已建立，一次性 bootstrap Secret 已删除。
 - `VERIFIED`：三位一体工作台、T1/T2/T3 记录和 required traceability gate 已通过真实 PR CI。
 - `ASSUMED`：旧 Worker 与旧反馈 D1 继续保留到明确结束稳定观察期；删除前必须另建 Issue 并给出回滚替代方案。
+- `VERIFIED`：Photo Museum v1 输入已锁定为 27 张用户指定照片，原片不进入公开仓库。
+- `VERIFIED`：27 张照片的 1280px / 2560px WebP 与公共目录已上传 staging R2；staging Worker 版本 `99d4ddd4-6ccc-4344-8f52-a273f040bd70` 已通过桌面与 390px 验收。
 
 ## Project Goal
 
@@ -32,11 +34,12 @@ Last updated: 2026-08-08 15:30 Asia/Bangkok
 
 - React Router 全栈、Cloudflare Workers、D1、R2 和 Better Auth 平台地基。
 - `identity`、`publishing`、`media`、`poster-wall`、`feedback`、`experiments` 领域模块。
+- Community Hero、Photo Museum、Event Museum 组成的正式根路径首页。
 - GitHub Issues、ADR、Experiment、PR、CI 和 Release Record 组成的可追溯协作流程。
 
 ### Out of Scope
 
-- 新官网首页、完整 CMS 后台、公开注册、社区关系图谱和完整英文内容。
+- 完整 CMS 后台、公开注册、社区关系图谱和完整英文内容。
 - 原始海报、5.7GB 私有归档、SQLite、生产数据导出和内部授权材料。
 - 完整聊天记录或模型内部推理归档。
 
@@ -48,6 +51,7 @@ Last updated: 2026-08-08 15:30 Asia/Bangkok
 | 2026-08-07 | [ADR 0002：代码许可与 CMI 品牌分离](./adr/0002-open-source-and-brand-boundary.md) | 允许技术复用，同时保护品牌与社区内容 | `Accepted` |
 | 2026-08-07 | [ADR 0003：邀请制身份与单一发布源](./adr/0003-identity-and-publishing.md) | 权限、账号关联和运营内容需要服务端唯一真相源 | `Accepted` |
 | 2026-08-08 | [ADR 0004：三位一体可追溯协作](./adr/0004-traceability-governance.md) | 防止长期开发、实验和回滚造成上下文断裂 | `Accepted` |
+| 2026-08-10 | [ADR 0005：三屏首页与版本化公共照片目录](./adr/0005-homepage-museums-and-public-photo-catalog.md) | 根路径、公共媒体目录和社交入口需要长期兼容及回滚 | `Accepted` |
 
 ## Options Considered
 
@@ -62,7 +66,7 @@ Last updated: 2026-08-08 15:30 Asia/Bangkok
 
 ### Now
 
-- 暂无；可执行工作必须先创建 GitHub Issue。
+- [ ] [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)
 
 ### Next
 
@@ -83,7 +87,8 @@ Last updated: 2026-08-08 15:30 Asia/Bangkok
 | Type | Item | Impact | Owner/Next check | Status |
 | --- | --- | --- | --- | --- |
 | Rollback | 旧 Worker 与旧反馈 D1 仍在稳定观察期 | 提供生产回滚能力，也增加资源识别成本 | 删除前新建 T3 Issue 并重新验证资源 | `OBSERVED` |
-| Product | 当前根路径仍是海报档案，不是真正官网首页 | 新访客只看到 demo 模块 | 下一产品阶段由新 Issue 定义 | `VERIFIED` |
+| Product | 正式三屏首页仅在 staging，production 根路径仍是海报档案 | 新首页尚未对公众生效 | 内容负责人先验收 staging，再决定 production 批准 | `NEEDS REVIEW` |
+| Media | Photo Museum v1 需要两档资产与目录一致 | 缺图会让动态墙或全屏浏览失败 | staging 已逐一验证 54 个 WebP；production 发布前重复同一门禁 | `VERIFIED` |
 | Maintenance | Dependabot 已产生多项待审 PR | 依赖升级可能影响 Node 24 和 Cloudflare 兼容性 | 逐项通过 CI 后合并，不批量猜测兼容性 | `OBSERVED` |
 
 ## Implementation Notes
@@ -92,6 +97,7 @@ Last updated: 2026-08-08 15:30 Asia/Bangkok
 - D1 是身份、角色、内容、审计和反馈的运行数据源；R2 提供版本化公共媒体。
 - 仓库 Markdown 只保存固定政策、架构、协作和发布记录，不复制运营内容。
 - 公共 API 必须使用字段白名单；权限始终在服务端校验。
+- Photo Museum v1 公共目录只保存展示字段；原始 HEIC/JPEG、本机路径、人物身份和授权材料继续留在私有素材边界。
 
 ## Validation Log
 
@@ -103,6 +109,11 @@ Last updated: 2026-08-08 15:30 Asia/Bangkok
 | 2026-08-08 | 三位一体结构与 PR 合同 | `VERIFIED` | T1/T2/T3、Dependabot、override、坏链接、状态、重复编号和公开边界自动测试通过 |
 | 2026-08-08 | `npm run check` | `VERIFIED` | lint、trace、typecheck、19 tests、D1 migration、SSR build 和 Wrangler staging dry-run通过 |
 | 2026-08-08 | PR #12 required CI | `VERIFIED` | trace gate、构建、dry-run、桌面与 390px smoke 全部通过；7 passed，1 skipped |
+| 2026-08-10 | Photo Museum v1 资产处理 | `VERIFIED` | 27 个唯一记录、54 个 WebP、25 横图 + 2 竖图；公共目录无本机路径或内部字段 |
+| 2026-08-10 | `npm run check` | `VERIFIED` | lint、trace、typecheck、24 tests、D1 migration、SSR build 和 staging dry-run 通过 |
+| 2026-08-10 | staging deploy | `VERIFIED` | Worker `99d4ddd4-6ccc-4344-8f52-a273f040bd70`；根路径 200，production 未改动 |
+| 2026-08-10 | staging Playwright | `VERIFIED` | 桌面与 390px 共 15 passed、3 skipped；54 个照片变体、海报/留言/OAuth 回归均通过 |
+| 2026-08-10 | staging 视觉检查 | `VERIFIED` | 首屏七个社交入口、Photo 双轨与 Event Museum 在 1440×900 和 390×844 无横向溢出或导航重叠 |
 
 ## Recent Updates
 
@@ -110,6 +121,8 @@ Last updated: 2026-08-08 15:30 Asia/Bangkok
 - 2026-08-08 15:22 Asia/Bangkok：上下文骨架、记录模板和 CI 门禁完成首轮验证；第一次完整检查暴露并修正了检查器参数的 TypeScript 推断问题。
 - 2026-08-08 15:30 Asia/Bangkok：PR #12 首次 required CI 通过，补齐 `v0.1.1` Release Record，三位一体协作地基进入 Shipped 状态。
 - 2026-08-08：发布 `v0.1.0-foundation`，新平台接管生产域名，旧 Worker/D1 保留回滚。
+- 2026-08-10 11:43 Asia/Bangkok：创建 Milestone v0.2.0、Issue #13 与 ADR 0005，开始三屏首页和 Photo Museum v1 实施。
+- 2026-08-10 12:30 Asia/Bangkok：完成三屏首页、Photo Museum v1、全站社交入口与 Event Museum 嵌入；上传 staging R2、部署 staging 并完成桌面与 390px 自动化和目视验收，进入 review。
 
 ## Handoff Notes
 
