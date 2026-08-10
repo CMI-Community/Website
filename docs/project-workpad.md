@@ -1,23 +1,23 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-10 13:26 Asia/Bangkok
+Last updated: 2026-08-10 13:42 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
-- Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 进行中。
-- Current focus: 根据首轮 staging review 调整首屏移动端可读性和彩色氛围，并把 Photo Museum 扩展为 528 张 v2；任务仍为 [#13](https://github.com/CMI-Community/Website/issues/13)，实施见 [PR #14](https://github.com/CMI-Community/Website/pull/14)，新增 [ADR 0006](./adr/0006-photo-museum-v2-density-and-scale.md)。
-- Next step: 将 [PR #14](https://github.com/CMI-Community/Website/pull/14) 合并主线，同步 Photo Museum v2 到 production R2，发布 production Worker 并完成裸域/`www`、桌面与 390px 真实域名验收。
-- Latest production runtime release: [v0.1.0-foundation](https://github.com/CMI-Community/Website/releases/tag/v0.1.0-foundation)
+- Status: `Shipped`
+- Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 已完成。
+- Current focus: [#13](https://github.com/CMI-Community/Website/issues/13) 已通过 [PR #14](https://github.com/CMI-Community/Website/pull/14) 合并主线；Community Hero、528 张 Photo Museum 与 Event Museum 已成为 `cmi.community` 正式首页。
+- Next step: 无；继续稳定观察，后续策展文案、CMS 或新功能必须先创建新 GitHub Issue。
+- Latest production runtime release: [v0.2.0](https://github.com/CMI-Community/Website/releases/tag/v0.2.0)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
 - 等待决定：无；内容负责人已完成手机主观验收，并于 2026-08-10 13:26 Asia/Bangkok 明确批准立即发布 production。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
-- `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker 提供服务，根路径暂时进入 `/archive/posters`。
+- `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `bbfff480-23cc-49cc-8ccb-f883cb38983a` 提供服务，根路径直接呈现三屏正式首页。
 - `VERIFIED`：当前公共档案为 180 张海报；新 D1 保留 3 条留言和 2 条投票；首位管理员已建立，一次性 bootstrap Secret 已删除。
 - `VERIFIED`：三位一体工作台、T1/T2/T3 记录和 required traceability gate 已通过真实 PR CI。
 - `ASSUMED`：旧 Worker 与旧反馈 D1 继续保留到明确结束稳定观察期；删除前必须另建 Issue 并给出回滚替代方案。
@@ -25,6 +25,7 @@ Last updated: 2026-08-10 13:26 Asia/Bangkok
 - `VERIFIED`：27 张照片的 1280px / 2560px WebP 与公共目录已上传 staging R2；staging Worker 版本 `99d4ddd4-6ccc-4344-8f52-a273f040bd70` 已通过桌面与 390px 验收。
 - `VERIFIED`：新增私有目录有 508 个文件，其中 7 个与 v1 原片完全重复；全部可读取的 501 张唯一新素材与 v1 合并为 528 张 v2。
 - `VERIFIED`：Photo Museum v2 已生成并核验 1056 个 WebP（322MB），上传 staging R2 后逐项验证两档资产；staging Worker 为 `796915a9-f000-4e8c-b321-411f5b9a1e61`。
+- `VERIFIED`：Photo Museum v2 目录与 1056 个 WebP 已上传 production R2，目录最后发布且从远端回读一致。
 
 ## Project Goal
 
@@ -69,7 +70,7 @@ Last updated: 2026-08-10 13:26 Asia/Bangkok
 
 ### Now
 
-- [ ] [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)
+- 暂无；可执行工作必须先创建 GitHub Issue。
 
 ### Next
 
@@ -81,6 +82,8 @@ Last updated: 2026-08-10 13:26 Asia/Bangkok
 
 ### Done
 
+- [x] [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)
+- [x] [v0.2.0：三屏首页与 528 张 Photo Museum](https://github.com/CMI-Community/Website/releases/tag/v0.2.0)
 - [x] [#11 建立三位一体可追溯协作地基](https://github.com/CMI-Community/Website/issues/11)
 - [x] [v0.1.1：任务、思考、过程协作地基](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 - [x] [v0.1.0-foundation：CMI 官网长期技术地基](https://github.com/CMI-Community/Website/releases/tag/v0.1.0-foundation)
@@ -90,9 +93,9 @@ Last updated: 2026-08-10 13:26 Asia/Bangkok
 | Type | Item | Impact | Owner/Next check | Status |
 | --- | --- | --- | --- | --- |
 | Rollback | 旧 Worker 与旧反馈 D1 仍在稳定观察期 | 提供生产回滚能力，也增加资源识别成本 | 删除前新建 T3 Issue 并重新验证资源 | `OBSERVED` |
-| Product | 正式三屏首页已获 production 人工批准 | 发布窗口中需防止 Worker 先于 R2 目录生效 | 资产先上传、目录最后发布，再部署 Worker 并立即验收 | `IN PROGRESS` |
+| Product | 正式三屏首页已成为 production 根路径 | 边缘发布后有短暂新旧 Worker 传播窗口 | 传播稳定后连续检查根路径，完整 production 验收已通过 | `VERIFIED` |
 | Media | Photo Museum v2 为 528 张、1056 个 WebP | 损坏源图、重复项或漏传会破坏墙面与全屏浏览 | 本地目录完整性和 staging 两档公开入口已逐项通过 | `VERIFIED` |
-| Performance | 七条动态轨道会逐步加载 528 张缩略图 | 手机内存、流量和帧率可能上升 | 720px 缩略图、390×844 视口与动画/全屏交互已验证；等待内容负责人真机主观验收 | `NEEDS REVIEW` |
+| Performance | 七条动态轨道会逐步加载 528 张缩略图 | 手机内存、流量和帧率可能上升 | 720px 缩略图、内容负责人真机验收、390×844 production 动画/全屏交互已通过 | `VERIFIED` |
 | Maintenance | Dependabot 已产生多项待审 PR | 依赖升级可能影响 Node 24 和 Cloudflare 兼容性 | 逐项通过 CI 后合并，不批量猜测兼容性 | `OBSERVED` |
 
 ## Implementation Notes
@@ -125,6 +128,10 @@ Last updated: 2026-08-10 13:26 Asia/Bangkok
 | 2026-08-10 | staging Playwright | `VERIFIED` | 桌面与 390px 共 15 passed、3 skipped；1056 个照片入口、全屏浏览、导航、Event Museum、海报/留言/OAuth 回归通过 |
 | 2026-08-10 | staging 视觉检查 | `VERIFIED` | 1440×900 与 390×844 的字号/字距、Logo 五色模糊色场、七轨密集照片墙、吸顶导航无溢出；控制台 0 errors / 0 warnings |
 | 2026-08-10 | production 人工批准 | `VERIFIED` | 内容负责人确认第二版无问题，明确要求立即发布为 `cmi.community` 首页 |
+| 2026-08-10 | production R2 | `VERIFIED` | `photo-museum/v2` 的 1056 个 WebP 完整上传，目录最后发布并与本地逐字节一致 |
+| 2026-08-10 | production deploy | `VERIFIED` | [GitHub production Environment run](https://github.com/CMI-Community/Website/actions/runs/31362512317) 成功；Worker `bbfff480-23cc-49cc-8ccb-f883cb38983a` |
+| 2026-08-10 | production Playwright | `VERIFIED` | 桌面与 390px 共 15 passed、3 skipped；1056 个照片入口、全屏浏览、导航、Event Museum、海报/留言/OAuth 回归通过 |
+| 2026-08-10 | production 域名与视觉 | `VERIFIED` | 根路径连续 15 次直接 200；`www` 308 保留 path/query；390×844 首屏/照片墙正常，控制台 0 errors / 0 warnings |
 
 ## Recent Updates
 
@@ -138,6 +145,7 @@ Last updated: 2026-08-10 13:26 Asia/Bangkok
 - 2026-08-10 12:44 Asia/Bangkok：收到首轮 staging review；盘点新照片目录为 508 个文件，识别 7 个 v1 精确重复项，按 [ADR 0006](./adr/0006-photo-museum-v2-density-and-scale.md) 启动 528 张 Photo Museum v2 与首屏可读性调整。
 - 2026-08-10 13:18 Asia/Bangkok：完成首屏放大紧字号和 Logo 五色模糊色场；528 张 Photo Museum v2 已以七轨高密度布局发布 staging，通过全部自动化与桌面/手机视口目视验收，进入第二轮 review。
 - 2026-08-10 13:26 Asia/Bangkok：内容负责人完成手机验收并明确批准立即发布 production；创建 [v0.2.0 Release Record](./releases/v0.2.0.md)，开始版本化 R2 同步和 production 发布链。
+- 2026-08-10 13:42 Asia/Bangkok：[PR #14](https://github.com/CMI-Community/Website/pull/14) 合并并关闭 Issue #13；production R2、Worker、裸域/`www`、桌面/390px 与 1056 个照片入口全部验收通过，发布 [v0.2.0](https://github.com/CMI-Community/Website/releases/tag/v0.2.0) 并进入 Shipped。
 
 ## Handoff Notes
 
