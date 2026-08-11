@@ -1,16 +1,16 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-11 12:24 Asia/Bangkok
+Last updated: 2026-08-11 12:35 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `Production patch in progress`
+- Status: `Shipped`
 - Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 已完成。
-- Current focus: [#16](https://github.com/CMI-Community/Website/issues/16) / [PR #17](https://github.com/CMI-Community/Website/pull/17) 紧急恢复三屏官网并更新全站小红书入口。
-- Next step: 完成 v0.2.1 全量检查、PR、production 发布与逐页验收。
-- Latest production runtime release: [v0.2.0](https://github.com/CMI-Community/Website/releases/tag/v0.2.0)
+- Current focus: [#16](https://github.com/CMI-Community/Website/issues/16) 已通过 [PR #17](https://github.com/CMI-Community/Website/pull/17) 完成；三屏官网已恢复并发布新小红书入口。
+- Next step: 无；继续稳定观察，后续变更必须先创建新 GitHub Issue。
+- Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
@@ -18,7 +18,7 @@ Last updated: 2026-08-11 12:24 Asia/Bangkok
 - 等待决定：无；内容负责人已完成手机主观验收，并于 2026-08-10 13:26 Asia/Bangkok 明确批准立即发布 production。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
-- `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d` 提供服务，根路径直接呈现三屏正式首页。
+- `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
 - `VERIFIED`：当前公共档案为 180 张海报；新 D1 保留 3 条留言和 2 条投票；首位管理员已建立，一次性 bootstrap Secret 已删除。
 - `VERIFIED`：三位一体工作台、T1/T2/T3 记录和 required traceability gate 已通过真实 PR CI。
 - `ASSUMED`：旧 Worker 与旧反馈 D1 继续保留到明确结束稳定观察期；删除前必须另建 Issue 并给出回滚替代方案。
@@ -71,7 +71,7 @@ Last updated: 2026-08-11 12:24 Asia/Bangkok
 
 ### Now
 
-- [ ] [#16 紧急恢复 v0.2.0 三屏官网并更新小红书入口](https://github.com/CMI-Community/Website/issues/16)
+- 暂无；可执行工作必须先创建 GitHub Issue。
 
 ### Next
 
@@ -83,6 +83,7 @@ Last updated: 2026-08-11 12:24 Asia/Bangkok
 
 ### Done
 
+- [x] [#16 恢复三屏官网并发布 v0.2.1 小红书入口](https://github.com/CMI-Community/Website/issues/16)
 - [x] [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)
 - [x] [v0.2.0：三屏首页与 528 张 Photo Museum](https://github.com/CMI-Community/Website/releases/tag/v0.2.0)
 - [x] [#11 建立三位一体可追溯协作地基](https://github.com/CMI-Community/Website/issues/11)
@@ -133,12 +134,15 @@ Last updated: 2026-08-11 12:24 Asia/Bangkok
 | 2026-08-10 | production deploy | `VERIFIED` | [GitHub production Environment run](https://github.com/CMI-Community/Website/actions/runs/31362512317) 成功；Worker `bbfff480-23cc-49cc-8ccb-f883cb38983a` |
 | 2026-08-10 | production Playwright | `VERIFIED` | 桌面与 390px 共 15 passed、3 skipped；1056 个照片入口、全屏浏览、导航、Event Museum、海报/留言/OAuth 回归通过 |
 | 2026-08-10 | production 域名与视觉 | `VERIFIED` | 根路径连续 15 次直接 200；`www` 308 保留 path/query；390×844 首屏/照片墙正常，控制台 0 errors / 0 warnings |
+| 2026-08-11 | v0.2.1 完整检查与 PR CI | `VERIFIED` | 本地 `npm run check`、7 passed / 1 skipped E2E、0 production 漏洞；PR #17 required CI 通过并合并 |
+| 2026-08-11 | v0.2.1 production 发布 | `VERIFIED` | Worker `d5703143-aeb3-4676-9f07-6c42e860fe92`；首页和档案均为新小红书短链，production Playwright 15 passed / 3 skipped |
 
 ## Recent Updates
 
 - 2026-08-11 12:24 Asia/Bangkok：确认旧 `CMI 海报工程/poster-wall` Worker 误覆盖 production，创建 Issue #16；从官网 `main` 与正确 production 配置恢复三屏首页，Worker 为 `6cb12718-4630-43b1-8988-7598e6043f8d`。
 - 2026-08-11 12:24 Asia/Bangkok：开始 v0.2.1 修复，将共享小红书入口更新为用户提供的新短链，并增加固定目标测试。
 - 2026-08-11 12:27 Asia/Bangkok：v0.2.1 `npm run check` 全部通过；本地 Playwright 桌面与 390px 为 7 passed、1 skipped，生产依赖审计为 0 个漏洞。
+- 2026-08-11 12:35 Asia/Bangkok：PR #17 required CI 通过并合并；从 `main` 发布 v0.2.1 Worker `d5703143-aeb3-4676-9f07-6c42e860fe92`，production 桌面与 390px 为 15 passed、3 skipped，三屏官网和新小红书入口验收完成。
 - 2026-08-08 15:11 Asia/Bangkok：创建 Milestone、Issue #11 和完整标签体系，开始建立三位一体可追溯协作地基。
 - 2026-08-08 15:22 Asia/Bangkok：上下文骨架、记录模板和 CI 门禁完成首轮验证；第一次完整检查暴露并修正了检查器参数的 TypeScript 推断问题。
 - 2026-08-08 15:30 Asia/Bangkok：PR #12 首次 required CI 通过，补齐 `v0.1.1` Release Record，三位一体协作地基进入 Shipped 状态。
