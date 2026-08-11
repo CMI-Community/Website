@@ -1,7 +1,7 @@
 export const COMMUNITY_LINKS = {
   discord: "https://discord.gg/BbaPPTRr9d",
   bilibili: "https://space.bilibili.com/3706956986452842?spm_id_from=333.337.search-card.all.click",
-  xiaohongshu: "https://www.xiaohongshu.com/user/profile/5f0eb478000000000000100260e",
+  xiaohongshu: "https://xhslink.cn/m/3C1MCJgpWq6",
   reddit: "https://www.reddit.com/r/CMI_Community/",
   github: "https://github.com/orgs/CMI-Community/repositories",
   wechat: "LinkLinkGuan",
