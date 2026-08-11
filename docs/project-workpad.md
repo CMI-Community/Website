@@ -8,7 +8,7 @@ Last updated: 2026-08-11 12:24 Asia/Bangkok
 
 - Status: `Production patch in progress`
 - Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 已完成。
-- Current focus: [#16](https://github.com/CMI-Community/Website/issues/16) 紧急恢复三屏官网并更新全站小红书入口。
+- Current focus: [#16](https://github.com/CMI-Community/Website/issues/16) / [PR #17](https://github.com/CMI-Community/Website/pull/17) 紧急恢复三屏官网并更新全站小红书入口。
 - Next step: 完成 v0.2.1 全量检查、PR、production 发布与逐页验收。
 - Latest production runtime release: [v0.2.0](https://github.com/CMI-Community/Website/releases/tag/v0.2.0)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
