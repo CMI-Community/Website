@@ -1,15 +1,15 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-28 06:21 Asia/Bangkok
+Last updated: 2026-08-28 06:29 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
+- Status: `In Review`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
-- Current focus：在 [#26](https://github.com/CMI-Community/Website/issues/26) / [Draft PR #27](https://github.com/CMI-Community/Website/pull/27) 增加 8 月 28 日 CMI 吃饭俱乐部《牛来》观影，并固定近期活动“开始时间从近到远、从左到右”。
-- Next step：提交并推送《牛来》活动与 390px 修正，等待 Draft PR #27 required CI；通过后仅发布 staging Worker，验收两张海报顺序和开始时刻自动流转。production 与旧 Vercel 继续保持不变。
+- Current focus：[#26](https://github.com/CMI-Community/Website/issues/26) / [Draft PR #27](https://github.com/CMI-Community/Website/pull/27) 的 8 月 28 日 CMI 吃饭俱乐部《牛来》观影已发布 staging，并按“开始时间从近到远、从左到右”完成桌面与手机验收。
+- Next step：等待内容负责人验收 [staging 首页](https://staging.cmi.community/) 的两张海报顺序、手机横向滑动与《牛来》放大层。production 与旧 Vercel 继续保持不变。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -44,6 +44,8 @@ Last updated: 2026-08-28 06:21 Asia/Bangkok
 - `VERIFIED`：用户提供的 941×1672 PNG 已在仓库外优化为 337,210 字节 WebP，并写入 staging R2 `activities/cmi-dinner-club/01-niulai-screening/v1/poster.webp`；回读 SHA-256 `4d022246…af6dfc` 一致，production R2 未写入。
 - `VERIFIED`：《牛来》已进入同一审核式活动目录；2026-08-28 16:00 前，首页按开始时刻从近到远显示《牛来》在左、第 27 期在右，达到各自开始时刻后按同一目录自动进入 Event Museum。新增两张卡片暴露的 390px 网格固有宽度外溢已通过活动区 `min-width: 0` 和手机头部收束修正。
 - `VERIFIED`：本轮 `npm run check` 全绿（50 unit tests、16 表 D1 smoke、SSR 与 staging dry-run）；本地 Playwright 桌面/390px 为 17 passed / 3 skipped，覆盖两张卡片顺序、真实外链、放大层、焦点、减少动画、Event Museum 流转、Projects 面板与无横向溢出。
+- `VERIFIED`：[Draft PR #27 本轮 required CI](https://github.com/CMI-Community/Website/actions/runs/33126046778) 通过；从提交 `c1ecb17` 发布 staging Worker `8aee0ea9-97b5-42d5-8c8f-03be02a2bc5e`。production 与旧 Vercel 未改变。
+- `VERIFIED`：staging 远端 Playwright 为 23 passed / 5 skipped；桌面与 390px 均显示《牛来》在左、第 27 期在右，文案、两条公众号地址、真实尺寸、放大层和生命周期准确。390px `scrollWidth === clientWidth === 390`，Projects 面板在视口内，控制台 0 errors / 0 warnings；《牛来》同域海报回读哈希继续为 `4d022246…af6dfc`。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -234,9 +236,11 @@ Last updated: 2026-08-28 06:21 Asia/Bangkok
 | 2026-08-27 | #26 staging Playwright 与目视 | `VERIFIED` | 23 passed / 5 skipped；桌面/390px 两级菜单、真实海报、放大层、三语兰纳、Photo 1056 变体、Event 180 条、身份和反馈通过；控制台 0 errors / 0 warnings |
 | 2026-08-28 | 《牛来》公众号与 staging R2 | `VERIFIED` | 真实浏览器核实 8 月 28 日 16:00–20:00；941×1672 WebP 为 337,210 字节，staging R2 上传回读 SHA-256 `4d022246…af6dfc` 一致，production 未写入 |
 | 2026-08-28 | 《牛来》本地目录与双视口 | `VERIFIED` | `npm run check` 全绿；Playwright 桌面/390px 为 17 passed / 3 skipped；8 月 28 日在左、8 月 30 日在右，手机 Projects 与页面均无横向溢出 |
+| 2026-08-28 | [《牛来》PR CI 与 staging](https://github.com/CMI-Community/Website/actions/runs/33126046778) | `VERIFIED` | required CI 通过；Worker `8aee0ea9…`；远端 23 passed / 5 skipped，同域海报哈希、双视口顺序、放大层、390px 和零控制台告警通过 |
 
 ## Recent Updates
 
+- 2026-08-28 06:29 Asia/Bangkok：提交 `c1ecb17` 推送 Draft PR #27，required CI 2m06s 全绿后仅发布 staging Worker `8aee0ea9-97b5-42d5-8c8f-03be02a2bc5e`。同域《牛来》海报返回 200 `image/webp`、immutable，SHA-256 `4d022246…af6dfc`；远端 Playwright 23 passed / 5 skipped。1440×900 与 390×844 目视确认《牛来》在左、第 27 期在右；手机可横向看到第二张，Projects 完整在视口内，页面 390/390 无溢出，放大层 Escape 焦点恢复，控制台 0 errors / 0 warnings。production 与旧 Vercel 未改变，进入内容负责人 staging 验收。
 - 2026-08-28 06:21 Asia/Bangkok：《牛来》进入统一活动目录与本地 R2 fixture；单元测试固定两期按开始时刻从近到远，E2E 覆盖活动开始瞬间转入 Event Museum。两张手机卡片首次暴露活动区网格固有宽度把页面撑到 464px，已通过活动容器允许收缩并在窄屏隐藏重复地点标签修正；最终 `npm run check` 全绿，本地 Playwright 桌面/390px 为 17 passed / 3 skipped，准备提交 Draft PR #27 并等待 required CI 后仅更新 staging。
 - 2026-08-28 06:12 Asia/Bangkok：用户要求加入 [CMI 吃饭俱乐部 #1 ·《牛来》观影](https://mp.weixin.qq.com/s/0Z1DTbX93zrAfwlCVxjzGg)，并明确近期活动按开始时间从近到远、从左到右。公众号自动提取触发验证码，按流程改用真实浏览器核实标题、2026-08-28 16:00–20:00、CMI Studio、限 10 人和共享食物机制。附图在仓库外优化为 337,210 字节 WebP，上传 staging R2 后回读哈希一致；开始更新审核目录和排序测试，production 不动。
 - 2026-08-27 22:00 Asia/Bangkok：[Draft PR #27 required CI](https://github.com/CMI-Community/Website/actions/runs/33084658539) 全绿后，从提交 `8b48a06` 发布 staging Worker `b90d343c-3ea8-49fc-8ef5-e321188bdea7`。第 27 期同域 WebP 返回 200、immutable，远端 SHA-256 与源一致；完整远端 Playwright 23 passed / 5 skipped。1440×900 和 390×844 的首页、两级 Projects、真实海报与放大层目视通过，控制台 0 errors / 0 warnings。production 和旧 Vercel 保持原状，进入内容负责人 staging 验收。
