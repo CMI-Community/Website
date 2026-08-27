@@ -161,6 +161,7 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     test.skip(testInfo.project.name !== "desktop-chromium", "one browser export is sufficient");
     test.setTimeout(60_000);
     await page.goto(`${PROJECT_PATH}#archive`, { waitUntil: "domcontentloaded" });
+    await expectClientLanguage(page, "zh");
     const firstTile = page.locator("#archive .archive-tile").first();
     await firstTile.click();
 
