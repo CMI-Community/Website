@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
   formatProjectDate,
+  getProjectIssueHref,
+  isExternalProjectIssue,
   orderProjectIssues,
   PROJECT_SERIES,
 } from "../project-catalog";
@@ -71,9 +73,9 @@ export function ProjectMenu({ placement }: ProjectMenuProps) {
                 {orderProjectIssues(series.issues).map((issue) => (
                   <li key={issue.id}>
                     <a
-                      href={issue.href}
-                      target="_blank"
-                      rel="noreferrer"
+                      href={getProjectIssueHref(series, issue)}
+                      target={isExternalProjectIssue(issue) ? "_blank" : undefined}
+                      rel={isExternalProjectIssue(issue) ? "noreferrer" : undefined}
                       onClick={closeAfterSelection}
                     >
                       <span className="project-menu__issue-number">{String(issue.number).padStart(2, "0")}</span>
@@ -81,7 +83,9 @@ export function ProjectMenu({ placement }: ProjectMenuProps) {
                         <b>第 {issue.number} 期 · {issue.title}</b>
                         <small>{formatProjectDate(issue.date)}</small>
                       </span>
-                      <span className="project-menu__issue-arrow" aria-hidden="true">↗</span>
+                      <span className="project-menu__issue-arrow" aria-hidden="true">
+                        {isExternalProjectIssue(issue) ? "↗" : "→"}
+                      </span>
                     </a>
                   </li>
                 ))}
