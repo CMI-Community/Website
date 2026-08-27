@@ -4,8 +4,10 @@ import { defineLannaProjectTests } from "./lanna-tests";
 
 defineLannaProjectTests();
 
-const UPCOMING_ACTIVITY_START = Date.parse("2026-08-30T12:30:00+07:00");
-const UPCOMING_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg";
+const DINNER_ACTIVITY_START = Date.parse("2026-08-28T16:00:00+07:00");
+const DINNER_ACTIVITY_URL = "https://mp.weixin.qq.com/s/0Z1DTbX93zrAfwlCVxjzGg";
+const WAYTOAGI_ACTIVITY_START = Date.parse("2026-08-30T12:30:00+07:00");
+const WAYTOAGI_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg";
 
 function d1(command: string): string {
   return execFileSync(
@@ -63,7 +65,7 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await expect(heroPanel.getByText("WaytoAGI 发起 · CMI Community 组织清迈场")).toBeVisible();
   const externalIssue = heroPanel.getByRole("link", { name: /第 27 期 · 即兴戏剧 \+ AI 短剧共创/ });
   await expect(externalIssue).toContainText("2026.08.30");
-  await expect(externalIssue).toHaveAttribute("href", UPCOMING_ACTIVITY_URL);
+  await expect(externalIssue).toHaveAttribute("href", WAYTOAGI_ACTIVITY_URL);
   await expect(externalIssue).toHaveAttribute("target", "_blank");
   const nativeIssue = heroPanel.getByRole("link", { name: /第 26 期 · 博物馆奇妙日/ });
   await expect(nativeIssue).toContainText("2026.07.26");
@@ -123,23 +125,55 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await expect(page).toHaveURL(/\/project\/waytoagi\/26-lanna-museum$/);
 });
 
-test("upcoming activity poster scrolls, tilts, expands and keeps its detail link explicit", async ({ page }, testInfo) => {
+test("upcoming activities are nearest-first, tilt, expand and move into Event Museum", async ({ page }, testInfo) => {
   await page.goto("/");
   const section = page.locator(".upcoming-activities");
-  if (Date.now() >= UPCOMING_ACTIVITY_START) {
+  const now = Date.now();
+  if (now >= WAYTOAGI_ACTIVITY_START) {
     await expect(section).toHaveCount(0);
     return;
   }
 
   await expect(section).toBeVisible();
   await expect(section.getByRole("heading", { name: "最近，可以一起做什么" })).toBeVisible();
-  await expect(section.locator(".upcoming-activity")).toHaveCount(1);
-  const posterButton = section.getByRole("button", { name: /放大海报：即兴戏剧 \+ AI 短剧共创/ });
+  const cards = section.locator(".upcoming-activity");
+
+  if (now < DINNER_ACTIVITY_START) {
+    await expect(cards).toHaveCount(2);
+    await expect(cards.locator("h3")).toHaveText([
+      "CMI 吃饭俱乐部 #1 · 周五《牛来》观影",
+      "即兴戏剧 + AI 短剧共创",
+    ]);
+    await expect(cards.nth(0).getByRole("link", { name: /查看详情/ })).toHaveAttribute(
+      "href",
+      DINNER_ACTIVITY_URL,
+    );
+    await expect(cards.nth(1).getByRole("link", { name: /查看详情/ })).toHaveAttribute(
+      "href",
+      WAYTOAGI_ACTIVITY_URL,
+    );
+  } else {
+    await expect(cards).toHaveCount(1);
+    await expect(cards.locator("h3")).toHaveText("即兴戏剧 + AI 短剧共创");
+    if (await page.locator("#event-museum .cmi-poster-wall").count()) {
+      await expect(
+        page.locator('[data-poster-key="activity-cmi-dinner-club-01-niulai-screening.webp"]'),
+      ).toBeAttached();
+    }
+  }
+
+  const posterButton = now < DINNER_ACTIVITY_START
+    ? section.getByRole("button", { name: /放大海报：CMI 吃饭俱乐部 #1/ })
+    : section.getByRole("button", { name: /放大海报：即兴戏剧 \+ AI 短剧共创/ });
   const poster = posterButton.locator("img");
   await expect(poster).toBeVisible();
   await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
-  const detail = section.getByRole("link", { name: /查看详情/ });
-  await expect(detail).toHaveAttribute("href", UPCOMING_ACTIVITY_URL);
+  const selectedCard = posterButton.locator("xpath=ancestor::article");
+  const detail = selectedCard.getByRole("link", { name: /查看详情/ });
+  await expect(detail).toHaveAttribute(
+    "href",
+    now < DINNER_ACTIVITY_START ? DINNER_ACTIVITY_URL : WAYTOAGI_ACTIVITY_URL,
+  );
   await expect(detail).toHaveAttribute("target", "_blank");
 
   if (testInfo.project.name === "desktop-chromium") {
@@ -150,10 +184,16 @@ test("upcoming activity poster scrolls, tilts, expands and keeps its detail link
   }
 
   await posterButton.click();
-  const dialog = page.getByRole("dialog", { name: /即兴戏剧 \+ AI 短剧共创/ });
+  const dialog = now < DINNER_ACTIVITY_START
+    ? page.getByRole("dialog", { name: /CMI 吃饭俱乐部 #1/ })
+    : page.getByRole("dialog", { name: /即兴戏剧 \+ AI 短剧共创/ });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByText("2026.08.30 · 周日")).toBeVisible();
-  await expect(dialog.getByText("12:30–17:30 · 清迈时间")).toBeVisible();
+  await expect(dialog.getByText(
+    now < DINNER_ACTIVITY_START ? "2026.08.28 · 周五" : "2026.08.30 · 周日",
+  )).toBeVisible();
+  await expect(dialog.getByText(
+    now < DINNER_ACTIVITY_START ? "16:00–20:00 · 清迈时间" : "12:30–17:30 · 清迈时间",
+  )).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
   await expect(posterButton).toBeFocused();
@@ -189,7 +229,7 @@ test("page fits the active viewport", async ({ page }) => {
 });
 
 test("upcoming activity removes its 3D motion when reduced motion is requested", async ({ page }) => {
-  test.skip(Date.now() >= UPCOMING_ACTIVITY_START, "the activity has already moved to Event Museum");
+  test.skip(Date.now() >= WAYTOAGI_ACTIVITY_START, "the activity has already moved to Event Museum");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const posterButton = page.getByRole("button", { name: /放大海报：即兴戏剧 \+ AI 短剧共创/ });

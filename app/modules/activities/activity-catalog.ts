@@ -46,6 +46,31 @@ export interface EventMuseumPoster {
 
 export const ACTIVITY_CATALOG = [
   {
+    id: "cmi-dinner-club-01-niulai-screening",
+    title: "CMI 吃饭俱乐部 #1 · 周五《牛来》观影",
+    startsAt: "2026-08-28T16:00:00+07:00",
+    endsAt: "2026-08-28T20:00:00+07:00",
+    dateLabel: "2026.08.28 · 周五",
+    timeLabel: "16:00–20:00 · 清迈时间",
+    publishedAt: "2026-08-27 19:57:21",
+    publishedDate: "2026-08-27",
+    detailUrl: "https://mp.weixin.qq.com/s/0Z1DTbX93zrAfwlCVxjzGg",
+    summary: "每个人带一份愿意分享的食物，在 CMI Studio 一边吃饭，一边共同观看《牛来》；活动限 10 人。",
+    initiator: "CMI 吃饭俱乐部 · 空想食堂活动分支",
+    category: "CMI 吃饭俱乐部",
+    poster: {
+      objectKey: "activities/cmi-dinner-club/01-niulai-screening/v1/poster.webp",
+      width: 941,
+      height: 1672,
+      alt: "CMI 吃饭俱乐部第一期《牛来》观影会活动海报",
+    },
+    series: {
+      id: "cmi-dinner-club",
+      name: "CMI 吃饭俱乐部",
+      issue: 1,
+    },
+  },
+  {
     id: "waytoagi-27-improv-ai-shortfilm",
     title: WAYTOAGI_27_ISSUE.title,
     startsAt: "2026-08-30T12:30:00+07:00",

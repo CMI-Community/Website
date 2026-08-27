@@ -1,6 +1,7 @@
 .upcoming-activities {
   position: relative;
   z-index: 65;
+  min-width: 0;
   margin: 4px 22px 12px;
   border-block: 1px solid var(--home-ink);
   background: rgb(239 239 233 / 62%);

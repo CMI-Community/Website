@@ -465,6 +465,10 @@ body:has(.cmi-home-page) {
   .home-social__copy small { font-size: 6px; }
 }
 
+@media (max-width: 520px) {
+  .home-hero__location { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html:has(.cmi-home-page) { scroll-behavior: auto; }
   .home-sticky-nav,

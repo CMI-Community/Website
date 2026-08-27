@@ -11,7 +11,13 @@ import {
   type EventMuseumPoster,
 } from "../app/modules/activities/activity-catalog";
 
-const approvedActivity = ACTIVITY_CATALOG[0];
+const dinnerActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-dinner-club-01-niulai-screening",
+)!;
+const waytoagiActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "waytoagi-27-improv-ai-shortfilm",
+)!;
+const approvedActivity = waytoagiActivity;
 
 function activityAt(id: string, startsAt: string): ActivityDefinition {
   return {
@@ -49,14 +55,36 @@ describe("upcoming activity catalog", () => {
     expect(isPublicActivityObjectKey("activities/../secret.webp")).toBe(false);
   });
 
-  it("moves an activity from upcoming to Event Museum exactly at its start", () => {
-    const before = partitionActivities(ACTIVITY_CATALOG, "2026-08-30T05:29:59Z");
-    expect(before.upcoming.map((activity) => activity.id)).toEqual([approvedActivity.id]);
-    expect(before.started).toHaveLength(0);
+  it("orders activities nearest-first and moves each one at its exact start", () => {
+    const beforeDinner = partitionActivities(ACTIVITY_CATALOG, "2026-08-28T08:59:59Z");
+    expect(beforeDinner.upcoming.map((activity) => activity.id)).toEqual([
+      dinnerActivity.id,
+      waytoagiActivity.id,
+    ]);
+    expect(beforeDinner.started).toHaveLength(0);
+
+    const atDinnerStart = partitionActivities(ACTIVITY_CATALOG, "2026-08-28T09:00:00Z");
+    expect(atDinnerStart.upcoming.map((activity) => activity.id)).toEqual([
+      waytoagiActivity.id,
+    ]);
+    expect(atDinnerStart.started.map((activity) => activity.id)).toEqual([
+      dinnerActivity.id,
+    ]);
+
+    const beforeWaytoagi = partitionActivities(ACTIVITY_CATALOG, "2026-08-30T05:29:59Z");
+    expect(beforeWaytoagi.upcoming.map((activity) => activity.id)).toEqual([
+      waytoagiActivity.id,
+    ]);
+    expect(beforeWaytoagi.started.map((activity) => activity.id)).toEqual([
+      dinnerActivity.id,
+    ]);
 
     const atStart = partitionActivities(ACTIVITY_CATALOG, "2026-08-30T05:30:00Z");
     expect(atStart.upcoming).toHaveLength(0);
-    expect(atStart.started.map((activity) => activity.id)).toEqual([approvedActivity.id]);
+    expect(atStart.started.map((activity) => activity.id)).toEqual([
+      waytoagiActivity.id,
+      dinnerActivity.id,
+    ]);
   });
 
   it("orders upcoming entries by start time and limits the homepage to five", () => {
