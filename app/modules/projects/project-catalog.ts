@@ -26,6 +26,20 @@ export interface PublicProjectSeries {
   issues: readonly PublicProjectIssue[];
 }
 
+export const WAYTOAGI_27_ISSUE = {
+  id: "waytoagi-skills-exchange-chiang-mai-27",
+  number: 27,
+  slug: "improv-ai-shortfilm",
+  routeSegment: "27-improv-ai-shortfilm",
+  title: "即兴戏剧 + AI 短剧共创",
+  date: "2026-08-30",
+  locales: ["zh-CN"],
+  publication: {
+    kind: "external",
+    href: "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg",
+  },
+} as const satisfies PublicProjectIssue;
+
 export const PROJECT_SERIES = [
   {
     id: "waytoagi-skills-exchange-chiang-mai",
@@ -33,6 +47,7 @@ export const PROJECT_SERIES = [
     name: "WaytoAGI 切磋大会 · 清迈场",
     credit: "WaytoAGI 发起 · CMI Community 组织清迈场",
     issues: [
+      WAYTOAGI_27_ISSUE,
       {
         id: "waytoagi-skills-exchange-chiang-mai-26",
         number: 26,

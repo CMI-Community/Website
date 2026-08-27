@@ -4,6 +4,9 @@ import { defineLannaProjectTests } from "./lanna-tests";
 
 defineLannaProjectTests();
 
+const UPCOMING_ACTIVITY_START = Date.parse("2026-08-30T12:30:00+07:00");
+const UPCOMING_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg";
+
 function d1(command: string): string {
   return execFileSync(
     "npx",
@@ -20,7 +23,10 @@ test("root renders the formal community homepage with independent museum fallbac
   await expect(page.getByRole("heading", { name: "CMI Community", exact: true })).toBeVisible();
   await expect(page.getByText("一个在清迈的华人数字游民社区")).toBeVisible();
   await expect(page.locator(".home-social__item")).toHaveCount(7);
-  await expect(page.locator('.home-social__item[href="https://discord.gg/BbaPPTRr9d"]')).toBeVisible();
+  const discord = page.locator('.home-social__item[href="https://discord.gg/BbaPPTRr9d"]');
+  await expect(discord).toBeVisible();
+  await expect(discord).not.toHaveClass(/is-featured/);
+  await expect(page.locator(".home-sticky-nav__discord")).toHaveCount(0);
   if (await page.locator(".photo-museum").count()) {
     const primaryLanes = page.locator(
       '.photo-museum__lane .photo-museum__set:not([aria-hidden="true"])',
@@ -51,14 +57,19 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await page.keyboard.press("Enter");
   const heroPanel = page.locator(".home-hero__topline .project-menu__panel");
   await expect(heroPanel).toBeVisible();
+  await expect(heroPanel.getByText("01 / 一级目录 · SERIES")).toBeVisible();
+  await expect(heroPanel.getByText("02 / 二级目录 · ISSUES")).toBeVisible();
   await expect(heroPanel.getByText("WaytoAGI 切磋大会 · 清迈场")).toBeVisible();
   await expect(heroPanel.getByText("WaytoAGI 发起 · CMI Community 组织清迈场")).toBeVisible();
-  const heroIssue = heroPanel.locator("a");
-  await expect(heroIssue).toContainText("第 26 期 · 博物馆奇妙日");
-  await expect(heroIssue).toContainText("2026.07.26");
-  await expect(heroIssue).toHaveAttribute("href", "/project/waytoagi/26-lanna-museum");
-  await expect(heroIssue).not.toHaveAttribute("target", "_blank");
-  await expect(heroIssue).not.toHaveAttribute("rel", "noreferrer");
+  const externalIssue = heroPanel.getByRole("link", { name: /第 27 期 · 即兴戏剧 \+ AI 短剧共创/ });
+  await expect(externalIssue).toContainText("2026.08.30");
+  await expect(externalIssue).toHaveAttribute("href", UPCOMING_ACTIVITY_URL);
+  await expect(externalIssue).toHaveAttribute("target", "_blank");
+  const nativeIssue = heroPanel.getByRole("link", { name: /第 26 期 · 博物馆奇妙日/ });
+  await expect(nativeIssue).toContainText("2026.07.26");
+  await expect(nativeIssue).toHaveAttribute("href", "/project/waytoagi/26-lanna-museum");
+  await expect(nativeIssue).not.toHaveAttribute("target", "_blank");
+  await expect(nativeIssue).not.toHaveAttribute("rel", "noreferrer");
   expect(homepageRequests.some((url) => url.includes("/lanna-museum/"))).toBe(false);
   expect(homepageRequests.some((url) => url.includes("/media/projects/waytoagi/26-lanna-museum/"))).toBe(false);
 
@@ -74,15 +85,19 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await expect(heroTrigger).toBeFocused();
 
   await heroTrigger.click();
-  await heroPanel.locator("a").evaluate((link) => {
+  await externalIssue.evaluate((link) => {
     link.addEventListener("click", (event) => event.preventDefault(), { once: true });
   });
-  await heroPanel.locator("a").click();
+  await externalIssue.click();
   await expect(heroPanel).toHaveCount(0);
   await expect(heroTrigger).toBeFocused();
 
   await heroTrigger.click();
-  await page.locator("#home-title").click();
+  await page.locator("body").dispatchEvent("pointerdown", {
+    pointerType: "mouse",
+    clientX: 2,
+    clientY: 2,
+  });
   await expect(heroPanel).toHaveCount(0);
 
   await page.locator('.home-museum-entries a[href="#photo-museum"]').click();
@@ -92,7 +107,7 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await stickyTrigger.click();
   const stickyPanel = page.locator(".home-sticky-nav .project-menu__panel");
   await expect(stickyPanel).toBeVisible();
-  await expect(stickyPanel.locator("a")).toHaveAttribute(
+  await expect(stickyPanel.getByRole("link", { name: /第 26 期 · 博物馆奇妙日/ })).toHaveAttribute(
     "href",
     "/project/waytoagi/26-lanna-museum",
   );
@@ -104,8 +119,44 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   expect(stickyBounds.left).toBeGreaterThanOrEqual(0);
   expect(stickyBounds.right).toBeLessThanOrEqual(stickyBounds.viewportWidth + 1);
 
-  await stickyPanel.locator("a").click();
+  await stickyPanel.getByRole("link", { name: /第 26 期 · 博物馆奇妙日/ }).click();
   await expect(page).toHaveURL(/\/project\/waytoagi\/26-lanna-museum$/);
+});
+
+test("upcoming activity poster scrolls, tilts, expands and keeps its detail link explicit", async ({ page }, testInfo) => {
+  await page.goto("/");
+  const section = page.locator(".upcoming-activities");
+  if (Date.now() >= UPCOMING_ACTIVITY_START) {
+    await expect(section).toHaveCount(0);
+    return;
+  }
+
+  await expect(section).toBeVisible();
+  await expect(section.getByRole("heading", { name: "最近，可以一起做什么" })).toBeVisible();
+  await expect(section.locator(".upcoming-activity")).toHaveCount(1);
+  const posterButton = section.getByRole("button", { name: /放大海报：即兴戏剧 \+ AI 短剧共创/ });
+  const poster = posterButton.locator("img");
+  await expect(poster).toBeVisible();
+  await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+  const detail = section.getByRole("link", { name: /查看详情/ });
+  await expect(detail).toHaveAttribute("href", UPCOMING_ACTIVITY_URL);
+  await expect(detail).toHaveAttribute("target", "_blank");
+
+  if (testInfo.project.name === "desktop-chromium") {
+    await posterButton.hover({ position: { x: 20, y: 40 } });
+    await expect.poll(() => posterButton.locator(".upcoming-activity__poster").evaluate(
+      (element) => getComputedStyle(element).transform,
+    )).not.toBe("none");
+  }
+
+  await posterButton.click();
+  const dialog = page.getByRole("dialog", { name: /即兴戏剧 \+ AI 短剧共创/ });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("2026.08.30 · 周日")).toBeVisible();
+  await expect(dialog.getByText("12:30–17:30 · 清迈时间")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  await expect(posterButton).toBeFocused();
 });
 
 test("foundation health and unauthenticated state are explicit", async ({ request }) => {
@@ -137,8 +188,20 @@ test("page fits the active viewport", async ({ page }) => {
   expect(archiveDimensions.scrollWidth).toBeLessThanOrEqual(archiveDimensions.clientWidth + 1);
 });
 
+test("upcoming activity removes its 3D motion when reduced motion is requested", async ({ page }) => {
+  test.skip(Date.now() >= UPCOMING_ACTIVITY_START, "the activity has already moved to Event Museum");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const posterButton = page.getByRole("button", { name: /放大海报：即兴戏剧 \+ AI 短剧共创/ });
+  await posterButton.hover({ position: { x: 18, y: 36 } });
+  await expect.poll(() => posterButton.locator(".upcoming-activity__poster").evaluate(
+    (element) => getComputedStyle(element).transform,
+  )).toBe("none");
+});
+
 test("invite, verification and server-side publishing roles work end to end", async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "one shared D1 integration run is sufficient");
+  test.setTimeout(60_000);
   const stamp = `${Date.now()}-${Math.floor(Math.random() * 100_000)}`;
   const invitedEmail = `cmi-e2e-${stamp}@example.com`;
   const uninvitedEmail = `cmi-uninvited-${stamp}@example.com`;

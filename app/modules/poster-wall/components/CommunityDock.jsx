@@ -58,14 +58,6 @@ export function CommunityDock({ qrUrl, links = DEFAULT_LINKS }) {
     <nav className="cmi-community-dock" aria-label="找到 CMI 社区" ref={dockRef}>
       <div className="cmi-community-dock__label">找到 CMI</div>
       <div className="cmi-community-dock__items">
-        <a className="cmi-community-dock__item cmi-community-dock__item--featured" href={socialLinks.discord} target="_blank" rel="noreferrer">
-          <DockIcon type="discord" />
-          <span><b>Discord</b><small>新的线上阵地</small></span>
-        </a>
-        <a className="cmi-community-dock__item" href={socialLinks.bilibili} target="_blank" rel="noreferrer">
-          <DockIcon type="bilibili" />
-          <span><b>Bilibili</b><small>CMI 影像频道</small></span>
-        </a>
         <button type="button" className="cmi-community-dock__item" onClick={() => setQrOpen((value) => !value)} aria-expanded={qrOpen}>
           <DockIcon type="official" />
           <span><b>公众号</b><small>C M I</small></span>
@@ -74,18 +66,26 @@ export function CommunityDock({ qrUrl, links = DEFAULT_LINKS }) {
           <DockIcon type="xiaohongshu" />
           <span><b>小红书</b><small>CMI 清迈数字游民社区</small></span>
         </a>
-        <a className="cmi-community-dock__item" href={socialLinks.reddit} target="_blank" rel="noreferrer">
-          <DockIcon type="reddit" />
-          <span><b>Reddit</b><small>r/CMI_Community</small></span>
-        </a>
-        <a className="cmi-community-dock__item" href={socialLinks.github} target="_blank" rel="noreferrer">
-          <DockIcon type="github" />
-          <span><b>GitHub</b><small>CMI-Community</small></span>
+        <a className="cmi-community-dock__item" href={socialLinks.bilibili} target="_blank" rel="noreferrer">
+          <DockIcon type="bilibili" />
+          <span><b>Bilibili</b><small>CMI 影像频道</small></span>
         </a>
         <button type="button" className="cmi-community-dock__item" onClick={copyWechat}>
           <DockIcon type="wechat" />
           <span><b>微信联系</b><small>{socialLinks.wechat}</small></span>
         </button>
+        <a className="cmi-community-dock__item" href={socialLinks.github} target="_blank" rel="noreferrer">
+          <DockIcon type="github" />
+          <span><b>GitHub</b><small>CMI-Community</small></span>
+        </a>
+        <a className="cmi-community-dock__item" href={socialLinks.reddit} target="_blank" rel="noreferrer">
+          <DockIcon type="reddit" />
+          <span><b>Reddit</b><small>r/CMI_Community</small></span>
+        </a>
+        <a className="cmi-community-dock__item" href={socialLinks.discord} target="_blank" rel="noreferrer">
+          <DockIcon type="discord" />
+          <span><b>Discord</b><small>社区群聊</small></span>
+        </a>
       </div>
 
       {qrOpen && (

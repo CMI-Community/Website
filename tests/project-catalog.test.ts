@@ -29,7 +29,8 @@ describe("public project series catalog", () => {
         expect(issue.title.trim()).not.toBe("");
         expect(issue.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
         expect(Number.isNaN(Date.parse(`${issue.date}T00:00:00Z`))).toBe(false);
-        expect(issue.locales).toEqual(PROJECT_LOCALES);
+        expect(issue.locales.length).toBeGreaterThan(0);
+        expect(issue.locales.every((locale) => PROJECT_LOCALES.includes(locale))).toBe(true);
       }
     }
   });
@@ -52,11 +53,23 @@ describe("public project series catalog", () => {
     }
   });
 
-  it("contains the approved WaytoAGI Chiang Mai entry", () => {
+  it("contains the approved WaytoAGI Chiang Mai series and both issue levels", () => {
     expect(PROJECT_SERIES[0]).toMatchObject({
       name: "WaytoAGI 切磋大会 · 清迈场",
       credit: "WaytoAGI 发起 · CMI Community 组织清迈场",
       issues: [
+        {
+          number: 27,
+          slug: "improv-ai-shortfilm",
+          routeSegment: "27-improv-ai-shortfilm",
+          title: "即兴戏剧 + AI 短剧共创",
+          date: "2026-08-30",
+          locales: ["zh-CN"],
+          publication: {
+            kind: "external",
+            href: "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg",
+          },
+        },
         {
           number: 26,
           slug: "lanna-museum",
@@ -70,12 +83,12 @@ describe("public project series catalog", () => {
         },
       ],
     });
-    expect(formatProjectDate(PROJECT_SERIES[0].issues[0].date)).toBe("2026.07.26");
+    expect(formatProjectDate(PROJECT_SERIES[0].issues[0].date)).toBe("2026.08.30");
   });
 
   it("derives canonical language and recap paths from the approved route segment", () => {
     const series = PROJECT_SERIES[0];
-    const issue = series.issues[0];
+    const issue = series.issues.find((candidate) => candidate.number === 26)!;
 
     expect(getProjectIssuePath(series, issue)).toBe(
       "/project/waytoagi/26-lanna-museum",

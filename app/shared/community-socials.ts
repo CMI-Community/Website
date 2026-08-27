@@ -8,19 +8,6 @@ export const COMMUNITY_LINKS = {
 } as const;
 
 export const COMMUNITY_SOCIALS = [
-  {
-    id: "discord",
-    label: "Discord",
-    detail: "新的线上阵地",
-    href: COMMUNITY_LINKS.discord,
-    featured: true,
-  },
-  {
-    id: "bilibili",
-    label: "Bilibili",
-    detail: "CMI 影像频道",
-    href: COMMUNITY_LINKS.bilibili,
-  },
   { id: "official", label: "公众号", detail: "C M I", action: "qr" as const },
   {
     id: "xiaohongshu",
@@ -29,10 +16,16 @@ export const COMMUNITY_SOCIALS = [
     href: COMMUNITY_LINKS.xiaohongshu,
   },
   {
-    id: "reddit",
-    label: "Reddit",
-    detail: "r/CMI_Community",
-    href: COMMUNITY_LINKS.reddit,
+    id: "bilibili",
+    label: "Bilibili",
+    detail: "CMI 影像频道",
+    href: COMMUNITY_LINKS.bilibili,
+  },
+  {
+    id: "wechat",
+    label: "微信联系",
+    detail: COMMUNITY_LINKS.wechat,
+    action: "copy" as const,
   },
   {
     id: "github",
@@ -41,10 +34,16 @@ export const COMMUNITY_SOCIALS = [
     href: COMMUNITY_LINKS.github,
   },
   {
-    id: "wechat",
-    label: "微信联系",
-    detail: COMMUNITY_LINKS.wechat,
-    action: "copy" as const,
+    id: "reddit",
+    label: "Reddit",
+    detail: "r/CMI_Community",
+    href: COMMUNITY_LINKS.reddit,
+  },
+  {
+    id: "discord",
+    label: "Discord",
+    detail: "社区群聊",
+    href: COMMUNITY_LINKS.discord,
   },
 ] as const;
 

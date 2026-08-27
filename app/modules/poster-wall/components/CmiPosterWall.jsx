@@ -48,6 +48,9 @@ function useElementSize(ref) {
 }
 
 function getPosterUrl(poster, assetBase) {
+  if (poster.imagePath.startsWith('/') || /^https:\/\//i.test(poster.imagePath)) {
+    return poster.imagePath
+  }
   const base = assetBase.endsWith('/') ? assetBase : `${assetBase}/`
   return `${base}${poster.imagePath}`
 }

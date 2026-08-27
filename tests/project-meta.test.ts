@@ -5,7 +5,7 @@ import { projectRouteMeta } from "../app/modules/projects/project-meta";
 describe("project metadata", () => {
   it("emits localized canonical, hreflang, OG, and completed Event data", () => {
     const series = PROJECT_SERIES[0];
-    const issue = series.issues[0];
+    const issue = series.issues.find((candidate) => candidate.number === 26)!;
     const meta = projectRouteMeta({ locale: "th", view: "recap", series, issue });
     expect(meta).toContainEqual({
       tagName: "link",

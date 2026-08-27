@@ -66,9 +66,11 @@ export function ProjectMenu({ placement }: ProjectMenuProps) {
           {PROJECT_SERIES.map((series) => (
             <section className="project-menu__series" key={series.id} aria-labelledby={`${panelId}-${series.id}`}>
               <header>
+                <span className="project-menu__level">01 / 一级目录 · SERIES</span>
                 <h2 id={`${panelId}-${series.id}`}>{series.name}</h2>
                 <p>{series.credit}</p>
               </header>
+              <p className="project-menu__issues-label">02 / 二级目录 · ISSUES</p>
               <ul>
                 {orderProjectIssues(series.issues).map((issue) => (
                   <li key={issue.id}>

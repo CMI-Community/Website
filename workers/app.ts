@@ -1,5 +1,6 @@
 import { createRequestHandler, RouterContextProvider } from "react-router";
 import { cloudflareContext } from "../app/shared/cloudflare-context";
+import { isPublicActivityObjectKey } from "../app/modules/activities/activity-catalog";
 import { handleV1Api } from "./api";
 import { createAuth } from "./auth";
 import { handleFeedback } from "./feedback";
@@ -133,6 +134,28 @@ async function publicProjectAsset(request: Request, env: CloudflareEnv): Promise
   return new Response(request.method === "HEAD" ? null : object.body, { headers });
 }
 
+async function publicActivityAsset(request: Request, env: CloudflareEnv): Promise<Response | null> {
+  const url = new URL(request.url);
+  const match = url.pathname.match(
+    /^\/media\/(activities\/[a-z0-9][a-z0-9-]{1,63}\/[a-z0-9][a-z0-9-]{1,95}\/v[1-9][0-9]*\/[a-z0-9][a-z0-9._-]{1,127})$/,
+  );
+  if (!match) return null;
+  if (!isPublicActivityObjectKey(match[1])) return new Response("Not found", { status: 404 });
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
+  }
+
+  const object = await env.MEDIA.get(match[1]);
+  if (!object) return new Response("Not found", { status: 404 });
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("content-type", "image/webp");
+  headers.set("cache-control", "public, max-age=31536000, immutable");
+  headers.set("etag", object.httpEtag);
+  headers.set("x-content-type-options", "nosniff");
+  return new Response(request.method === "HEAD" ? null : object.body, { headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const redirect = canonicalRedirect(request);
@@ -143,6 +166,8 @@ export default {
     if (photoAsset) return photoAsset;
     const projectAsset = await publicProjectAsset(request, env);
     if (projectAsset) return projectAsset;
+    const activityAsset = await publicActivityAsset(request, env);
+    if (activityAsset) return activityAsset;
     const socialLogin = url.pathname.match(/^\/login\/(google|github)$/);
     if (socialLogin) {
       return socialLoginRedirect(request, env, ctx, socialLogin[1] as SocialProvider);
