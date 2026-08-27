@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Route } from "./+types/home";
 import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.jsx";
 import { PhotoMuseum } from "../modules/photo-museum/components/PhotoMuseum";
+import { ProjectMenu } from "../modules/projects/components/ProjectMenu";
 import {
   sanitizePhotoCatalog,
   type PhotoCatalog,
@@ -257,6 +258,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <div className="home-sticky-nav__sections">
           <a href="#photo-museum" tabIndex={navVisible ? 0 : -1} aria-current={activeSection === "photo-museum" ? "page" : undefined}>Photo Museum</a>
           <a href="#event-museum" tabIndex={navVisible ? 0 : -1} aria-current={activeSection === "event-museum" ? "page" : undefined}>Event Museum</a>
+          {navVisible && <ProjectMenu placement="sticky" />}
         </div>
         <a className="home-sticky-nav__discord" href={COMMUNITY_LINKS.discord} target="_blank" rel="noreferrer" tabIndex={navVisible ? 0 : -1}>
           <span>JOIN</span> Discord ↗
@@ -270,7 +272,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <img src="/brand/cmi-community-logo.png" alt="CMI Community Logo" />
             <span>CMI COMMUNITY</span>
           </a>
-          <p><span>CHIANG MAI</span><b>18.7883° N · 98.9853° E</b></p>
+          <div className="home-hero__navigation">
+            <p className="home-hero__location"><span>CHIANG MAI</span><b>18.7883° N · 98.9853° E</b></p>
+            <ProjectMenu placement="hero" />
+          </div>
         </header>
 
         <div className="home-hero__statement">
