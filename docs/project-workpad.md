@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 20:17 Asia/Bangkok
+Last updated: 2026-08-27 20:25 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -185,9 +185,13 @@ Last updated: 2026-08-27 20:17 Asia/Bangkok
 | 2026-08-27 | #22 兰纳本地视觉对照 | `VERIFIED` | 1440×900 首屏与线上基线布局一致；390×844 档案和泰文回顾无横向溢出，局部样式未污染官网首页 |
 | 2026-08-27 | [PR #24 前三次 CI](https://github.com/CMI-Community/Website/actions/runs/33075153499) | `OBSERVED / CORRECTED` | 首次正文未采用 T3 模板；第二次 Linux 类型检查发现 `archive/` 忽略规则漏源文件；第三次进入浏览器阶段后发现空库 SVG 测试图可展示但不能稳定触发 Canvas 下载，且共享负载下手机流程撞到 30 秒。功能目录已更名，测试图改为确定性 PNG，三语流程上限统一为 60 秒 |
 | 2026-08-27 | [PR #24 第四次 CI](https://github.com/CMI-Community/Website/actions/runs/33075641076) | `VERIFIED / STABILIZING` | required CI 全部通过：46 tests、D1、SSR、dry-run 与双视口浏览器成功；桌面三语流程有 1 次重试，定位为整页切换后点击早于客户端挂载。测试改为等待 `html[data-language]` 挂载信号后再操作 |
+| 2026-08-27 | [PR #24 第五次 CI](https://github.com/CMI-Community/Website/actions/runs/33075982451) | `OBSERVED / CORRECTED` | 非浏览器阶段全部通过；媒体密集项目页的 metadata 测试在共享负载下等待所有图片/视频 `load` 超过 30 秒，功能断言尚未开始。项目测试改为以 SSR `domcontentloaded` 为导航完成条件，媒体本身由独立自然尺寸、下载和 R2 哈希断言覆盖 |
 
 ## Recent Updates
 
+- 2026-08-27 20:25 Asia/Bangkok：三轮并发稳定性复跑最终为 9 passed / 3 skipped，无重试；`npm run check` 全部通过（46 tests、D1、SSR、staging dry-run）。390px 在共享负载下 SSR 已显示、但客户端挂载信号可能超过默认 5 秒；将明确的可交互挂载等待设为 15 秒，仍在后续语言菜单点击前强制确认客户端接管。
+- 2026-08-27 20:24 Asia/Bangkok：重复浏览器测试确认泰文回顾页在 SSR `DOMContentLoaded` 与路由级样式注入之间存在约 250ms 的暂态原图宽度；最终布局没有溢出。无溢出断言改为轮询稳定布局，仍严格限制最终误差不超过 1px。
+- 2026-08-27 20:21 Asia/Bangkok：PR #24 第五次 CI 在媒体密集项目页的 `page.goto` 等待全量 `load` 时超时，未进入 metadata 断言；其他 12 项浏览器测试通过。将项目导航统一改为等待 SSR `domcontentloaded`，语言链接以 URL 和客户端挂载信号确认，图片与导出继续由独立断言覆盖。
 - 2026-08-27 20:17 Asia/Bangkok：PR #24 required CI 首次完整通过；CI 空库 PNG 成功完成 1080×1350 Canvas 下载。桌面三语流程出现一次自动重试，原因是英文整页导航后测试早于客户端挂载点击泰文菜单；增加 `html[data-language]` 挂载断言以消除时序波动，再运行最终 required CI。
 - 2026-08-27 20:12 Asia/Bangkok：PR #24 第三次 CI 的依赖、追踪、Linux 类型、D1、构建和 dry-run 均通过；浏览器阶段发现 CI 空库 SVG fixture 无法完成 Canvas 下载，390px 三语流程在共享负载下达到 30 秒。改为脚本生成可被 Chromium 解码和重绘的标准 PNG，并增加确定性单元测试；三语流程使用 60 秒完整路径上限。
 - 2026-08-27 20:06 Asia/Bangkok：PR #24 第二次 CI 已通过 T3 追踪门禁；Linux 类型检查发现 `archive/` 通用私有归档忽略规则使六个兰纳功能源文件未进入提交。将功能目录更名为不冲突的 `pattern-archive/`，本地 TypeScript 与 45 项单元测试通过，触发第三次 CI。

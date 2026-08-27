@@ -11,16 +11,30 @@ interface LannaTestOptions {
 }
 
 async function expectNoHorizontalOverflow(page: import("@playwright/test").Page) {
-  const dimensions = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-  }));
-  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        ),
+      { message: "the document should settle without horizontal overflow" },
+    )
+    .toBeLessThanOrEqual(1);
+}
+
+async function expectClientLanguage(
+  page: import("@playwright/test").Page,
+  language: "zh" | "en" | "th",
+) {
+  await expect(page.locator("html")).toHaveAttribute("data-language", language, {
+    timeout: 15_000,
+  });
 }
 
 export function defineLannaProjectTests(options: LannaTestOptions = {}) {
   test("Lanna project routes normalize permanently and publish complete metadata", async ({ page, request }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop-chromium", "one metadata and redirect run is sufficient");
+    test.setTimeout(60_000);
 
     for (const route of [PROJECT_PATH, ENGLISH_PATH, THAI_PATH, `${PROJECT_PATH}/recap`]) {
       const response = await request.get(route, { maxRedirects: 0 });
@@ -40,7 +54,7 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     const missing = await request.get("/project/waytoagi/99-missing", { maxRedirects: 0 });
     expect(missing.status()).toBe(404);
 
-    await page.goto(PROJECT_PATH);
+    await page.goto(PROJECT_PATH, { waitUntil: "domcontentloaded" });
     await expect(page).toHaveTitle("博物馆奇妙日｜CMI Community");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
@@ -79,10 +93,10 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     const requestedURLs: string[] = [];
     page.on("request", (request) => requestedURLs.push(request.url()));
 
-    await page.goto(`${PROJECT_PATH}#archive`);
+    await page.goto(`${PROJECT_PATH}#archive`, { waitUntil: "domcontentloaded" });
     await expect(page.locator('.lanna-project[data-language="zh"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
-    await expect(page.locator("html")).toHaveAttribute("data-language", "zh");
+    await expectClientLanguage(page, "zh");
     await expect(page.locator("#archive")).toBeInViewport();
     await expect(page.getByText("第 26 期已结束，纹样档案继续开放")).toBeAttached();
     await expect(page.locator(".ended-button").first()).toBeDisabled();
@@ -103,20 +117,24 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     await expectNoHorizontalOverflow(page);
 
     await page.locator(".language-switcher__trigger").click();
-    await page.locator('.language-switcher__menu [role="option"]', { hasText: "English" }).click();
+    await page.locator('.language-switcher__menu [role="option"]', { hasText: "English" }).click({
+      noWaitAfter: true,
+    });
     await expect(page).toHaveURL(new RegExp(`${ENGLISH_PATH}$`));
     await expect(page.locator('.lanna-project[data-language="en"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
-    await expect(page.locator("html")).toHaveAttribute("data-language", "en");
+    await expectClientLanguage(page, "en");
 
     await page.locator(".language-switcher__trigger").click();
-    await page.locator('.language-switcher__menu [role="option"]', { hasText: "ไทย" }).click();
+    await page.locator('.language-switcher__menu [role="option"]', { hasText: "ไทย" }).click({
+      noWaitAfter: true,
+    });
     await expect(page).toHaveURL(new RegExp(`${THAI_PATH}$`));
     await expect(page.locator('.lanna-project[data-language="th"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "th");
-    await expect(page.locator("html")).toHaveAttribute("data-language", "th");
+    await expectClientLanguage(page, "th");
 
-    await page.goto(THAI_RECAP_PATH);
+    await page.goto(THAI_RECAP_PATH, { waitUntil: "domcontentloaded" });
     await expect(page.locator('.lanna-project[data-language="th"] .recap-page')).toBeVisible();
     await expect(page).toHaveTitle(/สรุปกิจกรรม/);
     await expectNoHorizontalOverflow(page);
@@ -132,7 +150,7 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
   test("Lanna archive details export a 1080 by 1350 PNG and restore focus", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop-chromium", "one browser export is sufficient");
     test.setTimeout(60_000);
-    await page.goto(`${PROJECT_PATH}#archive`);
+    await page.goto(`${PROJECT_PATH}#archive`, { waitUntil: "domcontentloaded" });
     const firstTile = page.locator("#archive .archive-tile").first();
     await firstTile.click();
 
