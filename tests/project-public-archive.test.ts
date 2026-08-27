@@ -3,7 +3,7 @@ import {
   projectPublicPatternEntry,
   type ProjectArchiveEntryRow,
   type ProjectArchiveMediaRow,
-} from "../app/modules/projects/archive/public-pattern-entry";
+} from "../app/modules/projects/archive-model/public-pattern-entry";
 
 const entry: ProjectArchiveEntryRow = {
   id: "entry-1",

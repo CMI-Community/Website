@@ -1,6 +1,6 @@
 # ADR 0007：Projects 原生路由与兰纳档案迁移
 
-- 状态：Proposed
+- 状态：Accepted
 - 日期：2026-08-27
 - 关联 Issue：[#22](https://github.com/CMI-Community/Website/issues/22)
 - Supersedes：无
@@ -9,9 +9,9 @@
 
 - `VERIFIED`：官网使用 React Router SSR、Cloudflare Worker、D1、R2 与受保护的 production 环境；Projects v1 只有类型化导航目录。
 - `VERIFIED`：第 26 期兰纳博物馆站当前是独立 Vite/Vercel 应用，主体实现集中在大型页面与样式文件中，并直接读取 Supabase。
-- `VERIFIED`：旧 Supabase 项目 `cmi-lanna-pattern-archive` 当前为 `INACTIVE`；恢复前数据库不可查询。
+- `VERIFIED`：旧 Supabase 项目 `cmi-lanna-pattern-archive` 已在 2026-08-27 恢复；恢复后核得 36 条公开记录和 `pattern-submissions` 中 160 个对象。
 - `OBSERVED`：兰纳旧仓库存在未提交的 FAM 扩充内容，且线上部署不包含该批改动。
-- `ASSUMED`：旧项目仍处于 Supabase 一年自助恢复窗口内；恢复时需再次验证当前平台状态。
+- `VERIFIED`：恢复后已撤销 `anon`、`authenticated` 与 `service_role` 对档案表的写权限，并将原提交函数固定为只读 410 响应；Pattern Garden 独立函数未改动。
 
 ## 决策驱动因素
 

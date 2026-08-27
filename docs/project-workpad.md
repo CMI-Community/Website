@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 18:56 Asia/Bangkok
+Last updated: 2026-08-27 19:03 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -9,7 +9,7 @@ Last updated: 2026-08-27 18:56 Asia/Bangkok
 - Status: `In Progress`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
 - Current focus: [#22](https://github.com/CMI-Community/Website/issues/22) 正在建立 Projects 原生路由、D1/R2 档案边界，并迁移 WaytoAGI 清迈场第 26 期兰纳博物馆站。
-- Next step: 完成第一组平台/数据 PR，恢复并冻结旧 Supabase，核对可迁移记录和媒体后进入兰纳模块迁移。
+- Next step: 修正并合并第一组平台/数据 PR；使用已冻结的 36 条档案和 160 个对象完成受控导出，再进入兰纳模块与三语页面迁移。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -17,7 +17,7 @@ Last updated: 2026-08-27 18:56 Asia/Bangkok
 
 - 等待决定：无实施前产品决策；CMI production 与旧 Vercel 308 继续等待迁移完成后的单独批准。
 - `VERIFIED`：[PR #21](https://github.com/CMI-Community/Website/pull/21) 已通过验收并合并，[#20](https://github.com/CMI-Community/Website/issues/20) 已关闭；production 未发布该 T1。
-- `VERIFIED`：旧 Supabase 项目仍存在但为 `INACTIVE`；数据库连接在恢复前超时。
+- `VERIFIED`：旧 Supabase 已恢复并冻结：36 条档案均为公开状态；`pattern-submissions` 有 160 个对象、150,120,950 字节；档案表三类运行角色只保留读取权限，提交函数固定返回 410。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -66,7 +66,7 @@ Last updated: 2026-08-27 18:56 Asia/Bangkok
 | 2026-08-10 | [ADR 0005：三屏首页与版本化公共照片目录](./adr/0005-homepage-museums-and-public-photo-catalog.md) | 根路径、公共媒体目录和社交入口需要长期兼容及回滚 | `Accepted` |
 | 2026-08-10 | [ADR 0006：Photo Museum v2 的高密度布局与规模化目录](./adr/0006-photo-museum-v2-density-and-scale.md) | 528 张规模需要新的缩略图尺寸、七轨分配与独立回滚版本 | `Accepted` |
 | 2026-08-27 | [#20：Projects 项目系列下拉菜单](https://github.com/CMI-Community/Website/issues/20) | 导航入口比首屏展示卡更克制，并可用同一审核式目录持续增加期次 | `Accepted / T1` |
-| 2026-08-27 | [ADR 0007：Projects 原生路由与兰纳档案迁移](./adr/0007-project-native-routing-and-lanna-migration.md) | 后续活动需要同域发布、模块隔离、D1/R2 单一运行边界和独立切换回滚 | `Proposed / T3` |
+| 2026-08-27 | [ADR 0007：Projects 原生路由与兰纳档案迁移](./adr/0007-project-native-routing-and-lanna-migration.md) | 后续活动需要同域发布、模块隔离、D1/R2 单一运行边界和独立切换回滚 | `Accepted / T3` |
 
 ## Options Considered
 
@@ -87,8 +87,8 @@ Last updated: 2026-08-27 18:56 Asia/Bangkok
 
 ### Next
 
-- [ ] 完成项目路由、D1 模型、幂等导入器与第一组 PR。
-- [ ] 恢复 Supabase、冻结提交并验证数据库/Storage 导出。
+- [ ] 合并项目路由、D1 模型、幂等导入器与第一组 PR。
+- [ ] 从已冻结 Supabase 完成数据库/Storage 受控导出与逐项校验。
 - [ ] 拆分兰纳模块、迁移三语页面与媒体，完成 staging 验收。
 
 ### Later
@@ -115,7 +115,7 @@ Last updated: 2026-08-27 18:56 Asia/Bangkok
 | Performance | 七条动态轨道会逐步加载 528 张缩略图 | 手机内存、流量和帧率可能上升 | 720px 缩略图、内容负责人真机验收、390×844 production 动画/全屏交互已通过 | `VERIFIED` |
 | Maintenance | Dependabot 已产生多项待审 PR | 依赖升级可能影响 Node 24 和 Cloudflare 兼容性 | 逐项通过 CI 后合并，不批量猜测兼容性 | `OBSERVED` |
 | Navigation | Projects 菜单在顶部与吸顶导航各有一个实例 | 可能造成手机拥挤、隐藏焦点或下拉越界 | 共用目录与组件；本地自动化与真实浏览器验证 Escape、外部点击、390px 和隐藏导航焦点 | `VERIFIED (LOCAL)` |
-| Migration | 兰纳旧 Supabase 当前已暂停 | 恢复前无法证明生产档案和 Storage 完整性 | 恢复后先冻结写入；记录、对象、字节和 SHA-256 不一致则停止切换 | `OBSERVED` |
+| Migration | 兰纳旧 Supabase 已恢复并冻结 | 36 条记录和 160 个对象已锁定，但仍需逐项导出与哈希核验 | 受控目录导出后核对编号集合、对象、字节与 SHA-256；任何差异停止切换 | `VERIFIED / IN PROGRESS` |
 | Source | 兰纳旧仓库存在未提交 FAM 扩充 | 直接复制会把未审核内容混入线上基线 | 不改脏工作区；线上行为为基线，新增内容走独立审核 | `OBSERVED` |
 | Release | Projects T3 涉及 Worker、D1、R2 与旧 Vercel | 错序切换会失去回滚入口 | staging 先行；CMI production 验收后才执行旧站 308 | `PLANNED` |
 
@@ -166,9 +166,11 @@ Last updated: 2026-08-27 18:56 Asia/Bangkok
 | 2026-08-27 | [#20 staging deploy](https://github.com/CMI-Community/Website/actions/runs/33056362208) | `VERIFIED` | staging Worker `1e15bae5-6bdf-4755-b7ea-bc50584badc5`；production job 未运行；上一 staging 版本 `c1d868da-f541-4bb8-9cf4-11a3c99c65a2` 可回滚 |
 | 2026-08-27 | #20 staging Playwright | `VERIFIED` | 桌面与 390×844 共 17 passed、3 skipped；1056 个 Photo Museum WebP、Projects、Museum、社交、海报、OAuth 与反馈路径通过 |
 | 2026-08-27 | #20 staging 视觉检查 | `VERIFIED` | 1440×900 首屏与 390×844 首屏/吸顶菜单无越界；新浏览器会话控制台 0 errors / 0 warnings |
+| 2026-08-27 | #22 Supabase 迁移基线 | `VERIFIED` | 源项目恢复健康；36 条公开档案、160 个 Storage 对象、150,120,950 字节；表写权限撤销且旧提交函数返回 410，Pattern Garden 未改动 |
 
 ## Recent Updates
 
+- 2026-08-27 19:03 Asia/Bangkok：恢复并冻结兰纳 Supabase 源项目；核得 36 条公开档案（CMI-LN-0027 至 CMI-LN-0071）和 160 个媒体对象（150,120,950 字节）。撤销档案表写权限、将 `submit-pattern` 固定为 410 只读响应，Pattern Garden 独立函数保持不变；ADR 0007 接受。
 - 2026-08-27 18:56 Asia/Bangkok：内容负责人接受 #20 并要求进入原生迁移；PR #21 合并、Issue #20 关闭，production 仍未发布。创建 [Milestone v0.3.0](https://github.com/CMI-Community/Website/milestone/3)、[#22](https://github.com/CMI-Community/Website/issues/22) 与 Proposed ADR 0007，开始项目路由、D1 模型和幂等迁移工具。
 - 2026-08-27 15:32 Asia/Bangkok：创建 [#20](https://github.com/CMI-Community/Website/issues/20) 并开始 T1 实施；确认两处导航共用 `Projects` 单层分组菜单，首个系列为 WaytoAGI 切磋大会清迈场，production 仍保持未授权。
 - 2026-08-27 15:50 Asia/Bangkok：完成类型化目录、共用菜单、目录单元测试与双视口 E2E；两次移动端目视检查分别暴露并修复首屏左越界和吸顶右越界，完整 E2E 固定为 3 workers 后稳定通过，进入 PR / staging review。
