@@ -23,6 +23,7 @@
     "test:unit": "vitest run --config vitest.config.ts",
     "test:d1": "node scripts/test-d1-migrations.mjs",
     "test:e2e": "playwright test",
+    "project:lanna:download-source": "node scripts/download-lanna-storage.mjs",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:staging": "wrangler d1 migrations apply DB --remote --env staging",
     "db:migrate:production": "wrangler d1 migrations apply DB --remote --env production",

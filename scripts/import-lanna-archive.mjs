@@ -7,7 +7,7 @@ import { buildLannaArchiveImport } from "./lib/lanna-archive-import.mjs";
 function usage() {
   return [
     "Usage:",
-    "  node scripts/import-lanna-archive.mjs --input <rows.json> --storage-root <downloaded-bucket> --created-by <admin-user-id> --snapshot-at <ISO timestamp> --output <outside-repo-directory> [--dry-run]",
+    "  node scripts/import-lanna-archive.mjs --input <rows.json> --storage-root <downloaded-bucket> --site-asset-root <committed-site-public> --created-by <admin-user-id> --snapshot-at <ISO timestamp> --output <outside-repo-directory> [--dry-run]",
     "",
     "The input, generated SQL, manifest, and downloaded media contain production data and must remain outside Git.",
   ].join("\n");
@@ -37,6 +37,7 @@ export function main(argv = process.argv.slice(2)) {
   const result = buildLannaArchiveImport({
     input,
     storageRoot: resolve(options.storageRoot),
+    siteAssetRoot: options.siteAssetRoot ? resolve(options.siteAssetRoot) : undefined,
     createdBy: options.createdBy,
     snapshotAt: options.snapshotAt,
   });
@@ -45,6 +46,7 @@ export function main(argv = process.argv.slice(2)) {
     manifestSha256: result.manifest.manifestSha256,
     recordCount: result.manifest.recordCount,
     objectCount: result.manifest.objectCount,
+    associationCount: result.manifest.associationCount,
     totalBytes: result.manifest.totalBytes,
     outputWritten: !options.dryRun,
   };

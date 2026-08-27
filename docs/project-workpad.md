@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 19:03 Asia/Bangkok
+Last updated: 2026-08-27 19:15 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -9,7 +9,7 @@ Last updated: 2026-08-27 19:03 Asia/Bangkok
 - Status: `In Progress`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
 - Current focus: [#22](https://github.com/CMI-Community/Website/issues/22) 正在建立 Projects 原生路由、D1/R2 档案边界，并迁移 WaytoAGI 清迈场第 26 期兰纳博物馆站。
-- Next step: 修正并合并第一组平台/数据 PR；使用已冻结的 36 条档案和 160 个对象完成受控导出，再进入兰纳模块与三语页面迁移。
+- Next step: 合并第一组平台/数据 PR；以 Vercel production 对应的 `8714afac` 快照拆分兰纳模块，并对 22 条待权利复核记录与 6 个孤立源对象保持切换门禁。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -18,6 +18,8 @@ Last updated: 2026-08-27 19:03 Asia/Bangkok
 - 等待决定：无实施前产品决策；CMI production 与旧 Vercel 308 继续等待迁移完成后的单独批准。
 - `VERIFIED`：[PR #21](https://github.com/CMI-Community/Website/pull/21) 已通过验收并合并，[#20](https://github.com/CMI-Community/Website/issues/20) 已关闭；production 未发布该 T1。
 - `VERIFIED`：旧 Supabase 已恢复并冻结：36 条档案均为公开状态；`pattern-submissions` 有 160 个对象、150,120,950 字节；档案表三类运行角色只保留读取权限，提交函数固定返回 410。
+- `VERIFIED`：160 个 Storage 对象已完整下载到仓库外受控目录；对象数、总字节和 160/160 ETag/MD5 均一致，并生成逐对象 SHA-256 manifest。
+- `VERIFIED`：Vercel 当前 production 部署为 `dpl_3ZTaLWQoe9xWdEAcwwnt3mQ1FFok`，对应已提交版本 `8714afac`；迁移基线已从较早的 `65d4918` 切换为该线上版本。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -115,7 +117,9 @@ Last updated: 2026-08-27 19:03 Asia/Bangkok
 | Performance | 七条动态轨道会逐步加载 528 张缩略图 | 手机内存、流量和帧率可能上升 | 720px 缩略图、内容负责人真机验收、390×844 production 动画/全屏交互已通过 | `VERIFIED` |
 | Maintenance | Dependabot 已产生多项待审 PR | 依赖升级可能影响 Node 24 和 Cloudflare 兼容性 | 逐项通过 CI 后合并，不批量猜测兼容性 | `OBSERVED` |
 | Navigation | Projects 菜单在顶部与吸顶导航各有一个实例 | 可能造成手机拥挤、隐藏焦点或下拉越界 | 共用目录与组件；本地自动化与真实浏览器验证 Escape、外部点击、390px 和隐藏导航焦点 | `VERIFIED (LOCAL)` |
-| Migration | 兰纳旧 Supabase 已恢复并冻结 | 36 条记录和 160 个对象已锁定，但仍需逐项导出与哈希核验 | 受控目录导出后核对编号集合、对象、字节与 SHA-256；任何差异停止切换 | `VERIFIED / IN PROGRESS` |
+| Migration | 兰纳旧 Supabase 已恢复、冻结并完成受控导出 | 36 条记录、160 个对象、总字节、ETag/MD5 与 SHA-256 已锁定；仍需完成 D1/R2 目标核验 | 先导入本地与 staging；目标记录、关联、对象和哈希任何差异都停止切换 | `VERIFIED / IN PROGRESS` |
+| Rights | 36 条在线档案中 22 条仍标记需要权利复核 | 不能把源端 `rights_review=true` 误标为已授权；会阻止这些记录进入公共投影 | staging 保留为 `research_only`；production 切换前由内容负责人完成权利审核 | `BLOCKS CUTOVER` |
+| Integrity | 源 Storage 有 6 个对象未被任何档案引用 | 直接删除会破坏原始证据，直接公开会制造孤立媒体 | 完整保留在非公开迁移证据；目标公共档案不建立虚假关联，并记录差异处置 | `BLOCKS CUTOVER RECORD` |
 | Source | 兰纳旧仓库存在未提交 FAM 扩充 | 直接复制会把未审核内容混入线上基线 | 不改脏工作区；线上行为为基线，新增内容走独立审核 | `OBSERVED` |
 | Release | Projects T3 涉及 Worker、D1、R2 与旧 Vercel | 错序切换会失去回滚入口 | staging 先行；CMI production 验收后才执行旧站 308 | `PLANNED` |
 
@@ -167,9 +171,13 @@ Last updated: 2026-08-27 19:03 Asia/Bangkok
 | 2026-08-27 | #20 staging Playwright | `VERIFIED` | 桌面与 390×844 共 17 passed、3 skipped；1056 个 Photo Museum WebP、Projects、Museum、社交、海报、OAuth 与反馈路径通过 |
 | 2026-08-27 | #20 staging 视觉检查 | `VERIFIED` | 1440×900 首屏与 390×844 首屏/吸顶菜单无越界；新浏览器会话控制台 0 errors / 0 warnings |
 | 2026-08-27 | #22 Supabase 迁移基线 | `VERIFIED` | 源项目恢复健康；36 条公开档案、160 个 Storage 对象、150,120,950 字节；表写权限撤销且旧提交函数返回 410，Pattern Garden 未改动 |
+| 2026-08-27 | #22 源媒体受控导出 | `VERIFIED` | 160/160 对象完整下载；总字节 150,120,950；全部 ETag 与本地 MD5 一致并生成 SHA-256；识别 6 个源端孤立对象，未删除或公开 |
+| 2026-08-27 | #22 线上代码基线 | `VERIFIED` | Vercel production 别名指向部署 `dpl_3ZTaLWQoe9xWdEAcwwnt3mQ1FFok`，提交为 `8714afac`；独立快照共 59 个站点媒体文件、约 68MB |
+| 2026-08-27 | #22 平台 PR 本地完整检查 | `VERIFIED` | `npm run check` 通过：公开边界、trace、typecheck、38 tests、16 表 D1 smoke、SSR build 和 staging dry-run |
 
 ## Recent Updates
 
+- 2026-08-27 19:15 Asia/Bangkok：Vercel CLI 核得当前线上基线为 production 部署 `dpl_3ZTaLWQoe9xWdEAcwwnt3mQ1FFok` / 提交 `8714afac`，不再使用较早的 `65d4918`；从提交对象建立独立只读快照，旧脏工作区未改动。160 个 Supabase Storage 对象完成受控下载、ETag/MD5 和 SHA-256 核验；识别 6 个孤立源对象及 22 条待权利复核记录，作为 production 切换门禁保留。
 - 2026-08-27 19:03 Asia/Bangkok：恢复并冻结兰纳 Supabase 源项目；核得 36 条公开档案（CMI-LN-0027 至 CMI-LN-0071）和 160 个媒体对象（150,120,950 字节）。撤销档案表写权限、将 `submit-pattern` 固定为 410 只读响应，Pattern Garden 独立函数保持不变；ADR 0007 接受。
 - 2026-08-27 18:56 Asia/Bangkok：内容负责人接受 #20 并要求进入原生迁移；PR #21 合并、Issue #20 关闭，production 仍未发布。创建 [Milestone v0.3.0](https://github.com/CMI-Community/Website/milestone/3)、[#22](https://github.com/CMI-Community/Website/issues/22) 与 Proposed ADR 0007，开始项目路由、D1 模型和幂等迁移工具。
 - 2026-08-27 15:32 Asia/Bangkok：创建 [#20](https://github.com/CMI-Community/Website/issues/20) 并开始 T1 实施；确认两处导航共用 `Projects` 单层分组菜单，首个系列为 WaytoAGI 切磋大会清迈场，production 仍保持未授权。

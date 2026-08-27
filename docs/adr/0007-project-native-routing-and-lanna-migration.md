@@ -10,6 +10,7 @@
 - `VERIFIED`：官网使用 React Router SSR、Cloudflare Worker、D1、R2 与受保护的 production 环境；Projects v1 只有类型化导航目录。
 - `VERIFIED`：第 26 期兰纳博物馆站当前是独立 Vite/Vercel 应用，主体实现集中在大型页面与样式文件中，并直接读取 Supabase。
 - `VERIFIED`：旧 Supabase 项目 `cmi-lanna-pattern-archive` 已在 2026-08-27 恢复；恢复后核得 36 条公开记录和 `pattern-submissions` 中 160 个对象。
+- `VERIFIED`：Vercel 当前 production 别名对应部署 `dpl_3ZTaLWQoe9xWdEAcwwnt3mQ1FFok` 和已提交源码 `8714afac`；较早的 `65d4918` 不是当前线上基线。
 - `OBSERVED`：兰纳旧仓库存在未提交的 FAM 扩充内容，且线上部署不包含该批改动。
 - `VERIFIED`：恢复后已撤销 `anon`、`authenticated` 与 `service_role` 对档案表的写权限，并将原提交函数固定为只读 410 响应；Pattern Garden 独立函数未改动。
 
@@ -59,7 +60,7 @@
 
 1. 记录线上部署和已提交源码基线；不改动旧仓库脏工作区。
 2. 恢复旧 Supabase 后立即冻结写入，导出数据库与 Storage 到仓库外受控目录。
-3. 使用幂等转换器生成 D1 SQL 与 R2 manifest；按本地、staging、production 顺序验证记录、对象、字节和 SHA-256。
+3. 使用幂等转换器生成 D1 SQL 与 R2 manifest；按本地、staging、production 顺序验证记录、对象、字节和 SHA-256。源端孤立对象进入非公开迁移证据，不得伪造档案关联。
 4. 先在 staging 验收原生项目；production 由内容负责人另行批准。
 5. CMI production 验收通过后才把旧 Vercel 路径永久 308 到新地址。
 6. 失败时恢复上一 Worker 与旧 Vercel 部署；新表、R2 对象、源项目和失败证据保留，不执行破坏性逆迁移。

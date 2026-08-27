@@ -6,11 +6,13 @@ export const LANNA_PROJECT_ID = "waytoagi-skills-exchange-chiang-mai-26";
 export const LANNA_SOURCE_SYSTEM = "supabase:osqyplgctlzdlpqmzfud";
 export const LANNA_R2_PREFIX = "projects/waytoagi/26-lanna-museum/v1";
 
+const LEGACY_SITE_HOST = "lanna-museum-day-chiang-mai.vercel.app";
 const MEDIA_GROUPS = [
   ["detail_image_urls", "detail"],
   ["context_image_urls", "context"],
   ["label_image_urls", "label"],
 ];
+const RIGHTS_PRIORITY = { cleared: 0, research_only: 1, unknown: 2 };
 
 function requiredText(value, field) {
   if (typeof value !== "string" || !value.trim()) {
@@ -31,19 +33,58 @@ function stringArray(value, field) {
   return value.map((item) => item.trim()).filter(Boolean);
 }
 
-function storagePathFromUrl(value) {
-  const url = new URL(requiredText(value, "storage URL"));
-  const marker = "/storage/v1/object/public/pattern-submissions/";
-  const index = url.pathname.indexOf(marker);
-  if (url.protocol !== "https:" || index < 0) {
-    throw new Error(`Unsupported pattern-submissions URL: ${url.toString()}`);
-  }
-  const decoded = decodeURIComponent(url.pathname.slice(index + marker.length));
+function safeRelativePath(value, field) {
+  const decoded = decodeURIComponent(requiredText(value, field));
   const normalized = normalize(decoded).replaceAll(sep, "/");
-  if (!normalized || normalized.startsWith("../") || normalized.includes("/../")) {
-    throw new Error(`Unsafe storage object path: ${decoded}`);
+  if (
+    !normalized ||
+    normalized.startsWith("../") ||
+    normalized.includes("/../") ||
+    normalized.startsWith("/")
+  ) {
+    throw new Error(`Unsafe ${field}: ${decoded}`);
   }
   return normalized;
+}
+
+function sourceMediaFromUrl(value, { storageRoot, siteAssetRoot }) {
+  const raw = requiredText(value, "media URL");
+  const storageMarker = "/storage/v1/object/public/pattern-submissions/";
+  let url;
+  try {
+    url = new URL(raw, `https://${LEGACY_SITE_HOST}`);
+  } catch {
+    throw new Error(`Unsupported project media URL: ${raw}`);
+  }
+  const storageIndex = url.pathname.indexOf(storageMarker);
+  if (url.protocol === "https:" && storageIndex >= 0) {
+    const sourcePath = safeRelativePath(
+      url.pathname.slice(storageIndex + storageMarker.length),
+      "storage object path",
+    );
+    return {
+      sourceKind: "supabase-storage",
+      sourcePath,
+      localPath: join(storageRoot, ...sourcePath.split("/")),
+    };
+  }
+
+  const isLegacyAsset = url.pathname.startsWith("/assets/") && (
+    raw.startsWith("/assets/") || url.hostname === LEGACY_SITE_HOST
+  );
+  if (url.protocol === "https:" && isLegacyAsset) {
+    if (!siteAssetRoot) {
+      throw new Error(`Legacy site asset requires siteAssetRoot: ${url.pathname}`);
+    }
+    const sourcePath = safeRelativePath(url.pathname.slice(1), "legacy site asset path");
+    return {
+      sourceKind: "legacy-site",
+      sourcePath,
+      localPath: join(siteAssetRoot, ...sourcePath.split("/")),
+    };
+  }
+
+  throw new Error(`Unsupported project media URL: ${raw}`);
 }
 
 function mimeTypeFor(path) {
@@ -84,9 +125,30 @@ function normalizeRows(input) {
   return rows;
 }
 
+function rightsStatusFor(source) {
+  // Source schema: true means public image/artwork rights still require review.
+  if (source.rights_review === true) return "research_only";
+  if (source.rights_review === false) return "cleared";
+  return "unknown";
+}
+
+function stricterRights(left, right) {
+  return RIGHTS_PRIORITY[left] >= RIGHTS_PRIORITY[right] ? left : right;
+}
+
+/**
+ * @param {{
+ *   input: any,
+ *   storageRoot: string,
+ *   siteAssetRoot?: string,
+ *   createdBy: string,
+ *   snapshotAt: string,
+ * }} options
+ */
 export function buildLannaArchiveImport({
   input,
   storageRoot,
+  siteAssetRoot,
   createdBy,
   snapshotAt,
 }) {
@@ -97,7 +159,8 @@ export function buildLannaArchiveImport({
 
   const archiveNumbers = new Set();
   const entries = [];
-  const media = [];
+  const mediaByChecksum = new Map();
+  const mediaLinks = [];
 
   for (const source of rows) {
     const archiveNumber = requiredText(source.archive_number, "archive_number");
@@ -110,14 +173,13 @@ export function buildLannaArchiveImport({
   for (const source of rows) {
     const sourceId = requiredText(source.id, "id");
     const archiveNumber = requiredText(source.archive_number, "archive_number");
-
     const entryId = stableId("project-entry", `${LANNA_PROJECT_ID}:${sourceId}`);
     const status = source.status === "published"
       ? "published"
       : source.status === "hidden"
         ? "hidden"
         : "archived";
-    const rightsStatus = source.rights_review === true ? "cleared" : "unknown";
+    const rightsStatus = rightsStatusFor(source);
 
     entries.push({
       id: entryId,
@@ -147,29 +209,43 @@ export function buildLannaArchiveImport({
     for (const [sourceField, role] of MEDIA_GROUPS) {
       const urls = stringArray(source[sourceField], sourceField);
       for (const [order, url] of urls.entries()) {
-        const sourcePath = storagePathFromUrl(url);
-        const localPath = join(storageRoot, ...sourcePath.split("/"));
-        const { checksum, byteSize } = hashFile(localPath);
-        const extension = extname(sourcePath).toLowerCase().replace(".jpeg", ".jpg");
-        const objectKey = `${LANNA_R2_PREFIX}/archive/${archiveNumber.toLowerCase()}/${role}/${String(order + 1).padStart(2, "0")}-${checksum.slice(0, 16)}${extension}`;
-        media.push({
-          id: stableId("project-media", `${sourceId}:${role}:${order}:${sourcePath}`),
-          entryId,
-          role,
-          order,
-          sourcePath,
-          objectKey,
-          mimeType: mimeTypeFor(sourcePath),
+        const sourceMedia = sourceMediaFromUrl(url, { storageRoot, siteAssetRoot });
+        const { checksum, byteSize } = hashFile(sourceMedia.localPath);
+        const extension = extname(sourceMedia.sourcePath).toLowerCase().replace(".jpeg", ".jpg");
+        const existing = mediaByChecksum.get(checksum);
+        const mediaAsset = existing ?? {
+          id: stableId("project-media", checksum),
+          sourceKind: sourceMedia.sourceKind,
+          sourcePath: sourceMedia.sourcePath,
+          alternateSources: [],
+          objectKey: `${LANNA_R2_PREFIX}/archive/media/${checksum.slice(0, 32)}${extension}`,
+          mimeType: mimeTypeFor(sourceMedia.sourcePath),
           byteSize,
           checksum,
-          altText: `${archiveNumber} ${role === "detail" ? "纹样局部" : role === "context" ? "完整载体" : "展签或来源"} ${order + 1}`,
+          altText: "兰纳纹样公开档案图像",
           rightsStatus,
-        });
+        };
+        if (existing) {
+          existing.rightsStatus = stricterRights(existing.rightsStatus, rightsStatus);
+          const sourceIdentity = `${sourceMedia.sourceKind}:${sourceMedia.sourcePath}`;
+          if (`${existing.sourceKind}:${existing.sourcePath}` !== sourceIdentity) {
+            existing.alternateSources.push({
+              sourceKind: sourceMedia.sourceKind,
+              sourcePath: sourceMedia.sourcePath,
+            });
+          }
+        } else {
+          mediaByChecksum.set(checksum, mediaAsset);
+        }
+        mediaLinks.push({ entryId, mediaAssetId: mediaAsset.id, role, order });
       }
     }
   }
 
-  const canonical = JSON.stringify({ entries, media });
+  const media = [...mediaByChecksum.values()].sort((left, right) =>
+    left.objectKey.localeCompare(right.objectKey)
+  );
+  const canonical = JSON.stringify({ entries, media, mediaLinks });
   const manifestSha256 = createHash("sha256").update(canonical).digest("hex");
   const importId = stableId("project-import", manifestSha256);
   const totalBytes = media.reduce((sum, item) => sum + item.byteSize, 0);
@@ -181,9 +257,11 @@ export function buildLannaArchiveImport({
     manifestSha256,
     recordCount: entries.length,
     objectCount: media.length,
+    associationCount: mediaLinks.length,
     totalBytes,
     entries,
     media,
+    mediaLinks,
   };
 
   const statements = [
@@ -200,13 +278,15 @@ export function buildLannaArchiveImport({
     statements.push(
       `INSERT INTO media_assets (id, object_key, mime_type, byte_size, alt_text, status, created_by, checksum_sha256, source_system, rights_status) VALUES (${sqlText(item.id)}, ${sqlText(item.objectKey)}, ${sqlText(item.mimeType)}, ${item.byteSize}, ${sqlText(item.altText)}, 'ready', ${sqlText(createdBy)}, ${sqlText(item.checksum)}, ${sqlText(LANNA_SOURCE_SYSTEM)}, ${sqlText(item.rightsStatus)}) ON CONFLICT (id) DO UPDATE SET object_key = excluded.object_key, mime_type = excluded.mime_type, byte_size = excluded.byte_size, alt_text = excluded.alt_text, status = 'ready', checksum_sha256 = excluded.checksum_sha256, source_system = excluded.source_system, rights_status = excluded.rights_status, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now');`,
     );
+  }
+  for (const link of mediaLinks) {
     statements.push(
-      `INSERT INTO project_archive_media (entry_id, media_asset_id, role, sort_order) VALUES (${sqlText(item.entryId)}, ${sqlText(item.id)}, ${sqlText(item.role)}, ${item.order}) ON CONFLICT (entry_id, role, sort_order) DO UPDATE SET media_asset_id = excluded.media_asset_id;`,
+      `INSERT INTO project_archive_media (entry_id, media_asset_id, role, sort_order) VALUES (${sqlText(link.entryId)}, ${sqlText(link.mediaAssetId)}, ${sqlText(link.role)}, ${link.order}) ON CONFLICT (entry_id, role, sort_order) DO UPDATE SET media_asset_id = excluded.media_asset_id;`,
     );
   }
 
   statements.push(
-    `INSERT INTO audit_logs (id, actor_user_id, action, resource_type, resource_id, metadata_json) VALUES (${sqlText(randomUUID())}, ${sqlText(createdBy)}, 'project.archive.imported', 'project_archive_import', ${sqlText(importId)}, ${sqlJson({ projectId: LANNA_PROJECT_ID, manifestSha256, recordCount: entries.length, objectCount: media.length, totalBytes })});`,
+    `INSERT INTO audit_logs (id, actor_user_id, action, resource_type, resource_id, metadata_json) VALUES (${sqlText(randomUUID())}, ${sqlText(createdBy)}, 'project.archive.imported', 'project_archive_import', ${sqlText(importId)}, ${sqlJson({ projectId: LANNA_PROJECT_ID, manifestSha256, recordCount: entries.length, objectCount: media.length, associationCount: mediaLinks.length, totalBytes })});`,
   );
 
   return { manifest, sql: `${statements.join("\n")}\n` };

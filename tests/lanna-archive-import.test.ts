@@ -49,13 +49,54 @@ describe("Lanna archive import transformer", () => {
     });
 
     expect(first.manifest.manifestSha256).toBe(second.manifest.manifestSha256);
-    expect(first.manifest).toMatchObject({ recordCount: 1, objectCount: 2, totalBytes: 13 });
+    expect(first.manifest).toMatchObject({
+      recordCount: 1,
+      objectCount: 2,
+      associationCount: 2,
+      totalBytes: 13,
+    });
     expect(first.manifest.media[0].objectKey).toMatch(
-      /^projects\/waytoagi\/26-lanna-museum\/v1\/archive\/cmi-ln-0045\/detail\//,
+      /^projects\/waytoagi\/26-lanna-museum\/v1\/archive\/media\/[a-f0-9]{32}\./,
     );
+    expect(first.manifest.entries[0].rightsStatus).toBe("research_only");
     expect(first.sql).toContain("ON CONFLICT");
     expect(first.sql).not.toContain("example.supabase.co");
     expect(first.sql).not.toContain(storageRoot);
+  });
+
+  it("supports committed legacy assets and deduplicates repeated media", () => {
+    const storageRoot = mkdtempSync(join(tmpdir(), "cmi-lanna-import-"));
+    const siteAssetRoot = mkdtempSync(join(tmpdir(), "cmi-lanna-site-"));
+    mkdirSync(join(siteAssetRoot, "assets", "patterns"), { recursive: true });
+    writeFileSync(join(siteAssetRoot, "assets", "patterns", "shared.jpg"), "shared");
+
+    const row = {
+      id: "source-legacy",
+      archive_number: "CMI-LN-0027",
+      museum: "lanna_folklife",
+      source_title: "旧站纹样",
+      status: "published",
+      rights_review: false,
+      detail_image_urls: ["/assets/patterns/shared.jpg"],
+      context_image_urls: ["/assets/patterns/shared.jpg"],
+      label_image_urls: [],
+    };
+    const result = buildLannaArchiveImport({
+      input: [row],
+      storageRoot,
+      siteAssetRoot,
+      createdBy: "admin",
+      snapshotAt: "2026-08-27T12:00:00Z",
+    });
+
+    expect(result.manifest).toMatchObject({
+      recordCount: 1,
+      objectCount: 1,
+      associationCount: 2,
+    });
+    expect(result.manifest.entries[0].rightsStatus).toBe("cleared");
+    expect(result.sql.match(/INSERT INTO media_assets/g)).toHaveLength(1);
+    expect(result.sql.match(/INSERT INTO project_archive_media/g)).toHaveLength(2);
   });
 
   it("rejects duplicate archive numbers and unsafe storage URLs", () => {
@@ -73,7 +114,7 @@ describe("Lanna archive import transformer", () => {
 
     expect(() => buildLannaArchiveImport({
       input: [row], storageRoot, createdBy: "admin", snapshotAt: "2026-08-27T12:00:00Z",
-    })).toThrow(/Unsupported pattern-submissions URL/);
+    })).toThrow(/Unsupported project media URL/);
     expect(() => buildLannaArchiveImport({
       input: [row, { ...row, id: "source-2" }],
       storageRoot,
