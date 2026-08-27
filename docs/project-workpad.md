@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 20:06 Asia/Bangkok
+Last updated: 2026-08-27 20:12 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -183,10 +183,11 @@ Last updated: 2026-08-27 20:06 Asia/Bangkok
 | 2026-08-27 | #22 兰纳本地 D1/R2 迁移 | `VERIFIED` | 36 条档案、158 个媒体对象、174 个关联；14 cleared / 22 research_only；R2 217/217 对象、217,384,137 字节回读 SHA-256 一致 |
 | 2026-08-27 | #22 兰纳本地 Playwright | `VERIFIED` | 桌面与 390×844 共 13 passed、3 skipped；规范路由、三语、回顾、只读档案、焦点、无溢出与 1080×1350 PNG 导出通过 |
 | 2026-08-27 | #22 兰纳本地视觉对照 | `VERIFIED` | 1440×900 首屏与线上基线布局一致；390×844 档案和泰文回顾无横向溢出，局部样式未污染官网首页 |
-| 2026-08-27 | [PR #24 前两次 CI](https://github.com/CMI-Community/Website/actions/runs/33074963732) | `OBSERVED / CORRECTED` | 首次正文未采用 T3 模板，被 traceability gate 拦截；补齐正文后的第二次 run 通过门禁，但 Linux 类型检查发现通用 `archive/` 忽略规则漏掉兰纳源目录。功能目录已更名为 `pattern-archive/` 并通过本地类型与单元测试 |
+| 2026-08-27 | [PR #24 前三次 CI](https://github.com/CMI-Community/Website/actions/runs/33075153499) | `OBSERVED / CORRECTED` | 首次正文未采用 T3 模板；第二次 Linux 类型检查发现 `archive/` 忽略规则漏源文件；第三次进入浏览器阶段后发现空库 SVG 测试图可展示但不能稳定触发 Canvas 下载，且共享负载下手机流程撞到 30 秒。功能目录已更名，测试图改为确定性 PNG，三语流程上限统一为 60 秒 |
 
 ## Recent Updates
 
+- 2026-08-27 20:12 Asia/Bangkok：PR #24 第三次 CI 的依赖、追踪、Linux 类型、D1、构建和 dry-run 均通过；浏览器阶段发现 CI 空库 SVG fixture 无法完成 Canvas 下载，390px 三语流程在共享负载下达到 30 秒。改为脚本生成可被 Chromium 解码和重绘的标准 PNG，并增加确定性单元测试；三语流程使用 60 秒完整路径上限。
 - 2026-08-27 20:06 Asia/Bangkok：PR #24 第二次 CI 已通过 T3 追踪门禁；Linux 类型检查发现 `archive/` 通用私有归档忽略规则使六个兰纳功能源文件未进入提交。将功能目录更名为不冲突的 `pattern-archive/`，本地 TypeScript 与 45 项单元测试通过，触发第三次 CI。
 - 2026-08-27 20:04 Asia/Bangkok：[PR #24](https://github.com/CMI-Community/Website/pull/24) 已创建。首次 CI 在实现测试前被 PR 正文格式门禁拦截；补为标准 T3 模板并把失败原因写回工作台，以新提交触发使用最新 PR 上下文的 required CI。
 - 2026-08-27 19:59 Asia/Bangkok：完成线上 `8714afac` 视觉与功能的原生模块化迁移、三语规范地址、Event metadata、只读 D1 白名单档案和 R2 迁移工具。真实浏览器首次暴露并修复语言/回顾跨路由点击无效；完整双视口 E2E 为 13 passed / 3 skipped。源端 6 个孤立对象与 22 条待权利复核记录继续明确阻止 production 切换。

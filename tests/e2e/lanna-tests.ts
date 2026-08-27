@@ -74,6 +74,7 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
   });
 
   test("Lanna project is a three-language read-only archive with an internal recap", async ({ page }) => {
+    test.setTimeout(60_000);
     await page.emulateMedia({ reducedMotion: "reduce" });
     const requestedURLs: string[] = [];
     page.on("request", (request) => requestedURLs.push(request.url()));
