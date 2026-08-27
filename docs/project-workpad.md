@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 19:59 Asia/Bangkok
+Last updated: 2026-08-27 20:04 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -9,7 +9,7 @@ Last updated: 2026-08-27 19:59 Asia/Bangkok
 - Status: `In Progress`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
 - Current focus: [#22](https://github.com/CMI-Community/Website/issues/22) 正在建立 Projects 原生路由、D1/R2 档案边界，并迁移 WaytoAGI 清迈场第 26 期兰纳博物馆站。
-- Next step: 提交第二组兰纳迁移 PR；required CI 通过后导入 staging D1/R2 并部署 Worker，完成三语桌面与手机验收。22 条待权利复核记录与 6 个孤立源对象继续阻止 production 切换。
+- Next step: [PR #24](https://github.com/CMI-Community/Website/pull/24) required CI 通过后导入 staging D1/R2 并部署 Worker，完成三语桌面与手机验收。22 条待权利复核记录与 6 个孤立源对象继续阻止 production 切换。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -183,9 +183,11 @@ Last updated: 2026-08-27 19:59 Asia/Bangkok
 | 2026-08-27 | #22 兰纳本地 D1/R2 迁移 | `VERIFIED` | 36 条档案、158 个媒体对象、174 个关联；14 cleared / 22 research_only；R2 217/217 对象、217,384,137 字节回读 SHA-256 一致 |
 | 2026-08-27 | #22 兰纳本地 Playwright | `VERIFIED` | 桌面与 390×844 共 13 passed、3 skipped；规范路由、三语、回顾、只读档案、焦点、无溢出与 1080×1350 PNG 导出通过 |
 | 2026-08-27 | #22 兰纳本地视觉对照 | `VERIFIED` | 1440×900 首屏与线上基线布局一致；390×844 档案和泰文回顾无横向溢出，局部样式未污染官网首页 |
+| 2026-08-27 | [PR #24 首次 CI](https://github.com/CMI-Community/Website/actions/runs/33074745170) | `OBSERVED / CORRECTED` | 实现步骤未运行；首次 PR 正文未采用仓库 T3 模板，被 traceability gate 在 24 秒内拦截。正文已补齐 ADR、基线、偏离、验证、迁移回滚与工作台选择，使用当前提交触发新 run |
 
 ## Recent Updates
 
+- 2026-08-27 20:04 Asia/Bangkok：[PR #24](https://github.com/CMI-Community/Website/pull/24) 已创建。首次 CI 在实现测试前被 PR 正文格式门禁拦截；补为标准 T3 模板并把失败原因写回工作台，以新提交触发使用最新 PR 上下文的 required CI。
 - 2026-08-27 19:59 Asia/Bangkok：完成线上 `8714afac` 视觉与功能的原生模块化迁移、三语规范地址、Event metadata、只读 D1 白名单档案和 R2 迁移工具。真实浏览器首次暴露并修复语言/回顾跨路由点击无效；完整双视口 E2E 为 13 passed / 3 skipped。源端 6 个孤立对象与 22 条待权利复核记录继续明确阻止 production 切换。
 - 2026-08-27 19:15 Asia/Bangkok：Vercel CLI 核得当前线上基线为 production 部署 `dpl_3ZTaLWQoe9xWdEAcwwnt3mQ1FFok` / 提交 `8714afac`，不再使用较早的 `65d4918`；从提交对象建立独立只读快照，旧脏工作区未改动。160 个 Supabase Storage 对象完成受控下载、ETag/MD5 和 SHA-256 核验；识别 6 个孤立源对象及 22 条待权利复核记录，作为 production 切换门禁保留。
 - 2026-08-27 19:03 Asia/Bangkok：恢复并冻结兰纳 Supabase 源项目；核得 36 条公开档案（CMI-LN-0027 至 CMI-LN-0071）和 160 个媒体对象（150,120,950 字节）。撤销档案表写权限、将 `submit-pattern` 固定为 410 只读响应，Pattern Garden 独立函数保持不变；ADR 0007 接受。
