@@ -49,6 +49,7 @@ describe("Lanna archive import transformer", () => {
     });
 
     expect(first.manifest.manifestSha256).toBe(second.manifest.manifestSha256);
+    expect(first.sql).toBe(second.sql);
     expect(first.manifest).toMatchObject({
       recordCount: 1,
       objectCount: 2,
@@ -60,6 +61,9 @@ describe("Lanna archive import transformer", () => {
     );
     expect(first.manifest.entries[0].rightsStatus).toBe("research_only");
     expect(first.sql).toContain("ON CONFLICT");
+    expect(first.sql).toMatch(
+      /INSERT INTO audit_logs .* ON CONFLICT \(id\) DO NOTHING;/,
+    );
     expect(first.sql).not.toContain("example.supabase.co");
     expect(first.sql).not.toContain(storageRoot);
   });

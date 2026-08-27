@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, sep } from "node:path";
 import { publicVerifiedInformation } from "../../app/modules/projects/lanna-museum/content/archive-provenance.js";
@@ -258,6 +258,7 @@ export function buildLannaArchiveImport({
   });
   const manifestSha256 = createHash("sha256").update(canonical).digest("hex");
   const importId = stableId("project-import", manifestSha256);
+  const auditId = stableId("audit-log", `${importId}:project.archive.imported`);
   const totalBytes = media.reduce((sum, item) => sum + item.byteSize, 0);
   const manifest = {
     version: "cmi-project-archive-import/v1",
@@ -297,7 +298,7 @@ export function buildLannaArchiveImport({
   }
 
   statements.push(
-    `INSERT INTO audit_logs (id, actor_user_id, action, resource_type, resource_id, metadata_json) VALUES (${sqlText(randomUUID())}, ${sqlText(createdBy)}, 'project.archive.imported', 'project_archive_import', ${sqlText(importId)}, ${sqlJson({ projectId: LANNA_PROJECT_ID, manifestSha256, recordCount: entries.length, objectCount: media.length, associationCount: mediaLinks.length, totalBytes })});`,
+    `INSERT INTO audit_logs (id, actor_user_id, action, resource_type, resource_id, metadata_json) VALUES (${sqlText(auditId)}, ${sqlText(createdBy)}, 'project.archive.imported', 'project_archive_import', ${sqlText(importId)}, ${sqlJson({ projectId: LANNA_PROJECT_ID, manifestSha256, recordCount: entries.length, objectCount: media.length, associationCount: mediaLinks.length, totalBytes })}) ON CONFLICT (id) DO NOTHING;`,
   );
 
   return { manifest, sql: `${statements.join("\n")}\n` };

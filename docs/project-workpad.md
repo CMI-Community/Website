@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 20:31 Asia/Bangkok
+Last updated: 2026-08-27 20:47 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -9,7 +9,7 @@ Last updated: 2026-08-27 20:31 Asia/Bangkok
 - Status: `In Progress`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
 - Current focus: [#22](https://github.com/CMI-Community/Website/issues/22) 正在建立 Projects 原生路由、D1/R2 档案边界，并迁移 WaytoAGI 清迈场第 26 期兰纳博物馆站。
-- Next step: [PR #24](https://github.com/CMI-Community/Website/pull/24) required CI 通过后导入 staging D1/R2 并部署 Worker，完成三语桌面与手机验收。22 条待权利复核记录与 6 个孤立源对象继续阻止 production 切换。
+- Next step: [PR #24](https://github.com/CMI-Community/Website/pull/24) 的审计幂等修复通过 required CI 后合并，部署 staging Worker 并完成三语桌面与手机验收。22 条待权利复核记录与 6 个孤立源对象继续阻止 production 切换。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -24,6 +24,9 @@ Last updated: 2026-08-27 20:31 Asia/Bangkok
 - `VERIFIED`：兰纳站已拆为项目壳、体验模块、回顾、三语字典、档案投影、Canvas 导出和局部样式；首页不加载兰纳代码或媒体，项目页不再包含 Supabase 浏览器客户端、提交表单或旧 Vercel 资产请求。
 - `VERIFIED`：本地 D1 导入为 36 条档案、158 个去重媒体对象、174 个角色关联；14 条 `cleared` 对外可见，22 条 `research_only` 由服务端隔离。CMI-LN-0046/0047 的未经核验生成式叙述已转换为明确 `UNKNOWN`，原始导出保持不改且不入 Git。
 - `VERIFIED`：本地 R2 迁移清单包含 158 个档案对象与 59 个线上基线站点资产，共 217 个对象、217,384,137 字节；217/217 已逐对象回读并核对 SHA-256。
+- `VERIFIED`：staging D1 已导入 36 条公开档案、158 个媒体对象与 174 个角色关联；14 cleared / 22 research_only、1 个导入批次、零缺失详情图、零外键异常。同一修正后 SQL 连续重放两次成功。
+- `VERIFIED`：staging R2 已写入版本前缀内 217 个对象、217,384,137 字节；上传回读与独立 `verify-only` 均为 217/217，清单 SHA-256 为 `d7889bf9…`。
+- `CORRECTED`：首次 staging 重放发现导入器的固定批次审计日志仍使用随机 ID，导致第二次执行冲突；现改为由批次清单派生稳定 ID 并 `ON CONFLICT DO NOTHING`。旧生成器产生的 1 条重复 staging 审计已精确删除，保留 1 条稳定审计；档案数据未删除。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -187,9 +190,14 @@ Last updated: 2026-08-27 20:31 Asia/Bangkok
 | 2026-08-27 | [PR #24 第四次 CI](https://github.com/CMI-Community/Website/actions/runs/33075641076) | `VERIFIED / STABILIZING` | required CI 全部通过：46 tests、D1、SSR、dry-run 与双视口浏览器成功；桌面三语流程有 1 次重试，定位为整页切换后点击早于客户端挂载。测试改为等待 `html[data-language]` 挂载信号后再操作 |
 | 2026-08-27 | [PR #24 第五次 CI](https://github.com/CMI-Community/Website/actions/runs/33075982451) | `OBSERVED / CORRECTED` | 非浏览器阶段全部通过；媒体密集项目页的 metadata 测试在共享负载下等待所有图片/视频 `load` 超过 30 秒，功能断言尚未开始。项目测试改为以 SSR `domcontentloaded` 为导航完成条件，媒体本身由独立自然尺寸、下载和 R2 哈希断言覆盖 |
 | 2026-08-27 | [PR #24 第六次 CI](https://github.com/CMI-Community/Website/actions/runs/33076829409) | `OBSERVED / CORRECTED` | 非浏览器阶段全部通过；13 项浏览器中 12 项通过。390px 英文切换已开始导航，但 URL 断言仍使用默认 5 秒并在 `DOMContentLoaded` 前超时，首次与重试一致；语言切换现与其它项目导航使用同一 15 秒 SSR 完成条件 |
+| 2026-08-27 | [PR #24 第七次 CI](https://github.com/CMI-Community/Website/actions/runs/33077262715) | `VERIFIED` | required CI 全部通过，浏览器为 13 passed / 3 skipped、无重试；依赖审计、追踪、46 tests、D1、SSR 与 staging dry-run 均通过 |
+| 2026-08-27 | #22 staging D1 导入 | `VERIFIED / CORRECTED` | 36 entries、158 media、174 associations、14 cleared / 22 research_only、1 import、零缺图和外键异常；真实重放发现并修复审计 ID 幂等缺口，同一新 SQL 连续两次成功 |
+| 2026-08-27 | #22 staging R2 同步 | `VERIFIED` | 217 objects、217,384,137 bytes；上传后回读及独立 verify-only 均为 217/217，manifest `d7889bf9…` |
 
 ## Recent Updates
 
+- 2026-08-27 20:47 Asia/Bangkok：staging D1 完成 36/158/174 导入与全量结构校验；同一 SQL 重放时发现末尾审计 INSERT 使用随机 ID。改为按导入批次派生稳定审计 ID 并冲突忽略，新增逐字确定性 SQL 测试；修正 SQL 在本地与 staging 均连续重放两次成功，`npm run check` 全绿，并精确清理 1 条旧重复 staging 审计。staging R2 上传回读和独立 verify-only 均为 217/217、217,384,137 字节、清单 `d7889bf9…`。
+- 2026-08-27 20:34 Asia/Bangkok：PR #24 第七次 required CI 全绿，浏览器为 13 passed / 3 skipped、无重试；前置依赖、追踪、46 tests、D1、SSR 与 dry-run 全部通过，开始 staging 数据与媒体迁移。
 - 2026-08-27 20:31 Asia/Bangkok：PR #24 第六次 CI 的依赖审计、公共边界、T3 追踪、类型、46 tests、D1、SSR 和 dry-run 全部通过；浏览器为 12 passed / 3 skipped、1 failed。唯一失败是 390px 英文整页切换仍以默认 5 秒等待 URL；改为明确等待该路由 `DOMContentLoaded`，不等待媒体全量加载。
 - 2026-08-27 20:25 Asia/Bangkok：三轮并发稳定性复跑最终为 9 passed / 3 skipped，无重试；`npm run check` 全部通过（46 tests、D1、SSR、staging dry-run）。390px 在共享负载下 SSR 已显示、但客户端挂载信号可能超过默认 5 秒；将明确的可交互挂载等待设为 15 秒，仍在后续语言菜单点击前强制确认客户端接管。
 - 2026-08-27 20:24 Asia/Bangkok：重复浏览器测试确认泰文回顾页在 SSR `DOMContentLoaded` 与路由级样式注入之间存在约 250ms 的暂态原图宽度；最终布局没有溢出。无溢出断言改为轮询稳定布局，仍严格限制最终误差不超过 1px。
