@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 15:50 Asia/Bangkok
+Last updated: 2026-08-27 15:53 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -151,6 +151,7 @@ Last updated: 2026-08-27 15:50 Asia/Bangkok
 
 - 2026-08-27 15:32 Asia/Bangkok：创建 [#20](https://github.com/CMI-Community/Website/issues/20) 并开始 T1 实施；确认两处导航共用 `Projects` 单层分组菜单，首个系列为 WaytoAGI 切磋大会清迈场，production 仍保持未授权。
 - 2026-08-27 15:50 Asia/Bangkok：完成类型化目录、共用菜单、目录单元测试与双视口 E2E；两次移动端目视检查分别暴露并修复首屏左越界和吸顶右越界，完整 E2E 固定为 3 workers 后稳定通过，进入 PR / staging review。
+- 2026-08-27 15:53 Asia/Bangkok：[PR #21](https://github.com/CMI-Community/Website/pull/21) 首次 CI 被当日新增的 `nanoid < 3.3.18` 高危公告拦下；确认其为 Vite → PostCSS 间接依赖，只将锁文件从 3.3.17 补丁升级至 3.3.18，`npm audit --omit=dev` 恢复为 0 vulnerabilities。
 - 2026-08-11 12:24 Asia/Bangkok：确认旧 `CMI 海报工程/poster-wall` Worker 误覆盖 production，创建 Issue #16；从官网 `main` 与正确 production 配置恢复三屏首页，Worker 为 `6cb12718-4630-43b1-8988-7598e6043f8d`。
 - 2026-08-11 12:24 Asia/Bangkok：开始 v0.2.1 修复，将共享小红书入口更新为用户提供的新短链，并增加固定目标测试。
 - 2026-08-11 12:27 Asia/Bangkok：v0.2.1 `npm run check` 全部通过；本地 Playwright 桌面与 390px 为 7 passed、1 skipped，生产依赖审计为 0 个漏洞。
