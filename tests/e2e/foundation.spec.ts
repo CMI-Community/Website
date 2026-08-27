@@ -34,6 +34,70 @@ test("root renders the formal community homepage with independent museum fallbac
   }
 });
 
+test("Projects menu exposes series and issues from both navigation states", async ({ page }) => {
+  await page.goto("/");
+
+  const heroTrigger = page.locator(".home-hero__topline .project-menu__trigger");
+  await expect(heroTrigger).toBeVisible();
+  await expect(heroTrigger).toHaveAccessibleName("Projects 项目系列");
+  await expect(page.locator(".home-sticky-nav .project-menu__trigger")).toHaveCount(0);
+
+  await heroTrigger.focus();
+  await page.keyboard.press("Enter");
+  const heroPanel = page.locator(".home-hero__topline .project-menu__panel");
+  await expect(heroPanel).toBeVisible();
+  await expect(heroPanel.getByText("WaytoAGI 切磋大会 · 清迈场")).toBeVisible();
+  await expect(heroPanel.getByText("WaytoAGI 发起 · CMI Community 组织清迈场")).toBeVisible();
+  const heroIssue = heroPanel.locator("a");
+  await expect(heroIssue).toContainText("第 26 期 · 博物馆奇妙日");
+  await expect(heroIssue).toContainText("2026.07.26");
+  await expect(heroIssue).toHaveAttribute("href", "https://lanna-museum-day-chiang-mai.vercel.app/");
+  await expect(heroIssue).toHaveAttribute("target", "_blank");
+  await expect(heroIssue).toHaveAttribute("rel", "noreferrer");
+
+  const panelBounds = await heroPanel.evaluate((panel) => {
+    const rect = panel.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, viewportWidth: window.innerWidth };
+  });
+  expect(panelBounds.left).toBeGreaterThanOrEqual(0);
+  expect(panelBounds.right).toBeLessThanOrEqual(panelBounds.viewportWidth + 1);
+
+  await page.keyboard.press("Escape");
+  await expect(heroPanel).toHaveCount(0);
+  await expect(heroTrigger).toBeFocused();
+
+  await heroTrigger.click();
+  await heroPanel.locator("a").evaluate((link) => {
+    link.addEventListener("click", (event) => event.preventDefault(), { once: true });
+  });
+  await heroPanel.locator("a").click();
+  await expect(heroPanel).toHaveCount(0);
+  await expect(heroTrigger).toBeFocused();
+
+  await heroTrigger.click();
+  await page.locator("#home-title").click();
+  await expect(heroPanel).toHaveCount(0);
+
+  await page.locator('.home-museum-entries a[href="#photo-museum"]').click();
+  await expect(page.locator('.home-sticky-nav[data-visible="true"]')).toBeVisible();
+  const stickyTrigger = page.locator(".home-sticky-nav .project-menu__trigger");
+  await expect(stickyTrigger).toBeVisible();
+  await stickyTrigger.click();
+  const stickyPanel = page.locator(".home-sticky-nav .project-menu__panel");
+  await expect(stickyPanel).toBeVisible();
+  await expect(stickyPanel.locator("a")).toHaveAttribute(
+    "href",
+    "https://lanna-museum-day-chiang-mai.vercel.app/",
+  );
+
+  const stickyBounds = await stickyPanel.evaluate((panel) => {
+    const rect = panel.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, viewportWidth: window.innerWidth };
+  });
+  expect(stickyBounds.left).toBeGreaterThanOrEqual(0);
+  expect(stickyBounds.right).toBeLessThanOrEqual(stickyBounds.viewportWidth + 1);
+});
+
 test("foundation health and unauthenticated state are explicit", async ({ request }) => {
   const health = await request.get("/api/v1/health");
   expect(health.ok()).toBeTruthy();

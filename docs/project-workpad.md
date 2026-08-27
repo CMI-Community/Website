@@ -1,21 +1,21 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-11 12:35 Asia/Bangkok
+Last updated: 2026-08-27 15:50 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `Shipped`
-- Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 已完成。
-- Current focus: [#16](https://github.com/CMI-Community/Website/issues/16) 已通过 [PR #17](https://github.com/CMI-Community/Website/pull/17) 完成；三屏官网已恢复并发布新小红书入口。
-- Next step: 无；继续稳定观察，后续变更必须先创建新 GitHub Issue。
+- Status: `Needs Review`
+- Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 已完成；当前为独立 T1 增量。
+- Current focus: [#20](https://github.com/CMI-Community/Website/issues/20) 在首页顶部与吸顶导航增加共用的 Projects 系列菜单。
+- Next step: 创建 PR、通过 required CI，并将当前分支部署到 staging 供内容负责人验收。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
-- 等待决定：无；内容负责人已完成手机主观验收，并于 2026-08-10 13:26 Asia/Bangkok 明确批准立即发布 production。
+- 等待决定：无；内容负责人已确认 #20 使用两处同步的纯排版下拉菜单和审核式目录，production 继续等待 staging 验收与单独批准。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -39,11 +39,13 @@ Last updated: 2026-08-11 12:35 Asia/Bangkok
 - React Router 全栈、Cloudflare Workers、D1、R2 和 Better Auth 平台地基。
 - `identity`、`publishing`、`media`、`poster-wall`、`feedback`、`experiments` 领域模块。
 - Community Hero、Photo Museum、Event Museum 组成的正式根路径首页。
+- 顶部与吸顶导航共用的 Projects 系列与期次入口。
 - GitHub Issues、ADR、Experiment、PR、CI 和 Release Record 组成的可追溯协作流程。
 
 ### Out of Scope
 
 - 完整 CMS 后台、公开注册、社区关系图谱和完整英文内容。
+- Projects 的 D1/CMS 自助发布、项目封面和首屏项目展示卡。
 - 原始海报、5.7GB 私有归档、SQLite、生产数据导出和内部授权材料。
 - 完整聊天记录或模型内部推理归档。
 
@@ -57,6 +59,7 @@ Last updated: 2026-08-11 12:35 Asia/Bangkok
 | 2026-08-08 | [ADR 0004：三位一体可追溯协作](./adr/0004-traceability-governance.md) | 防止长期开发、实验和回滚造成上下文断裂 | `Accepted` |
 | 2026-08-10 | [ADR 0005：三屏首页与版本化公共照片目录](./adr/0005-homepage-museums-and-public-photo-catalog.md) | 根路径、公共媒体目录和社交入口需要长期兼容及回滚 | `Accepted` |
 | 2026-08-10 | [ADR 0006：Photo Museum v2 的高密度布局与规模化目录](./adr/0006-photo-museum-v2-density-and-scale.md) | 528 张规模需要新的缩略图尺寸、七轨分配与独立回滚版本 | `Accepted` |
+| 2026-08-27 | [#20：Projects 项目系列下拉菜单](https://github.com/CMI-Community/Website/issues/20) | 导航入口比首屏展示卡更克制，并可用同一审核式目录持续增加期次 | `Accepted / T1` |
 
 ## Options Considered
 
@@ -66,16 +69,18 @@ Last updated: 2026-08-11 12:35 Asia/Bangkok
 | GitHub Project 看板 | 可视化较强 | 增加权限、字段和重复维护 | `Rejected for now` |
 | 公私双轨记录 | 可以保留敏感细节 | 容易形成第二真相源 | `Rejected` |
 | 保存完整聊天 | 信息最全 | 噪音、隐私和可读性风险高 | `Rejected` |
+| 首屏项目年鉴横带 | 系列与期次可同时获得高曝光 | 挤压现有 CMI 主叙事、Museum 与手机首屏 | `Rejected for #20` |
+| 两处导航共用 Projects 下拉菜单 | 不改变首屏内容层级，随滚动始终可达 | 需要处理两个导航状态与移动端越界 | `Selected for #20` |
 
 ## Task Board
 
 ### Now
 
-- 暂无；可执行工作必须先创建 GitHub Issue。
+- [ ] [#20 在两处导航增加 Projects 系列与期次菜单](https://github.com/CMI-Community/Website/issues/20)
 
 ### Next
 
-- 暂无；可执行工作必须先创建 GitHub Issue。
+- [ ] 完成 PR CI、staging 桌面与 390px 验收；production 等待内容负责人明确批准。
 
 ### Later
 
@@ -99,6 +104,7 @@ Last updated: 2026-08-11 12:35 Asia/Bangkok
 | Media | Photo Museum v2 为 528 张、1056 个 WebP | 损坏源图、重复项或漏传会破坏墙面与全屏浏览 | 本地目录完整性和 staging 两档公开入口已逐项通过 | `VERIFIED` |
 | Performance | 七条动态轨道会逐步加载 528 张缩略图 | 手机内存、流量和帧率可能上升 | 720px 缩略图、内容负责人真机验收、390×844 production 动画/全屏交互已通过 | `VERIFIED` |
 | Maintenance | Dependabot 已产生多项待审 PR | 依赖升级可能影响 Node 24 和 Cloudflare 兼容性 | 逐项通过 CI 后合并，不批量猜测兼容性 | `OBSERVED` |
+| Navigation | Projects 菜单在顶部与吸顶导航各有一个实例 | 可能造成手机拥挤、隐藏焦点或下拉越界 | 共用目录与组件；本地自动化与真实浏览器验证 Escape、外部点击、390px 和隐藏导航焦点 | `VERIFIED (LOCAL)` |
 
 ## Implementation Notes
 
@@ -108,6 +114,7 @@ Last updated: 2026-08-11 12:35 Asia/Bangkok
 - 公共 API 必须使用字段白名单；权限始终在服务端校验。
 - Photo Museum v1 公共目录只保存展示字段；原始 HEIC/JPEG、本机路径、人物身份和授权材料继续留在私有素材边界。
 - Photo Museum v2 按七条轨道分配完整目录，不让每条轨道重复 528 张；v1 保留为不删除的回滚版本。
+- Projects v1 使用仓库内类型化公开目录；不新增 D1、公共 API、图片资产或兰纳项目站改动。
 
 ## Validation Log
 
@@ -136,9 +143,14 @@ Last updated: 2026-08-11 12:35 Asia/Bangkok
 | 2026-08-10 | production 域名与视觉 | `VERIFIED` | 根路径连续 15 次直接 200；`www` 308 保留 path/query；390×844 首屏/照片墙正常，控制台 0 errors / 0 warnings |
 | 2026-08-11 | v0.2.1 完整检查与 PR CI | `VERIFIED` | 本地 `npm run check`、7 passed / 1 skipped E2E、0 production 漏洞；PR #17 required CI 通过并合并 |
 | 2026-08-11 | v0.2.1 production 发布 | `VERIFIED` | Worker `d5703143-aeb3-4676-9f07-6c42e860fe92`；首页和档案均为新小红书短链，production Playwright 15 passed / 3 skipped |
+| 2026-08-27 | #20 本地完整检查 | `VERIFIED` | `npm run check` 通过：lint、公开边界、trace、typecheck、28 tests、D1 migration、SSR build 与 staging dry-run |
+| 2026-08-27 | #20 本地 Playwright | `VERIFIED` | 桌面与 390×844 共 9 passed、1 skipped；两处 Projects 菜单、键盘焦点、外部点击、Museum 与社交入口回归通过 |
+| 2026-08-27 | #20 本地视觉检查 | `VERIFIED` | 1440×900 与 390×844 的首屏/吸顶面板均在视口内，字体、纸张色与细边框一致；控制台 0 errors / 0 warnings |
 
 ## Recent Updates
 
+- 2026-08-27 15:32 Asia/Bangkok：创建 [#20](https://github.com/CMI-Community/Website/issues/20) 并开始 T1 实施；确认两处导航共用 `Projects` 单层分组菜单，首个系列为 WaytoAGI 切磋大会清迈场，production 仍保持未授权。
+- 2026-08-27 15:50 Asia/Bangkok：完成类型化目录、共用菜单、目录单元测试与双视口 E2E；两次移动端目视检查分别暴露并修复首屏左越界和吸顶右越界，完整 E2E 固定为 3 workers 后稳定通过，进入 PR / staging review。
 - 2026-08-11 12:24 Asia/Bangkok：确认旧 `CMI 海报工程/poster-wall` Worker 误覆盖 production，创建 Issue #16；从官网 `main` 与正确 production 配置恢复三屏首页，Worker 为 `6cb12718-4630-43b1-8988-7598e6043f8d`。
 - 2026-08-11 12:24 Asia/Bangkok：开始 v0.2.1 修复，将共享小红书入口更新为用户提供的新短链，并增加固定目标测试。
 - 2026-08-11 12:27 Asia/Bangkok：v0.2.1 `npm run check` 全部通过；本地 Playwright 桌面与 390px 为 7 passed、1 skipped，生产依赖审计为 0 个漏洞。

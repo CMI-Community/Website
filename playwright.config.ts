@@ -6,7 +6,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   testMatch: externalBaseURL ? "staging.spec.ts" : "foundation.spec.ts",
   fullyParallel: true,
-  workers: externalBaseURL ? 3 : undefined,
+  workers: 3,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "line",

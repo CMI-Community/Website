@@ -1,0 +1,218 @@
+.project-menu {
+  position: relative;
+  flex: none;
+}
+
+.project-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  color: inherit;
+  background: transparent;
+  font: 500 9px "DM Mono", monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.project-menu__trigger i {
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1;
+}
+
+.project-menu--hero .project-menu__trigger {
+  border-color: var(--home-line);
+  color: var(--home-ink);
+  background: rgb(239 239 233 / 38%);
+}
+
+.project-menu--sticky .project-menu__trigger {
+  border-bottom-color: transparent;
+  color: rgb(239 239 233 / 58%);
+}
+
+.project-menu__trigger:hover,
+.project-menu__trigger:focus-visible,
+.project-menu__trigger[aria-expanded="true"] {
+  color: var(--home-ink);
+  border-color: var(--home-signal);
+  outline: none;
+  background: var(--home-paper);
+}
+
+.project-menu--sticky .project-menu__trigger:hover,
+.project-menu--sticky .project-menu__trigger:focus-visible,
+.project-menu--sticky .project-menu__trigger[aria-expanded="true"] {
+  color: #efefe9;
+  border-color: transparent transparent #ffab74;
+  background: transparent;
+}
+
+.project-menu__panel {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  width: min(340px, calc(100vw - 24px));
+  max-height: calc(100svh - 80px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--home-ink);
+  color: var(--home-ink);
+  background: var(--home-paper);
+}
+
+.project-menu--hero .project-menu__panel {
+  right: 0;
+}
+
+.project-menu--sticky .project-menu__panel {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.project-menu__eyebrow {
+  margin: 0;
+  padding: 9px 11px;
+  border-bottom: 1px solid var(--home-line);
+  color: var(--home-signal);
+  font: 700 8px "DM Mono", monospace;
+  letter-spacing: .09em;
+}
+
+.project-menu__series > header {
+  padding: 13px 11px 11px;
+}
+
+.project-menu__series h2,
+.project-menu__series p {
+  margin: 0;
+}
+
+.project-menu__series h2 {
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.project-menu__series header p {
+  margin-top: 4px;
+  color: var(--home-muted);
+  font-size: 9px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.project-menu__series ul {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--home-ink);
+  list-style: none;
+}
+
+.project-menu__series a {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 54px;
+  padding: 8px 11px;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+
+.project-menu__series a:hover,
+.project-menu__series a:focus-visible {
+  color: var(--home-paper);
+  outline: none;
+  background: var(--home-ink);
+}
+
+.project-menu__issue-number {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid currentColor;
+  font: 500 9px "DM Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.project-menu__issue-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.project-menu__issue-copy b {
+  overflow: hidden;
+  font-family: "Noto Serif SC", serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-menu__issue-copy small {
+  color: var(--home-muted);
+  font: 400 8px "DM Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+
+.project-menu__series a:hover small,
+.project-menu__series a:focus-visible small {
+  color: rgb(239 239 233 / 65%);
+}
+
+.project-menu__issue-arrow {
+  color: var(--home-signal);
+  font-size: 13px;
+}
+
+@media (max-width: 840px) {
+  .project-menu--hero .project-menu__trigger {
+    min-height: 34px;
+    padding-inline: 8px;
+    font-size: 8px;
+    letter-spacing: .05em;
+  }
+
+  .project-menu--sticky .project-menu__trigger {
+    min-height: 32px;
+    padding-inline: 7px;
+    font-size: 8px;
+    letter-spacing: .03em;
+  }
+
+  .project-menu--sticky .project-menu__panel {
+    position: fixed;
+    top: 55px;
+    right: 8px;
+    left: auto;
+    transform: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .project-menu--sticky .project-menu__trigger {
+    padding-inline: 5px;
+    font-size: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-menu__trigger,
+  .project-menu__series a {
+    transition: none !important;
+  }
+}
