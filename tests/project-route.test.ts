@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveProjectPath } from "../app/modules/projects/project-route";
+import { resolveProjectPath } from "../app/modules/projects/project-path";
 
 describe("project route parser", () => {
   it("accepts a project and its recap only", () => {

@@ -1,0 +1,539 @@
+/* Scoped to .lanna-project */
+/* Browser feedback refinement: museum frames, collection portal, and wizard */
+.lanna-project .museum-card::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  inset: 10px;
+  border: 8px solid transparent;
+  border-image: url("/media/projects/waytoagi/26-lanna-museum/v1/site/assets/decor/lanna-history-ribbon.jpg") 120 round;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.lanna-project .museum-card__content {
+  z-index: 6;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 0 0 4px rgba(36, 11, 51, 0.54),
+    0 20px 55px rgba(20, 4, 28, 0.3);
+}
+
+.lanna-project .collection-section {
+  padding-top: 118px;
+  padding-bottom: 128px;
+}
+
+.lanna-project .collection-portal {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(24px, 4vw, 58px);
+  align-items: stretch;
+}
+
+.lanna-project .collection-entry-card {
+  position: relative;
+  min-height: 630px;
+  padding: clamp(30px, 4vw, 54px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--purple-deep);
+  color: #fff;
+  border: 12px solid transparent;
+  border-image: url("/media/projects/waytoagi/26-lanna-museum/v1/site/assets/decor/lanna-history-ribbon.jpg") 120 round;
+  box-shadow: 18px 18px 0 #dfcfe4;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.lanna-project .collection-entry-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  pointer-events: none;
+}
+
+.lanna-project .collection-entry-card__ribbon {
+  position: absolute;
+  z-index: -2;
+  width: 920px;
+  max-width: none;
+  right: -410px;
+  top: -80px;
+  opacity: 0.42;
+  mix-blend-mode: screen;
+}
+
+.lanna-project .collection-entry-card__top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: #e2d2e8;
+  font-size: 0.72rem;
+  font-weight: 720;
+  letter-spacing: 0.09em;
+}
+
+.lanna-project .collection-entry-card__seal {
+  width: 86px;
+  height: 86px;
+  margin: 78px 0 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e7d5eb;
+  border-radius: 50%;
+  color: var(--yellow);
+  box-shadow:
+    0 0 0 8px rgba(255, 255, 255, 0.05),
+    0 0 0 9px rgba(255, 255, 255, 0.2);
+}
+
+.lanna-project .collection-entry-card__copy {
+  margin-top: auto;
+}
+
+.lanna-project .collection-entry-card__copy p {
+  margin: 0;
+  color: #d6c5dc;
+  font-size: 0.72rem;
+  font-weight: 740;
+  letter-spacing: 0.09em;
+}
+
+.lanna-project .collection-entry-card__copy h3 {
+  max-width: 520px;
+  margin: 12px 0 14px;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2.2rem, 3.8vw, 4.5rem);
+  line-height: 1.13;
+  letter-spacing: -0.045em;
+}
+
+.lanna-project .collection-entry-card__copy > span {
+  color: #cdbad4;
+  font-size: 0.82rem;
+}
+
+.lanna-project .collection-entry-card > .button {
+  margin-top: 32px;
+}
+
+.lanna-project .collection-recent {
+  min-width: 0;
+  padding: clamp(22px, 3.2vw, 44px);
+  background: #fffdf8;
+  border: 1px solid var(--line);
+}
+
+.lanna-project .collection-recent > header {
+  margin-bottom: 26px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.lanna-project .collection-recent > header span {
+  color: var(--orange);
+  font-size: 0.68rem;
+  font-weight: 780;
+  letter-spacing: 0.11em;
+}
+
+.lanna-project .collection-recent > header h3 {
+  margin: 6px 0 0;
+  color: var(--purple-dark);
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.8rem, 3vw, 3.3rem);
+  line-height: 1.15;
+}
+
+.lanna-project .collection-recent > header > a {
+  flex: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--purple);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.lanna-project .collection-recent__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lanna-project .collection-recent__grid button {
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--purple-soft);
+  cursor: pointer;
+}
+
+.lanna-project .collection-recent__grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lanna-project .collection-recent__grid button:hover img,
+.lanna-project .collection-recent__grid button:focus-visible img {
+  transform: scale(1.07);
+}
+
+.lanna-project .collection-recent__grid button > span {
+  position: absolute;
+  left: 7px;
+  bottom: 7px;
+  padding: 5px 7px;
+  background: rgba(36, 11, 51, 0.84);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.58rem;
+}
+
+.lanna-project .collection-recent__empty {
+  min-height: 180px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  border: 1px dashed #d6c9d9;
+  background: var(--purple-soft);
+  color: var(--muted);
+  text-align: center;
+}
+
+.lanna-project .collection-recent__empty svg {
+  color: var(--purple);
+}
+
+.lanna-project .collection-recent__empty p {
+  margin: 0;
+}
+
+.lanna-project .dialog--collector {
+  width: min(1240px, 100%);
+  padding: 0;
+  overflow: auto;
+}
+
+.lanna-project .dialog--collector .dialog__close {
+  margin: 18px 18px -62px 12px;
+}
+
+.lanna-project .dialog--collector .collection-form {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.lanna-project .collector-wizard__header {
+  padding: 42px 54px 30px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  background: #fffdf8;
+}
+
+.lanna-project .collector-wizard__header h2 {
+  max-width: 820px;
+  margin: 10px 0 0;
+  color: var(--purple-dark);
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2.15rem, 4vw, 4.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.lanna-project .collector-wizard__mode {
+  flex: none;
+  margin-right: 52px;
+  min-height: 38px;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #f1e7f3;
+  color: var(--purple);
+  font-size: 0.74rem;
+  font-weight: 720;
+}
+
+.lanna-project .collector-wizard__progress {
+  margin: 0;
+  padding: 0 54px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--purple-deep);
+  color: #cdb8d5;
+  list-style: none;
+}
+
+.lanna-project .collector-wizard__progress li {
+  position: relative;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.lanna-project .collector-wizard__progress li:last-child {
+  border-right: 0;
+}
+
+.lanna-project .collector-wizard__progress li > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 0.72rem;
+}
+
+.lanna-project .collector-wizard__progress li.is-current {
+  color: #fff;
+}
+
+.lanna-project .collector-wizard__progress li.is-current > span {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.lanna-project .collector-wizard__progress li.is-complete {
+  color: #d6efda;
+}
+
+.lanna-project .collector-wizard__progress li.is-complete > span {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.lanna-project .collector-wizard__progress strong {
+  font-size: 0.8rem;
+}
+
+.lanna-project .wizard-page {
+  min-height: 500px;
+  padding: 42px 54px;
+  background: #faf6ee;
+}
+
+.lanna-project .wizard-page__intro {
+  max-width: 780px;
+  margin-bottom: 34px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.lanna-project .wizard-page__icon {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: var(--purple);
+  color: #fff;
+  border-radius: 50%;
+}
+
+.lanna-project .wizard-page__intro span {
+  color: var(--orange);
+  font-size: 0.72rem;
+  font-weight: 780;
+  letter-spacing: 0.1em;
+}
+
+.lanna-project .wizard-page__intro h3 {
+  margin: 2px 0 7px;
+  color: var(--purple-dark);
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.12;
+}
+
+.lanna-project .wizard-page__intro p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.lanna-project .wizard-page__content {
+  display: grid;
+  gap: 26px;
+}
+
+.lanna-project .field-label--icon > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.lanna-project .field-label--icon svg {
+  color: var(--purple);
+}
+
+.lanna-project .file-picker {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #cbbcd0;
+  background: #fffdf8;
+}
+
+.lanna-project .file-picker__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--purple-dark);
+}
+
+.lanna-project .file-picker__heading > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 750;
+}
+
+.lanna-project .file-picker__heading svg {
+  color: var(--purple);
+}
+
+.lanna-project .file-picker__heading small,
+.lanna-project .file-picker__format {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.lanna-project .file-picker > p {
+  min-height: 44px;
+  margin: 12px 0 18px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+.lanna-project .file-picker__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.lanna-project .file-picker__actions .button {
+  width: 100%;
+  padding-inline: 14px;
+}
+
+.lanna-project .file-picker__format {
+  display: block;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.lanna-project .access-code-field {
+  margin-top: 4px;
+  padding: 22px;
+  background: #f0e7f3;
+  border-left: 4px solid var(--purple);
+}
+
+.lanna-project .access-code-field > small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.lanna-project .collector-wizard__actions {
+  min-height: 92px;
+  padding: 20px 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: #fffdf8;
+  border-top: 1px solid var(--line);
+}
+
+.lanna-project .collector-wizard__actions > div > span {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.lanna-project .signup-dialog__commitment {
+  margin: 18px 0 0;
+  padding: 15px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  background: #f1e7f3;
+  border-left: 4px solid var(--purple);
+  color: var(--purple-dark);
+}
+
+.lanna-project .signup-dialog__commitment > svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--green);
+}
+
+.lanna-project .signup-dialog__commitment strong,
+.lanna-project .signup-dialog__commitment span {
+  display: block;
+}
+
+.lanna-project .signup-dialog__commitment span {
+  margin-top: 4px;
+  color: #5f5363;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 560px) {
+  .lanna-project .signup-dialog__contact {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .signup-dialog__wechat {
+    min-width: 0;
+  }
+}
+
+.lanna-project .site-footer__art {
+  z-index: 0;
+  width: min(72vw, 1080px);
+  height: 100%;
+  right: -6vw;
+  top: 0;
+  opacity: 0.22;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lanna-project .site-footer__art img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 72% 50%;
+}
+
+.lanna-project .site-footer__content,
+.lanna-project .site-footer__bottom {
+  position: relative;
+  z-index: 1;
+}

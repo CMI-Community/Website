@@ -1,5 +1,8 @@
 import { execFileSync } from "node:child_process";
 import { expect, test } from "@playwright/test";
+import { defineLannaProjectTests } from "./lanna-tests";
+
+defineLannaProjectTests();
 
 function d1(command: string): string {
   return execFileSync(
@@ -35,6 +38,8 @@ test("root renders the formal community homepage with independent museum fallbac
 });
 
 test("Projects menu exposes series and issues from both navigation states", async ({ page }) => {
+  const homepageRequests: string[] = [];
+  page.on("request", (request) => homepageRequests.push(request.url()));
   await page.goto("/");
 
   const heroTrigger = page.locator(".home-hero__topline .project-menu__trigger");
@@ -51,9 +56,11 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   const heroIssue = heroPanel.locator("a");
   await expect(heroIssue).toContainText("第 26 期 · 博物馆奇妙日");
   await expect(heroIssue).toContainText("2026.07.26");
-  await expect(heroIssue).toHaveAttribute("href", "https://lanna-museum-day-chiang-mai.vercel.app/");
-  await expect(heroIssue).toHaveAttribute("target", "_blank");
-  await expect(heroIssue).toHaveAttribute("rel", "noreferrer");
+  await expect(heroIssue).toHaveAttribute("href", "/project/waytoagi/26-lanna-museum");
+  await expect(heroIssue).not.toHaveAttribute("target", "_blank");
+  await expect(heroIssue).not.toHaveAttribute("rel", "noreferrer");
+  expect(homepageRequests.some((url) => url.includes("/lanna-museum/"))).toBe(false);
+  expect(homepageRequests.some((url) => url.includes("/media/projects/waytoagi/26-lanna-museum/"))).toBe(false);
 
   const panelBounds = await heroPanel.evaluate((panel) => {
     const rect = panel.getBoundingClientRect();
@@ -87,7 +94,7 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await expect(stickyPanel).toBeVisible();
   await expect(stickyPanel.locator("a")).toHaveAttribute(
     "href",
-    "https://lanna-museum-day-chiang-mai.vercel.app/",
+    "/project/waytoagi/26-lanna-museum",
   );
 
   const stickyBounds = await stickyPanel.evaluate((panel) => {
@@ -96,6 +103,9 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   });
   expect(stickyBounds.left).toBeGreaterThanOrEqual(0);
   expect(stickyBounds.right).toBeLessThanOrEqual(stickyBounds.viewportWidth + 1);
+
+  await stickyPanel.locator("a").click();
+  await expect(page).toHaveURL(/\/project\/waytoagi\/26-lanna-museum$/);
 });
 
 test("foundation health and unauthenticated state are explicit", async ({ request }) => {

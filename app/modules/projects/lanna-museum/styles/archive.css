@@ -1,0 +1,1065 @@
+/* Scoped to .lanna-project */
+.lanna-project .collection-section {
+  padding-top: 120px;
+  padding-bottom: 130px;
+}
+
+.lanna-project .collection-steps {
+  margin: 0 0 64px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  list-style: none;
+}
+
+.lanna-project .collection-steps li {
+  position: relative;
+  min-height: 170px;
+  padding: 26px 44px 26px 22px;
+  display: flex;
+  gap: 16px;
+  border-right: 1px solid var(--line);
+}
+
+.lanna-project .collection-steps li:last-child {
+  border-right: 0;
+}
+
+.lanna-project .collection-steps li > span {
+  flex: none;
+  color: var(--purple);
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.lanna-project .collection-steps h3 {
+  margin: 0 0 8px;
+  color: var(--purple-dark);
+  font-size: 1rem;
+}
+
+.lanna-project .collection-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.lanna-project .collection-steps__arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--orange);
+}
+
+.lanna-project .collection-form {
+  padding: clamp(24px, 4vw, 58px);
+  background: var(--paper-strong);
+  border: 1px solid var(--line);
+  box-shadow: 14px 14px 0 #eadfeb;
+}
+
+.lanna-project .service-banner {
+  margin-bottom: 34px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #f3ebf6;
+  border-left: 4px solid var(--purple);
+  color: var(--purple-dark);
+}
+
+.lanna-project .service-banner svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.lanna-project .service-banner strong,
+.lanna-project .service-banner span {
+  display: block;
+}
+
+.lanna-project .service-banner span {
+  margin-top: 5px;
+  color: #6f5e74;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.lanna-project .form-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.lanna-project .form-grid + .form-grid,
+.lanna-project .form-grid + .file-picker,
+.lanna-project .file-picker + .form-grid,
+.lanna-project .file-picker + .file-picker {
+  margin-top: 28px;
+}
+
+.lanna-project .form-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lanna-project .form-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.lanna-project .form-grid--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.lanna-project .field {
+  display: grid;
+  gap: 9px;
+}
+
+.lanna-project .field-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--purple-dark);
+  font-size: 0.82rem;
+  font-weight: 720;
+}
+
+.lanna-project .field-label small {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.lanna-project .field input,
+.lanna-project .field textarea,
+.lanna-project .field select,
+.lanna-project .archive-toolbar select {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1px solid #cbbcd0;
+  border-radius: 0;
+  background: #fffdf8;
+  color: var(--ink);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.lanna-project .field textarea {
+  resize: vertical;
+  line-height: 1.65;
+}
+
+.lanna-project .field input::placeholder,
+.lanna-project .field textarea::placeholder {
+  color: #a398a6;
+}
+
+.lanna-project .field input:focus,
+.lanna-project .field textarea:focus,
+.lanna-project .field select:focus,
+.lanna-project .archive-toolbar select:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(92, 38, 131, 0.12);
+  outline: 0;
+}
+
+.lanna-project .select-wrap {
+  position: relative;
+}
+
+.lanna-project .select-wrap select {
+  appearance: none;
+  padding-right: 40px;
+}
+
+.lanna-project .select-wrap svg {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.lanna-project .file-picker {
+  min-width: 0;
+}
+
+.lanna-project .file-dropzone {
+  width: 100%;
+  min-height: 160px;
+  margin-top: 9px;
+  padding: 24px;
+  border: 1.5px dashed #a58bad;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: #faf4fc;
+  color: var(--purple);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.lanna-project .file-dropzone:hover {
+  border-color: var(--purple);
+  background: #f2e7f5;
+}
+
+.lanna-project .file-dropzone > span {
+  font-weight: 700;
+}
+
+.lanna-project .file-dropzone small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.lanna-project .file-previews {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lanna-project .file-preview {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.lanna-project .file-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lanna-project .file-preview button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--purple-deep);
+  color: #fff;
+  cursor: pointer;
+}
+
+.lanna-project .form-submit-row {
+  margin-top: 36px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) auto;
+  align-items: end;
+  gap: 24px;
+}
+
+.lanna-project .form-submit-row .button {
+  min-height: 52px;
+}
+
+.lanna-project .spinner {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+.lanna-project .spinner--purple {
+  border-color: rgba(92, 38, 131, 0.25);
+  border-top-color: var(--purple);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lanna-project .form-status {
+  margin-top: 20px;
+  min-height: 46px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.84rem;
+  font-weight: 620;
+}
+
+.lanna-project .form-status--error {
+  color: #8a2038;
+  background: #fae8ec;
+}
+
+.lanna-project .form-status--loading,
+.lanna-project .form-status--preview {
+  color: var(--purple-dark);
+  background: #f0e7f3;
+}
+
+.lanna-project .form-status--success {
+  color: #1e6730;
+  background: #e4f2e7;
+}
+
+.lanna-project .archive-section {
+  padding: 118px 0 124px;
+  background: #f1e8f3;
+  border-top: 1px solid #d9c9de;
+}
+
+.lanna-project .archive-preview-notice {
+  margin: -20px 0 38px;
+  padding: 13px 16px;
+  border-left: 4px solid var(--orange);
+  background: #fff7e9;
+  color: #6a523e;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.lanna-project .archive-toolbar {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.lanna-project .archive-toolbar__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.lanna-project .archive-toolbar label {
+  position: relative;
+}
+
+.lanna-project .archive-toolbar select {
+  min-width: 160px;
+  min-height: 44px;
+  appearance: none;
+  padding: 8px 38px 8px 13px;
+  font-size: 0.78rem;
+  background: var(--paper-strong);
+}
+
+.lanna-project .archive-toolbar label svg {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.lanna-project .archive-toolbar > span {
+  color: var(--purple);
+  font-size: 0.78rem;
+  font-weight: 720;
+}
+
+.lanna-project .archive-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lanna-project .archive-tile {
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--purple-soft);
+  cursor: pointer;
+}
+
+.lanna-project .archive-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lanna-project .archive-tile:hover img,
+.lanna-project .archive-tile:focus-visible img {
+  transform: scale(1.08);
+}
+
+.lanna-project .archive-tile__number {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 5px 7px;
+  background: rgba(36, 11, 51, 0.86);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.67rem;
+  letter-spacing: 0.03em;
+}
+
+.lanna-project .archive-tile__collector {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  max-width: calc(100% - 16px);
+  padding: 5px 7px;
+  overflow: hidden;
+  background: rgba(251, 248, 241, 0.9);
+  color: var(--purple-dark);
+  font-size: 0.64rem;
+  font-weight: 760;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 rgba(36, 11, 51, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+.lanna-project .archive-tile__hover {
+  position: absolute;
+  inset: auto 0 0 0;
+  min-height: 72px;
+  padding: 11px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  background: rgba(36, 11, 51, 0.91);
+  color: #fff;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.lanna-project .archive-tile__hover strong {
+  font-size: 0.74rem;
+}
+
+.lanna-project .archive-tile__hover small {
+  margin-top: 4px;
+  color: #d8c6df;
+  font-size: 0.66rem;
+}
+
+.lanna-project .archive-tile:hover .archive-tile__hover,
+.lanna-project .archive-tile:focus-visible .archive-tile__hover {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lanna-project .archive-tile:hover .archive-tile__number,
+.lanna-project .archive-tile:focus-visible .archive-tile__number {
+  opacity: 0;
+}
+
+.lanna-project .archive-state {
+  min-height: 340px;
+  padding: 60px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1px solid #cfbdd5;
+  background: rgba(255, 253, 248, 0.66);
+  color: var(--muted);
+  text-align: center;
+}
+
+.lanna-project .archive-state h3,
+.lanna-project .archive-state p {
+  margin: 0;
+}
+
+.lanna-project .dialog-layer {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  background: rgba(30, 7, 42, 0.78);
+  overflow-y: auto;
+}
+
+.lanna-project .dialog {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: calc(100svh - 48px);
+  padding: clamp(24px, 4vw, 46px);
+  background: var(--paper-strong);
+  box-shadow: var(--shadow);
+  overflow-y: auto;
+}
+
+.lanna-project .dialog--wide {
+  width: min(1240px, 100%);
+}
+
+.lanna-project .dialog__close {
+  position: sticky;
+  z-index: 4;
+  top: 0;
+  float: right;
+  margin: -12px -12px 0 12px;
+}
+
+.lanna-project .signup-dialog h2 {
+  margin: 12px 0 8px;
+  color: var(--purple-dark);
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.15;
+}
+
+.lanna-project .signup-dialog > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.lanna-project .signup-dialog__qr {
+  position: relative;
+  min-height: 340px;
+  margin: 24px 0 16px;
+  padding: 10px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.lanna-project .signup-dialog__qr img {
+  width: min(100%, 390px);
+  max-height: 56svh;
+  object-fit: contain;
+}
+
+.lanna-project .qr-fallback {
+  display: none;
+  max-width: 320px;
+  text-align: center;
+}
+
+.lanna-project .qr-fallback strong,
+.lanna-project .qr-fallback span {
+  display: block;
+}
+
+.lanna-project .qr-fallback span {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.lanna-project .signup-dialog__qr.is-unavailable .qr-fallback {
+  display: block;
+}
+
+.lanna-project .signup-dialog__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #7a6d7d;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.lanna-project .signup-dialog__notice > svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--orange);
+}
+
+.lanna-project .signup-dialog__contact {
+  margin-top: 20px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  border: 1px solid #d9c7df;
+  background: #fffaf0;
+}
+
+.lanna-project .signup-dialog__contact strong,
+.lanna-project .signup-dialog__contact span {
+  display: block;
+}
+
+.lanna-project .signup-dialog__contact > div:first-child > strong {
+  color: var(--purple-dark);
+  font-size: 1rem;
+}
+
+.lanna-project .signup-dialog__contact > div:first-child > span {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.lanna-project .signup-dialog__wechat {
+  min-width: 158px;
+  padding: 10px 13px;
+  border-left: 4px solid var(--green);
+  background: #edf7ed;
+}
+
+.lanna-project .signup-dialog__wechat span {
+  color: #5c725e;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lanna-project .signup-dialog__wechat strong {
+  margin-top: 3px;
+  color: #26472b;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.lanna-project .pattern-detail {
+  display: grid;
+  grid-template-columns: 570px minmax(0, 1fr);
+  gap: 52px;
+}
+
+.lanna-project .pattern-detail__card-column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  overflow-x: auto;
+}
+
+.lanna-project .pattern-card-export {
+  flex: none;
+  width: 540px;
+  height: 675px;
+  padding: 25px;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 17px;
+  background: #fbf8f1;
+  color: var(--purple-deep);
+  border: 1px solid #bca7c4;
+  overflow: hidden;
+}
+
+.lanna-project .pattern-card-export > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lanna-project .pattern-card-export__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--purple);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+}
+
+.lanna-project .pattern-card-export__brand img {
+  width: 28px;
+  height: 28px;
+}
+
+.lanna-project .pattern-card-export > header > strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+}
+
+.lanna-project .pattern-card-export__visual {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--purple-soft);
+}
+
+.lanna-project .pattern-card-export__visual > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lanna-project .pattern-card-export__context {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 126px;
+  height: 94px;
+  padding: 5px;
+  background: #fbf8f1;
+  border: 1px solid var(--purple);
+}
+
+.lanna-project .pattern-card-export__context img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lanna-project .pattern-card-export__body {
+  min-height: 0;
+}
+
+.lanna-project .pattern-card-export__eyebrow {
+  color: var(--orange);
+  font-size: 9px;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+}
+
+.lanna-project .pattern-card-export__collector {
+  margin-top: 7px;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  color: var(--purple);
+}
+
+.lanna-project .pattern-card-export__collector span {
+  font-size: 7px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+}
+
+.lanna-project .pattern-card-export__collector strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.lanna-project .pattern-card-export__collector .pattern-card-export__captured-at {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: 0;
+}
+
+.lanna-project .pattern-card-export__body h3 {
+  margin: 6px 0 7px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 21px;
+  line-height: 1.15;
+}
+
+.lanna-project .pattern-card-export__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lanna-project .pattern-card-export__tags span {
+  padding: 2px 6px;
+  color: var(--purple);
+  border: 1px solid #bfa8c6;
+  font-size: 8px;
+}
+
+.lanna-project .pattern-card-export__body p {
+  margin: 8px 0 0;
+  color: #5f5263;
+  font-size: 9px;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.lanna-project .pattern-card-export > footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 9px;
+  border-top: 1px solid #cdbdd2;
+  color: #756779;
+  font-size: 7px;
+}
+
+.lanna-project .pattern-detail__info {
+  padding-right: 16px;
+}
+
+.lanna-project .pattern-detail__info h2 {
+  margin: 8px 0 0;
+  color: var(--purple);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
+}
+
+.lanna-project .pattern-detail__info > h3 {
+  margin: 8px 0 16px;
+  color: var(--purple-dark);
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.25;
+}
+
+.lanna-project .pattern-detail__collector {
+  width: fit-content;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--purple);
+  font-size: 0.82rem;
+}
+
+.lanna-project .pattern-detail__collector span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.lanna-project .pattern-detail__collector strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1rem;
+}
+
+.lanna-project .pattern-detail__source {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.lanna-project .preview-label {
+  width: fit-content;
+  margin: 16px 0;
+  padding: 7px 9px;
+  background: #fff2d7;
+  color: #7a5621;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.lanna-project .pattern-detail__notes {
+  margin: 28px 0 0;
+  display: grid;
+  gap: 18px;
+}
+
+.lanna-project .pattern-detail__notes div {
+  padding-left: 16px;
+  border-left: 3px solid var(--purple);
+}
+
+.lanna-project .pattern-detail__notes div:nth-child(2) {
+  border-color: var(--green);
+}
+
+.lanna-project .pattern-detail__notes div:nth-child(3) {
+  border-color: var(--orange);
+}
+
+.lanna-project .pattern-detail__notes dt {
+  color: var(--purple-dark);
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+.lanna-project .pattern-detail__notes dd {
+  margin: 5px 0 0;
+  color: #615664;
+  font-size: 0.84rem;
+  line-height: 1.7;
+}
+
+.lanna-project .pattern-detail__gallery {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.lanna-project .pattern-detail__thumb {
+  position: relative;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--purple-soft);
+  cursor: zoom-in;
+}
+
+.lanna-project .pattern-detail__thumb img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 240ms ease;
+}
+
+.lanna-project .pattern-detail__thumb:hover img,
+.lanna-project .pattern-detail__thumb:focus-visible img {
+  transform: scale(1.06);
+  filter: brightness(0.82);
+}
+
+.lanna-project .pattern-detail__thumb span {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  padding: 4px 6px;
+  background: rgba(36, 11, 51, 0.86);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.03em;
+}
+
+.lanna-project .image-lightbox {
+  position: fixed;
+  z-index: 240;
+  inset: 0;
+  padding: 24px clamp(18px, 4vw, 64px);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  background: rgba(22, 6, 31, 0.96);
+  backdrop-filter: blur(14px);
+}
+
+.lanna-project .image-lightbox__close,
+.lanna-project .image-lightbox__nav {
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: rgba(36, 11, 51, 0.68);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.lanna-project .image-lightbox__close:hover,
+.lanna-project .image-lightbox__nav:hover {
+  color: var(--purple-dark);
+  background: #fff;
+}
+
+.lanna-project .image-lightbox__close {
+  position: fixed;
+  z-index: 2;
+  top: 24px;
+  right: 28px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.lanna-project .image-lightbox__stage {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.lanna-project .image-lightbox__stage > img {
+  width: auto;
+  max-width: min(1180px, calc(100vw - 190px));
+  height: auto;
+  max-height: calc(100svh - 150px);
+  object-fit: contain;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.lanna-project .image-lightbox__nav {
+  position: fixed;
+  z-index: 2;
+  top: 50%;
+  width: 54px;
+  height: 82px;
+  transform: translateY(-50%);
+}
+
+.lanna-project .image-lightbox__nav:hover {
+  transform: translateY(-50%) scale(1.04);
+}
+
+.lanna-project .image-lightbox__nav--previous {
+  left: 28px;
+}
+
+.lanna-project .image-lightbox__nav--next {
+  right: 28px;
+}
+
+.lanna-project .image-lightbox__caption {
+  width: min(760px, 100%);
+  margin: 14px auto 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 14px;
+  color: #fff;
+  text-align: center;
+}
+
+.lanna-project .image-lightbox__caption span,
+.lanna-project .image-lightbox__caption em {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  font-style: normal;
+  letter-spacing: 0.06em;
+}
+
+.lanna-project .image-lightbox__caption strong {
+  overflow: hidden;
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.98rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lanna-project .download-error {
+  margin: 0;
+  color: #8a2038;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.lanna-project .pattern-detail__idea-button {
+  width: 100%;
+  margin: 4px 0 24px;
+}

@@ -1,0 +1,349 @@
+/* Scoped to .lanna-project */
+@media (max-width: 920px) {
+
+  .lanna-project .recap-page .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .hero-copy {
+    min-height: 64svh;
+  }
+
+  .lanna-project .recap-page .hero-image {
+    min-height: 54svh;
+  }
+
+  .lanna-project .recap-page .hero-seal {
+    bottom: calc(54svh - 44px);
+    left: auto;
+    right: 28px;
+  }
+
+  .lanna-project .recap-page .fact-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lanna-project .recap-page .fact-strip div {
+    padding: 18px 22px;
+    border-bottom: 1px solid #cfc3b4;
+  }
+
+  .lanna-project .recap-page .fact-strip div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .lanna-project .recap-page .fact-strip div:nth-child(3),
+.lanna-project .recap-page .fact-strip div:nth-child(4) {
+    border-bottom: 0;
+  }
+
+  .lanna-project .recap-page .section-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .section-heading .kicker {
+    margin-top: 0;
+  }
+
+  .lanna-project .recap-page .story-grid,
+.lanna-project .recap-page .feature-grid,
+.lanna-project .recap-page .pattern-layout,
+.lanna-project .recap-page .museum-story-copy,
+.lanna-project .recap-page .capture-grid,
+.lanna-project .recap-page .website-intro,
+.lanna-project .recap-page .making-grid,
+.lanna-project .recap-page .organization-grid,
+.lanna-project .recap-page .studio-section,
+.lanna-project .recap-page .guide-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .editorial-figure,
+.lanna-project .recap-page .tall-image {
+    position: static;
+  }
+
+  .lanna-project .recap-page .tall-image img {
+    max-height: 640px;
+    aspect-ratio: 4 / 5;
+  }
+
+  .lanna-project .recap-page .museum-mosaic {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lanna-project .recap-page .museum-mosaic .mosaic-main {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .lanna-project .recap-page .museum-mosaic .mosaic-main img {
+    min-height: 480px;
+  }
+
+  .lanna-project .recap-page .website-roles {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .website-roles article {
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid rgb(223 195 137 / 25%);
+  }
+
+  .lanna-project .recap-page .website-roles h3 {
+    margin-top: 18px;
+  }
+
+  .lanna-project .recap-page .studio-section figure {
+    max-width: 460px;
+  }
+
+  .lanna-project .recap-page .guide-heading > p:last-child {
+    max-width: 600px;
+  }
+
+  .lanna-project .recap-page .closing-section {
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .lanna-project .recap-page .shell {
+    width: min(100% - 32px, 1180px);
+  }
+
+  .lanna-project .recap-page .hero {
+    min-height: auto;
+  }
+
+  .lanna-project .recap-page .hero-copy {
+    min-height: 620px;
+    padding: 62px 24px 76px;
+  }
+
+  .lanna-project .recap-page .hero h1 {
+    font-size: clamp(52px, 15.5vw, 74px);
+  }
+
+  .lanna-project[data-language="en"] .recap-page .hero h1 {
+    font-size: clamp(45px, 13vw, 58px);
+  }
+
+  .lanna-project[data-language="th"] .recap-page .hero h1 {
+    font-size: clamp(43px, 12.5vw, 56px);
+  }
+
+  .lanna-project .recap-page .hero-image {
+    min-height: 470px;
+  }
+
+  .lanna-project .recap-page .hero-image figcaption {
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .lanna-project .recap-page .hero-seal {
+    bottom: 426px;
+    right: 20px;
+    width: 82px;
+    height: 82px;
+  }
+
+  .lanna-project .recap-page .standfirst > p {
+    font-size: 28px;
+  }
+
+  .lanna-project .recap-page .fact-strip {
+    margin-top: 50px;
+  }
+
+  .lanna-project .recap-page .fact-strip div {
+    display: block;
+  }
+
+  .lanna-project .recap-page .fact-strip strong,
+.lanna-project .recap-page .fact-strip span {
+    display: block;
+  }
+
+  .lanna-project .recap-page .fact-strip span {
+    margin-top: 4px;
+  }
+
+  .lanna-project .recap-page .section-heading h2,
+.lanna-project .recap-page .guide-heading h2 {
+    font-size: 39px;
+  }
+
+  .lanna-project .recap-page .prose {
+    font-size: 17px;
+    line-height: 1.95;
+  }
+
+  .lanna-project .recap-page blockquote {
+    padding-left: 18px;
+    font-size: 27px;
+  }
+
+  .lanna-project .recap-page blockquote span {
+    left: -14px;
+  }
+
+  .lanna-project .recap-page .method-line {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .method-line li {
+    min-height: auto;
+    padding: 16px 18px;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    gap: 22px;
+    border-right: 0;
+    border-bottom: 1px solid #cdbfae;
+    writing-mode: horizontal-tb;
+  }
+
+  .lanna-project .recap-page .pattern-banner {
+    margin-top: 52px;
+  }
+
+  .lanna-project .recap-page .pattern-banner img {
+    height: 420px;
+  }
+
+  .lanna-project .recap-page .pattern-banner figcaption {
+    width: calc(100% - 24px);
+    padding: 20px;
+    font-size: 15px;
+  }
+
+  .lanna-project .recap-page .museum-mosaic {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .museum-mosaic .mosaic-main {
+    grid-column: auto;
+  }
+
+  .lanna-project .recap-page .museum-mosaic .mosaic-main img,
+.lanna-project .recap-page .museum-mosaic img {
+    min-height: 330px;
+  }
+
+  .lanna-project .recap-page .capture-card li {
+    grid-template-columns: 34px 70px minmax(0, 1fr);
+  }
+
+  .lanna-project .recap-page .browser-frame {
+    padding: 7px;
+  }
+
+  .lanna-project .recap-page .browser-bar {
+    height: 34px;
+  }
+
+  .lanna-project .recap-page .browser-cta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lanna-project .recap-page .website-links {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .website-links a {
+    border-right: 0;
+    border-bottom: 1px solid rgb(223 195 137 / 22%);
+  }
+
+  .lanna-project .recap-page .making-images {
+    gap: 10px;
+  }
+
+  .lanna-project .recap-page .making-images img {
+    height: 440px;
+  }
+
+  .lanna-project .recap-page .making-images figure:nth-child(2) {
+    margin-top: 44px;
+  }
+
+  .lanna-project .recap-page .organization-section figure::before {
+    top: -18px;
+    left: -10px;
+    width: 62px;
+    height: 62px;
+  }
+
+  .lanna-project .recap-page .studio-section {
+    padding-inline: 0;
+  }
+
+  .lanna-project .recap-page .studio-section figure {
+    max-width: calc(100% - 26px);
+  }
+
+  .lanna-project .recap-page .route-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .route-card figure img {
+    height: 250px;
+  }
+
+  .lanna-project .recap-page .route-body dl > div {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .lanna-project .recap-page .closing-section {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .recap-page .closing-image {
+    min-height: 520px;
+  }
+
+  .lanna-project .recap-page .closing-copy {
+    padding: 70px 24px 80px;
+  }
+
+  .lanna-project .recap-page footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .lanna-project .recap-page footer div {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lanna-project .recap-page {
+    scroll-behavior: auto;
+  }
+
+  .lanna-project .recap-page *,
+.lanna-project .recap-page *::before,
+.lanna-project .recap-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+.lanna-project .recap-page {
+  padding-top: 78px;
+  overflow: hidden;
+}
+
+@media (max-width: 720px) {
+  .lanna-project .recap-page { padding-top: 68px; }
+}

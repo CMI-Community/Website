@@ -1,10 +1,12 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, sep } from "node:path";
+import { publicVerifiedInformation } from "../../app/modules/projects/lanna-museum/content/archive-provenance.js";
 
 export const LANNA_PROJECT_ID = "waytoagi-skills-exchange-chiang-mai-26";
 export const LANNA_SOURCE_SYSTEM = "supabase:osqyplgctlzdlpqmzfud";
 export const LANNA_R2_PREFIX = "projects/waytoagi/26-lanna-museum/v1";
+export const LANNA_PUBLIC_CONTENT_POLICY = "lanna-archive-provenance/v1";
 
 const LEGACY_SITE_HOST = "lanna-museum-day-chiang-mai.vercel.app";
 const MEDIA_GROUPS = [
@@ -192,7 +194,10 @@ export function buildLannaArchiveImport({
       sourceTitle: requiredText(source.source_title, "source_title"),
       sourceLocation: optionalText(source.source_location),
       observation: optionalText(source.observation),
-      verifiedInformation: optionalText(source.verified_information),
+      verifiedInformation: publicVerifiedInformation(
+        archiveNumber,
+        optionalText(source.verified_information),
+      ),
       openQuestion: optionalText(source.open_question),
       carrierTags: stringArray(source.carrier_tags, "carrier_tags"),
       positionTags: stringArray(source.position_tags, "position_tags"),
@@ -245,15 +250,22 @@ export function buildLannaArchiveImport({
   const media = [...mediaByChecksum.values()].sort((left, right) =>
     left.objectKey.localeCompare(right.objectKey)
   );
-  const canonical = JSON.stringify({ entries, media, mediaLinks });
+  const canonical = JSON.stringify({
+    publicContentPolicy: LANNA_PUBLIC_CONTENT_POLICY,
+    entries,
+    media,
+    mediaLinks,
+  });
   const manifestSha256 = createHash("sha256").update(canonical).digest("hex");
   const importId = stableId("project-import", manifestSha256);
+  const auditId = stableId("audit-log", `${importId}:project.archive.imported`);
   const totalBytes = media.reduce((sum, item) => sum + item.byteSize, 0);
   const manifest = {
     version: "cmi-project-archive-import/v1",
     projectId: LANNA_PROJECT_ID,
     sourceSystem: LANNA_SOURCE_SYSTEM,
     snapshotAt,
+    publicContentPolicy: LANNA_PUBLIC_CONTENT_POLICY,
     manifestSha256,
     recordCount: entries.length,
     objectCount: media.length,
@@ -286,7 +298,7 @@ export function buildLannaArchiveImport({
   }
 
   statements.push(
-    `INSERT INTO audit_logs (id, actor_user_id, action, resource_type, resource_id, metadata_json) VALUES (${sqlText(randomUUID())}, ${sqlText(createdBy)}, 'project.archive.imported', 'project_archive_import', ${sqlText(importId)}, ${sqlJson({ projectId: LANNA_PROJECT_ID, manifestSha256, recordCount: entries.length, objectCount: media.length, associationCount: mediaLinks.length, totalBytes })});`,
+    `INSERT INTO audit_logs (id, actor_user_id, action, resource_type, resource_id, metadata_json) VALUES (${sqlText(auditId)}, ${sqlText(createdBy)}, 'project.archive.imported', 'project_archive_import', ${sqlText(importId)}, ${sqlJson({ projectId: LANNA_PROJECT_ID, manifestSha256, recordCount: entries.length, objectCount: media.length, associationCount: mediaLinks.length, totalBytes })}) ON CONFLICT (id) DO NOTHING;`,
   );
 
   return { manifest, sql: `${statements.join("\n")}\n` };

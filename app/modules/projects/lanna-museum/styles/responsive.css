@@ -1,0 +1,1631 @@
+/* Scoped to .lanna-project */
+@media (max-width: 1180px) {
+  .lanna-project .desktop-nav {
+    gap: 18px;
+  }
+
+  .lanna-project .hero__art {
+    width: 1120px;
+    right: -470px;
+  }
+
+  .lanna-project .hero__content {
+    width: 100%;
+  }
+
+  .lanna-project .hero__layout {
+    grid-template-columns: minmax(350px, 0.86fr) minmax(450px, 1.14fr);
+    column-gap: 28px;
+  }
+
+  .lanna-project .hero-recap-book__cover-copy {
+    inset: 34px;
+  }
+
+  .lanna-project .hero-recap-book__page {
+    padding: 40px 35px 34px;
+  }
+
+  .lanna-project .works-showcase__grid {
+    min-height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto;
+  }
+
+  .lanna-project .work-card--featured {
+    grid-column: 1 / 3;
+    grid-row: auto;
+    grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
+    grid-template-rows: minmax(400px, 52vh);
+  }
+
+  .lanna-project .work-card:not(.work-card--featured) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 250px auto;
+  }
+
+  .lanna-project .work-card__pair-media {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: 1fr;
+  }
+
+  .lanna-project .work-card__episode + .work-card__episode {
+    border-top: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .lanna-project .archive-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .lanna-project .collection-steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lanna-project .collection-steps li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lanna-project .pattern-detail {
+    grid-template-columns: 540px minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .lanna-project .idea-stage {
+    grid-template-columns: minmax(250px, 0.56fr) minmax(0, 1.44fr);
+  }
+
+  .lanna-project .idea-line {
+    grid-template-columns: 145px 1fr;
+  }
+}
+
+@media (max-width: 920px) {
+  .lanna-project .site-header {
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+  }
+
+  .lanna-project .desktop-nav,
+  .lanna-project .desktop-signup {
+    display: none;
+  }
+
+  .lanna-project .mobile-menu-button {
+    display: inline-flex;
+  }
+
+  .lanna-project .header-actions {
+    gap: 0;
+  }
+
+  .lanna-project .mobile-nav {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+    padding: 14px 22px 24px;
+    display: grid;
+    gap: 4px;
+    background: var(--paper-strong);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 20px 40px rgba(36, 11, 51, 0.12);
+  }
+
+  .lanna-project .mobile-nav > .site-nav-link {
+    min-height: 48px;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #eee5f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    color: inherit;
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .lanna-project .section-heading--split {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .lanna-project .works-showcase__header {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .lanna-project .works-showcase__intro {
+    max-width: 680px;
+  }
+
+  .lanna-project .work-card--featured {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(360px, 48vh) auto;
+  }
+
+  .lanna-project .work-video-dialog {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .work-video-dialog__copy {
+    padding: 32px;
+  }
+
+  .lanna-project .hero {
+    min-height: auto;
+    padding-top: 124px;
+    align-items: flex-start;
+  }
+
+  .lanna-project .hero__art {
+    width: 920px;
+    right: -330px;
+    top: 42%;
+    opacity: 0.78;
+  }
+
+  .lanna-project .hero__content {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .lanna-project .hero__layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "intro"
+      "book"
+      "details";
+    gap: 38px;
+  }
+
+  .lanna-project .hero-recap-book {
+    width: min(100%, 760px);
+    justify-self: center;
+  }
+
+  .lanna-project .hero-recap-entry {
+    justify-self: center;
+    justify-items: center;
+  }
+
+  .lanna-project .hero-recap-entry__hint {
+    margin-right: 0;
+  }
+
+  .lanna-project .hero h1 {
+    font-size: clamp(4.4rem, 10.5vw, 6.8rem);
+  }
+
+  .lanna-project .manifesto__intro,
+  .lanna-project .manifesto__outcome,
+  .lanna-project .manifesto__credits {
+    margin-left: 8%;
+  }
+
+  .lanna-project .museum-section__heading {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .lanna-project .museum-section__heading p {
+    text-align: left;
+  }
+
+  .lanna-project .museum-stage {
+    min-height: 660px;
+  }
+
+  .lanna-project .museum-card__content {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    padding: 20px;
+  }
+
+  .lanna-project .form-grid--3 {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .form-grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lanna-project .archive-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .lanna-project .pattern-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .pattern-detail__card-column {
+    align-items: flex-start;
+  }
+
+  .lanna-project .idea-generator__header {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .lanna-project .idea-generator__header > p {
+    max-width: 620px;
+  }
+
+  .lanna-project .idea-stage {
+    grid-template-columns: 260px minmax(0, 1fr);
+  }
+
+  .lanna-project .idea-stage__content {
+    padding-inline: 34px;
+  }
+
+  .lanna-project .idea-line {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .lanna-project .idea-line > span {
+    padding-top: 0;
+  }
+
+  .lanna-project .creation-video {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .lanna-project .creation-video__copy {
+    max-width: 720px;
+  }
+
+  .lanna-project .site-footer__bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .lanna-project {
+    scroll-padding-top: 70px;
+  }
+
+  .lanna-project .section-shell {
+    width: min(100% - 32px, 620px);
+  }
+
+  .lanna-project .site-header {
+    min-height: 68px;
+    padding: 9px 16px;
+  }
+
+  .lanna-project .language-switcher__trigger {
+    min-width: 64px;
+    height: 44px;
+    padding-inline: 9px;
+  }
+
+  .lanna-project .language-switcher__trigger > svg:first-child {
+    display: none;
+  }
+
+  .lanna-project .language-switcher__menu {
+    position: fixed;
+    top: 66px;
+    right: 12px;
+    width: min(230px, calc(100vw - 24px));
+  }
+
+  .lanna-project .brand-lockup {
+    gap: 9px;
+    font-size: 0.9rem;
+  }
+
+  .lanna-project .brand-lockup__mark,
+  .lanna-project .brand-lockup img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .lanna-project[data-language="en"] .hero h1,
+  .lanna-project[data-language="th"] .hero h1 {
+    font-size: clamp(2.65rem, 11.5vw, 3.85rem);
+  }
+
+  .lanna-project .hero {
+    min-height: auto;
+    padding: 102px 18px 94px;
+  }
+
+  .lanna-project .hero::before {
+    top: 94px;
+    left: auto;
+    right: 104px;
+    width: 10px;
+    height: 10px;
+    box-shadow:
+      16px 0 0 var(--orange),
+      32px 0 0 var(--green),
+      48px 0 0 var(--cyan);
+  }
+
+  .lanna-project .hero__art {
+    width: 820px;
+    right: -430px;
+    top: 24%;
+    opacity: 0.34;
+  }
+
+  .lanna-project .hero__content {
+    width: 100%;
+  }
+
+  .lanna-project .hero__series {
+    width: 68%;
+    margin-bottom: 22px;
+    display: grid;
+    gap: 4px;
+    font-size: 0.76rem;
+  }
+
+  .lanna-project .hero__series span + span::before {
+    display: none;
+  }
+
+  .lanna-project .hero h1 {
+    max-width: 96%;
+    font-size: clamp(3.7rem, 18vw, 5.8rem);
+    line-height: 0.96;
+  }
+
+  .lanna-project .hero h1 em {
+    margin: 4px 0 2px;
+  }
+
+  .lanna-project .hero__subtitle {
+    margin-top: 20px;
+    font-size: 1.12rem;
+  }
+
+  .lanna-project .hero__credits {
+    margin-top: 28px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.76rem;
+  }
+
+  .lanna-project .initiator {
+    padding: 0;
+    border: 0;
+  }
+
+  .lanna-project .hero__facts {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    background: rgba(251, 248, 241, 0.84);
+    border: 1px solid rgba(92, 38, 131, 0.18);
+  }
+
+  .lanna-project .hero__facts > div {
+    grid-template-columns: 62px 1fr;
+    gap: 8px;
+    font-size: 0.76rem;
+  }
+
+  .lanna-project .hero__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .lanna-project .hero__actions .button {
+    min-width: 0;
+    padding: 0 12px;
+    font-size: 0.8rem;
+  }
+
+  .lanna-project .hero-recap-book {
+    width: min(84vw, 360px);
+    aspect-ratio: 0.74;
+    grid-template-columns: 1fr;
+    margin-top: 0;
+    justify-self: center;
+    transform: rotate(-1.7deg);
+  }
+
+  .lanna-project .hero-recap-entry {
+    width: 100%;
+  }
+
+  .lanna-project .hero-recap-entry__hint {
+    max-width: 92vw;
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    text-align: left;
+  }
+
+  .lanna-project .hero-followup {
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .lanna-project .hero-recap-book:hover,
+  .lanna-project .hero-recap-book:focus-visible {
+    transform: translateY(-7px) rotate(-0.7deg);
+  }
+
+  .lanna-project .hero-recap-book__cover {
+    grid-column: 1;
+    border-radius: 10px 3px 3px 9px;
+  }
+
+  .lanna-project .hero-recap-book__cover > img {
+    object-position: 48% center;
+  }
+
+  .lanna-project .hero-recap-book__cover-frame {
+    inset: 16px;
+  }
+
+  .lanna-project .hero-recap-book__cover-copy {
+    inset: 35px 34px 32px 38px;
+  }
+
+  .lanna-project .hero-recap-book__cover-copy > strong,
+  .lanna-project[data-language="en"] .hero-recap-book__cover-copy > strong {
+    max-width: 12ch;
+    margin: auto 0 0;
+    font-size: clamp(1.85rem, 7.8vw, 2.65rem);
+  }
+
+  .lanna-project .hero-recap-book__edition {
+    margin-top: 22px;
+  }
+
+  .lanna-project .hero-recap-book__mobile-cta {
+    position: absolute;
+    top: 38px;
+    right: 34px;
+    margin: 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(240, 208, 139, 0.62);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #f4d58f;
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
+  .lanna-project .hero-recap-book__page {
+    display: none;
+  }
+
+  .lanna-project .hero-recap-book__spine {
+    top: 2px;
+    bottom: 2px;
+    left: 16px;
+    width: 7px;
+    transform: none;
+  }
+
+  .lanna-project .hero-recap-book__page-edges {
+    inset: 10px -9px -12px 18px;
+  }
+
+  .lanna-project .hero__content--details {
+    width: 100%;
+  }
+
+  .lanna-project .hero__content--details .hero__facts {
+    margin-top: 0;
+  }
+
+  .lanna-project .scroll-cue {
+    right: 18px;
+    bottom: 17px;
+  }
+
+  .lanna-project .manifesto {
+    min-height: auto;
+    padding: 84px 20px 78px;
+  }
+
+  .lanna-project .manifesto__ribbon {
+    width: 560px;
+    left: -405px;
+    bottom: 22%;
+    opacity: 0.62;
+  }
+
+  .lanna-project .manifesto h2 {
+    margin: 20px 0 30px;
+    font-size: clamp(2.6rem, 11vw, 4rem);
+    line-height: 1.28;
+  }
+
+  .lanna-project .manifesto__intro,
+  .lanna-project .manifesto__outcome,
+  .lanna-project .manifesto__credits {
+    max-width: none;
+    margin-left: 0;
+    font-size: 0.94rem;
+    line-height: 1.9;
+  }
+
+  .lanna-project .manifesto__creative {
+    width: 100%;
+    margin: 38px 0;
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 1.25rem;
+    line-height: 1.7;
+  }
+
+  .lanna-project .manifesto h3 {
+    font-size: clamp(2.2rem, 9vw, 3.4rem);
+    line-height: 1.35;
+  }
+
+  .lanna-project .manifesto__credits {
+    margin-top: 34px;
+    font-size: 0.72rem;
+  }
+
+  .lanna-project .manifesto__next {
+    margin-top: 38px;
+    font-size: 0.78rem;
+  }
+
+  .lanna-project .journey {
+    width: min(100% - 32px, 620px);
+    padding-top: 84px;
+    padding-bottom: 84px;
+    overflow: visible;
+  }
+
+  .lanna-project .section-heading {
+    margin-bottom: 36px;
+  }
+
+  .lanna-project .section-heading h2 {
+    font-size: clamp(2.35rem, 10vw, 3.6rem);
+  }
+
+  .lanna-project .section-heading--split > p {
+    font-size: 0.9rem;
+  }
+
+  .lanna-project .fishbone {
+    min-width: 0;
+    height: auto;
+    padding: 0 0 0 22px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .lanna-project .fishbone::before {
+    left: 18px;
+    right: auto;
+    top: 14px;
+    bottom: 14px;
+    border-top: 0;
+    border-left: 3px solid var(--purple);
+  }
+
+  .lanna-project .fishbone__item {
+    min-height: 150px;
+    padding-left: 42px;
+  }
+
+  .lanna-project .fishbone__item::before {
+    width: 42px;
+    height: 1px;
+    left: -3px;
+    top: 28px;
+    bottom: auto;
+    border-left: 0;
+    border-top: 2px dashed var(--step-color);
+  }
+
+  .lanna-project .fishbone__item.is-top::before,
+  .lanna-project .fishbone__item.is-bottom::before {
+    top: 28px;
+    bottom: auto;
+  }
+
+  .lanna-project .fishbone__node {
+    width: 34px;
+    height: 34px;
+    left: -4px;
+    top: 28px;
+  }
+
+  .lanna-project .fishbone__content,
+  .lanna-project .fishbone__item.is-top .fishbone__content,
+  .lanna-project .fishbone__item.is-bottom .fishbone__content {
+    position: static;
+    min-height: 0;
+    padding-top: 0;
+    display: block;
+  }
+
+  .lanna-project .fishbone__content h3 {
+    font-size: 1.05rem;
+  }
+
+  .lanna-project .fishbone__content p {
+    font-size: 0.8rem;
+  }
+
+  .lanna-project .journey__cta {
+    justify-content: stretch;
+  }
+
+  .lanna-project .journey__cta .button {
+    width: 100%;
+  }
+
+  .lanna-project .museum-section {
+    min-height: auto;
+    padding: 72px 0 30px;
+  }
+
+  .lanna-project .museum-section__heading {
+    padding: 0 20px;
+    margin-bottom: 26px;
+  }
+
+  .lanna-project .museum-section__heading h2 {
+    font-size: 2.7rem;
+  }
+
+  .lanna-project .museum-stage {
+    flex: none;
+    min-height: 0;
+    height: 76svh;
+    padding: 0 18px 10px;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    border: 0;
+    scrollbar-width: none;
+  }
+
+  .lanna-project .museum-stage::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lanna-project .museum-card,
+  .lanna-project .museum-stage--lanna_folklife .museum-card--lanna_folklife,
+  .lanna-project .museum-stage--fam .museum-card--fam,
+  .lanna-project .museum-stage--lanna_folklife .museum-card--fam,
+  .lanna-project .museum-stage--fam .museum-card--lanna_folklife {
+    flex: 0 0 88vw;
+    min-width: 88vw;
+    scroll-snap-align: center;
+    filter: none;
+  }
+
+  .lanna-project .museum-card__content {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 18px;
+  }
+
+  .lanna-project .museum-card__title > span {
+    font-size: 1.1rem;
+  }
+
+  .lanna-project .museum-card__title h3 {
+    font-size: 2.1rem;
+  }
+
+  .lanna-project .museum-card__content > p {
+    margin: 12px 0;
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+
+  .lanna-project .museum-card__content dl {
+    margin-bottom: 15px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .lanna-project .museum-card__actions .button {
+    flex: 1;
+    padding: 0 12px;
+    font-size: 0.78rem;
+  }
+
+  .lanna-project .museum-stage__or {
+    display: none;
+  }
+
+  .lanna-project .museum-mobile-indicator {
+    margin: 16px auto 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #a487b2;
+    font-size: 0.76rem;
+  }
+
+  .lanna-project .museum-mobile-indicator span.is-active {
+    color: #fff;
+    font-weight: 800;
+  }
+
+  .lanna-project .museum-mobile-indicator i {
+    width: 46px;
+    border-top: 1px solid #7d5d8b;
+  }
+
+  .lanna-project .collection-section {
+    padding-top: 88px;
+    padding-bottom: 94px;
+  }
+
+  .lanna-project .collection-steps {
+    grid-template-columns: 1fr;
+    border: 0;
+  }
+
+  .lanna-project .collection-steps li {
+    min-height: 0;
+    padding: 18px 42px 18px 8px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lanna-project .collection-steps__arrow {
+    transform: translateY(-50%) rotate(90deg);
+  }
+
+  .lanna-project .collection-form {
+    padding: 20px;
+    box-shadow: 8px 8px 0 #eadfeb;
+  }
+
+  .lanna-project .form-grid--2,
+  .lanna-project .form-grid--3,
+  .lanna-project .form-grid--4 {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .form-grid--files {
+    gap: 28px;
+  }
+
+  .lanna-project .file-dropzone {
+    min-height: 140px;
+  }
+
+  .lanna-project .file-previews {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .lanna-project .form-submit-row {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .form-submit-row .button {
+    width: 100%;
+  }
+
+  .lanna-project .archive-section {
+    padding: 86px 0 94px;
+  }
+
+  .lanna-project .archive-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .lanna-project .archive-toolbar__filters {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lanna-project .archive-toolbar label:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .lanna-project .archive-toolbar select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .lanna-project .archive-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .lanna-project .archive-tile__number {
+    left: 5px;
+    bottom: 5px;
+    padding: 4px 5px;
+    font-size: 0.55rem;
+  }
+
+  .lanna-project .archive-tile__collector {
+    top: 5px;
+    left: 5px;
+    max-width: calc(100% - 10px);
+    padding: 4px 5px;
+    font-size: 0.54rem;
+  }
+
+  .lanna-project .archive-tile__hover {
+    display: none;
+  }
+
+  .lanna-project .dialog-layer {
+    padding: 0;
+    place-items: end stretch;
+  }
+
+  .lanna-project .dialog {
+    width: 100%;
+    max-height: 94svh;
+    padding: 24px 18px 30px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .lanna-project .dialog--wide {
+    width: 100%;
+  }
+
+  .lanna-project .signup-dialog__qr {
+    min-height: 290px;
+  }
+
+  .lanna-project .pattern-detail {
+    gap: 34px;
+  }
+
+  .lanna-project .pattern-detail__card-column {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .lanna-project .pattern-card-export {
+    transform-origin: left top;
+  }
+
+  .lanna-project .pattern-detail__gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lanna-project .image-lightbox {
+    padding: 64px 12px 18px;
+  }
+
+  .lanna-project .image-lightbox__close {
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .lanna-project .image-lightbox__stage > img {
+    max-width: calc(100vw - 24px);
+    max-height: calc(100svh - 170px);
+  }
+
+  .lanna-project .image-lightbox__nav {
+    top: auto;
+    bottom: 84px;
+    width: 50px;
+    height: 50px;
+    transform: none;
+  }
+
+  .lanna-project .image-lightbox__nav:hover {
+    transform: scale(1.04);
+  }
+
+  .lanna-project .image-lightbox__nav--previous {
+    left: 12px;
+  }
+
+  .lanna-project .image-lightbox__nav--next {
+    right: 12px;
+  }
+
+  .lanna-project .image-lightbox__caption {
+    grid-template-columns: 1fr auto;
+    text-align: left;
+  }
+
+  .lanna-project .image-lightbox__caption strong {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .lanna-project .idea-generator {
+    padding-top: 86px;
+  }
+
+  .lanna-project .idea-generator__header {
+    margin-bottom: 30px;
+  }
+
+  .lanna-project .idea-generator__header h2 {
+    font-size: clamp(2.75rem, 13vw, 4.5rem);
+  }
+
+  .lanna-project .idea-generator__categories {
+    width: calc(100% - 16px);
+    margin-left: 16px;
+    margin-right: 0;
+  }
+
+  .lanna-project .idea-generator__category-track {
+    padding-right: 16px;
+  }
+
+  .lanna-project .idea-stage {
+    width: 100%;
+    min-height: 0;
+    margin-bottom: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    box-shadow: none;
+  }
+
+  .lanna-project .idea-stage::before {
+    top: 22px;
+    right: 20px;
+    width: 13px;
+    height: 13px;
+    box-shadow:
+      22px 0 0 var(--orange),
+      44px 0 0 var(--green),
+      66px 0 0 var(--cyan);
+  }
+
+  .lanna-project .idea-stage__number {
+    bottom: 122px;
+    font-size: 9rem;
+  }
+
+  .lanna-project .idea-stage__media {
+    min-height: 280px;
+    max-height: 52svh;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.17);
+  }
+
+  .lanna-project .idea-stage__medium {
+    left: 20px;
+    right: 20px;
+    bottom: 22px;
+  }
+
+  .lanna-project .idea-stage__content {
+    padding: 46px 20px 28px;
+  }
+
+  .lanna-project .idea-line {
+    padding: 17px 0 18px;
+  }
+
+  .lanna-project .idea-line p,
+  .lanna-project .idea-line--make p {
+    font-size: 1.08rem;
+    line-height: 1.65;
+  }
+
+  .lanna-project .idea-stage__source {
+    min-height: 0;
+    padding: 16px 18px;
+    grid-template-columns: 54px minmax(0, 1fr);
+  }
+
+  .lanna-project .idea-stage__source > img {
+    width: 54px;
+    height: 54px;
+  }
+
+  .lanna-project .idea-stage__source button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .lanna-project .idea-stage__action {
+    min-height: 0;
+    padding: 18px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lanna-project .idea-stage__action > button {
+    width: 100%;
+    min-height: 66px;
+  }
+
+  .lanna-project .idea-stage__action > div {
+    justify-content: center;
+  }
+
+  .lanna-project .creation-video {
+    padding: 86px 20px 96px;
+    gap: 36px;
+  }
+
+  .lanna-project .creation-video__copy h2 {
+    font-size: 3.05rem;
+  }
+
+  .lanna-project .creation-video__labels {
+    margin-top: 20px;
+  }
+
+  .lanna-project .creation-video__credit {
+    margin-top: 24px;
+  }
+
+  .lanna-project .creation-video__player {
+    box-shadow: 9px 9px 0 var(--orange);
+  }
+
+  .lanna-project .creation-video__playmark {
+    top: -18px;
+    left: -8px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .lanna-project .site-footer {
+    padding: 78px 20px 28px;
+  }
+
+  .lanna-project .site-footer__content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .lanna-project .site-footer__content h2 {
+    font-size: 2.8rem;
+  }
+
+  .lanna-project .site-footer__content .button {
+    width: 100%;
+  }
+
+  .lanna-project .site-footer__bottom {
+    margin-top: 64px;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .lanna-project .hero h1 {
+    font-size: 3.55rem;
+  }
+
+  .lanna-project .hero__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .hero-followup {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .lanna-project .archive-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 920px) {
+  .lanna-project .collection-portal {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .collection-entry-card {
+    min-height: 560px;
+  }
+
+  .lanna-project .dialog--collector {
+    width: min(760px, 100%);
+  }
+
+  .lanna-project .collector-wizard__header,
+  .lanna-project .wizard-page,
+  .lanna-project .collector-wizard__actions {
+    padding-inline: 34px;
+  }
+
+  .lanna-project .collector-wizard__progress {
+    padding-inline: 34px;
+  }
+}
+
+@media (max-width: 720px) {
+  .lanna-project .hero__content {
+    width: 100%;
+  }
+
+  .lanna-project .works-showcase {
+    min-height: 0;
+    padding: 82px 16px 42px;
+  }
+
+  .lanna-project .works-showcase::before {
+    top: 30px;
+    right: 90px;
+    width: 9px;
+    height: 9px;
+    box-shadow:
+      17px 0 0 var(--orange),
+      34px 0 0 var(--green),
+      51px 0 0 var(--cyan);
+  }
+
+  .lanna-project .works-showcase__header {
+    margin-bottom: 30px;
+  }
+
+  .lanna-project .works-showcase__header h2 {
+    font-size: clamp(2.65rem, 13vw, 4rem);
+  }
+
+  .lanna-project .works-showcase__intro {
+    padding-left: 18px;
+  }
+
+  .lanna-project .works-showcase__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lanna-project .work-card--featured {
+    grid-column: auto;
+    grid-template-rows: 340px auto;
+  }
+
+  .lanna-project .work-card:not(.work-card--featured) {
+    grid-template-rows: 230px auto;
+  }
+
+  .lanna-project .work-card--series:not(.work-card--featured) {
+    grid-template-rows: 280px auto;
+  }
+
+  .lanna-project .work-card__episode-label {
+    top: 11px;
+    left: 11px;
+    padding-inline: 8px;
+  }
+
+  .lanna-project .work-card__episode-number {
+    top: 11px;
+    right: 11px;
+  }
+
+  .lanna-project .work-card--featured .work-card__cover {
+    min-height: 0;
+  }
+
+  .lanna-project .work-card__body,
+  .lanna-project .work-card--featured .work-card__body {
+    padding: 24px 22px 22px;
+  }
+
+  .lanna-project .work-card--featured h3,
+  .lanna-project .work-card h3 {
+    font-size: clamp(1.55rem, 7vw, 2.3rem);
+  }
+
+  .lanna-project .works-showcase__footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .lanna-project .work-video-dialog {
+    margin-top: 22px;
+  }
+
+  .lanna-project .work-video-dialog__copy {
+    padding: 28px 22px;
+  }
+
+  .lanna-project .work-video-dialog__copy h2 {
+    font-size: 2.2rem;
+  }
+
+  .lanna-project .work-video-dialog__creator {
+    margin-top: 24px;
+  }
+
+  .lanna-project .work-video-dialog__player video {
+    max-height: 52svh;
+  }
+
+  .lanna-project .hero h1 {
+    max-width: 100%;
+    font-size: clamp(2.9rem, 13vw, 4.15rem);
+    line-height: 1;
+  }
+
+  .lanna-project .initiator img {
+    width: 104px;
+    height: 34px;
+  }
+
+  .lanna-project .museum-card::after {
+    inset: 6px;
+    border-width: 6px;
+  }
+
+  .lanna-project .museum-mobile-indicator {
+    color: #d7c3df;
+  }
+
+  .lanna-project .collection-portal {
+    gap: 30px;
+  }
+
+  .lanna-project .collection-entry-card {
+    min-height: 510px;
+    padding: 30px 26px;
+    border-width: 9px;
+    box-shadow: 10px 10px 0 #dfcfe4;
+  }
+
+  .lanna-project .collection-entry-card__seal {
+    width: 70px;
+    height: 70px;
+    margin: 50px 0 26px;
+  }
+
+  .lanna-project .collection-entry-card__copy h3 {
+    font-size: clamp(2.15rem, 10vw, 3.4rem);
+  }
+
+  .lanna-project .collection-entry-card > .button {
+    width: 100%;
+  }
+
+  .lanna-project .collection-recent {
+    padding: 20px;
+  }
+
+  .lanna-project .collection-recent > header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .lanna-project .collection-recent__grid {
+    gap: 5px;
+  }
+
+  .lanna-project .dialog--collector {
+    width: 100%;
+    padding: 0;
+  }
+
+  .lanna-project .dialog--collector .dialog__close {
+    margin: 12px 12px -56px 8px;
+  }
+
+  .lanna-project .collector-wizard__header {
+    padding: 28px 20px 22px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .lanna-project .collector-wizard__header h2 {
+    padding-right: 32px;
+    font-size: 2.25rem;
+  }
+
+  .lanna-project .collector-wizard__mode {
+    margin-right: 0;
+  }
+
+  .lanna-project .collector-wizard__progress {
+    padding: 0 20px;
+  }
+
+  .lanna-project .collector-wizard__progress li {
+    min-height: 68px;
+    gap: 7px;
+  }
+
+  .lanna-project .collector-wizard__progress li > span {
+    width: 29px;
+    height: 29px;
+    font-size: 0.62rem;
+  }
+
+  .lanna-project .collector-wizard__progress strong {
+    font-size: 0.68rem;
+  }
+
+  .lanna-project .wizard-page {
+    min-height: 0;
+    padding: 30px 20px 34px;
+  }
+
+  .lanna-project .wizard-page__intro {
+    margin-bottom: 26px;
+    gap: 13px;
+  }
+
+  .lanna-project .wizard-page__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .lanna-project .wizard-page__intro h3 {
+    font-size: 2rem;
+  }
+
+  .lanna-project .wizard-page__intro p {
+    font-size: 0.84rem;
+  }
+
+  .lanna-project .file-picker {
+    padding: 18px;
+  }
+
+  .lanna-project .file-picker > p {
+    min-height: 0;
+  }
+
+  .lanna-project .file-picker__actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lanna-project .file-picker__actions .button {
+    min-height: 50px;
+    padding: 0 9px;
+    font-size: 0.76rem;
+  }
+
+  .lanna-project .collector-wizard__actions {
+    min-height: 78px;
+    padding: 14px 20px;
+  }
+
+  .lanna-project .collector-wizard__actions .button {
+    padding-inline: 14px;
+  }
+
+  .lanna-project .site-footer__art {
+    width: 150%;
+    right: -64%;
+    opacity: 0.18;
+  }
+}
+
+@media (max-width: 390px) {
+  .lanna-project .hero h1 {
+    font-size: 2.9rem;
+  }
+
+  .lanna-project .collection-recent__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lanna-project .collector-wizard__progress {
+    padding-inline: 14px;
+  }
+
+  .lanna-project .collector-wizard__progress strong {
+    display: none;
+  }
+}
+
+/* Equal-height horizontal works rail */
+.lanna-project .works-showcase__rail-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1440px, 100%);
+  margin-inline: auto;
+}
+
+.lanna-project .works-showcase__rail-toolbar {
+  min-height: 52px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid #cfc0d2;
+  border-bottom: 1px solid #cfc0d2;
+}
+
+.lanna-project .works-showcase__rail-toolbar > span {
+  color: var(--purple);
+  font-size: 0.7rem;
+  font-weight: 820;
+  letter-spacing: 0.14em;
+}
+
+.lanna-project .works-showcase__rail-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.lanna-project .works-showcase__rail-actions button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--purple);
+  background: transparent;
+  border: 1px solid #c9b7ce;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.lanna-project .works-showcase__rail-actions button:hover,
+.lanna-project .works-showcase__rail-actions button:focus-visible {
+  color: #fff;
+  background: var(--purple);
+  transform: translateY(-2px);
+}
+
+.lanna-project .works-showcase__rail {
+  width: 100%;
+  padding: 8px 12px 24px 4px;
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-behavior: smooth;
+  scroll-padding-inline: 4px;
+  scroll-snap-type: inline mandatory;
+  scrollbar-color: var(--purple) rgba(92, 38, 131, 0.1);
+  scrollbar-width: thin;
+  touch-action: pan-x pan-y;
+}
+
+.lanna-project .works-showcase__rail::-webkit-scrollbar {
+  height: 7px;
+}
+
+.lanna-project .works-showcase__rail::-webkit-scrollbar-track {
+  background: rgba(92, 38, 131, 0.1);
+}
+
+.lanna-project .works-showcase__rail::-webkit-scrollbar-thumb {
+  background: var(--purple);
+  border-radius: 999px;
+}
+
+.lanna-project .works-showcase__rail .work-card {
+  flex: 0 0 clamp(360px, 30vw, 420px);
+  width: clamp(360px, 30vw, 420px);
+  min-width: clamp(360px, 30vw, 420px);
+  height: 640px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 300px minmax(0, 1fr);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.lanna-project .works-showcase__rail .work-card__cover {
+  min-height: 0;
+}
+
+.lanna-project .works-showcase__rail .work-card__cover img {
+  object-fit: cover;
+}
+
+.lanna-project .works-showcase__rail .work-card__body {
+  min-height: 0;
+  padding: 25px 26px 23px;
+}
+
+.lanna-project .works-showcase__rail .work-card h3 {
+  min-height: 2.6em;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: clamp(1.65rem, 2vw, 2.15rem);
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.lanna-project .works-showcase__rail .work-card__body > p {
+  min-height: 0;
+  margin: 12px 0 18px;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.84rem;
+  line-height: 1.72;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+}
+
+.lanna-project .works-showcase__rail .work-card__creator {
+  min-height: 44px;
+  margin-top: auto;
+}
+
+@media (max-width: 720px) {
+  .lanna-project .works-showcase__rail-toolbar {
+    min-height: 48px;
+    margin-bottom: 7px;
+  }
+
+  .lanna-project .works-showcase__rail-toolbar > span {
+    max-width: 210px;
+    font-size: 0.62rem;
+    line-height: 1.5;
+  }
+
+  .lanna-project .works-showcase__rail-actions button {
+    width: 35px;
+    height: 35px;
+  }
+
+  .lanna-project .works-showcase__rail {
+    width: calc(100% + 16px);
+    padding-right: 32px;
+    gap: 13px;
+    scrollbar-width: none;
+  }
+
+  .lanna-project .works-showcase__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lanna-project .works-showcase__rail .work-card {
+    flex-basis: min(82vw, 330px);
+    width: min(82vw, 330px);
+    min-width: min(82vw, 330px);
+    height: 600px;
+    grid-template-columns: 1fr;
+    grid-template-rows: 255px minmax(0, 1fr);
+  }
+
+  .lanna-project .works-showcase__rail .work-card__body {
+    padding: 22px 21px 20px;
+  }
+
+  .lanna-project .works-showcase__rail .work-card h3 {
+    min-height: 2.65em;
+    font-size: 1.55rem;
+  }
+
+  .lanna-project .works-showcase__rail .work-card__body > p {
+    margin-bottom: 15px;
+    font-size: 0.8rem;
+    line-height: 1.68;
+    -webkit-line-clamp: 7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lanna-project *,
+  .lanna-project *::before,
+  .lanna-project *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

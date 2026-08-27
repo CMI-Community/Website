@@ -1,0 +1,429 @@
+/* Scoped to .lanna-project */
+.lanna-project {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #271b2e;
+  background: #fbf8f1;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --paper: #fbf8f1;
+  --paper-strong: #fffdf8;
+  --purple: #5c2683;
+  --purple-dark: #351149;
+  --purple-deep: #240b33;
+  --purple-soft: #eee2f2;
+  --orange: #ec7623;
+  --green: #4d9c54;
+  --cyan: #1e9fbd;
+  --pink: #e34f7d;
+  --yellow: #ffd43b;
+  --ink: #271b2e;
+  --muted: #706776;
+  --line: #d8ccdc;
+  --shadow: 0 24px 70px rgba(57, 17, 76, 0.16);
+}
+
+.lanna-project * {
+  box-sizing: border-box;
+}
+
+.lanna-project {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+.lanna-project {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.lanna-project button,
+.lanna-project input,
+.lanna-project textarea,
+.lanna-project select {
+  font: inherit;
+}
+
+.lanna-project button,
+.lanna-project a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lanna-project button {
+  color: inherit;
+}
+
+.lanna-project a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lanna-project img {
+  display: block;
+  max-width: 100%;
+}
+
+.lanna-project button:focus-visible,
+.lanna-project a:focus-visible,
+.lanna-project input:focus-visible,
+.lanna-project textarea:focus-visible,
+.lanna-project select:focus-visible,
+.lanna-project [tabindex]:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.lanna-project .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lanna-project .section-shell {
+  width: min(1440px, calc(100% - 64px));
+  margin-inline: auto;
+}
+
+.lanna-project .section-kicker {
+  color: var(--purple);
+  font-size: 0.78rem;
+  font-weight: 760;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.lanna-project .section-kicker--light {
+  color: #eadff0;
+}
+
+.lanna-project .section-heading {
+  margin-bottom: 54px;
+}
+
+.lanna-project .section-heading h2 {
+  margin: 10px 0 0;
+  color: var(--purple-dark);
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2.2rem, 4.4vw, 4.8rem);
+  font-weight: 740;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.lanna-project .section-heading--split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.7fr);
+  align-items: end;
+  gap: 56px;
+}
+
+.lanna-project .section-heading--split > p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.85;
+}
+
+.lanna-project .button {
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.94rem;
+  font-weight: 720;
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.lanna-project .button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.lanna-project .button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.lanna-project .button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lanna-project .ended-button:disabled {
+  opacity: 1;
+  color: #fff;
+  border-color: #76667d;
+  background: #76667d;
+  box-shadow: none;
+}
+
+.lanna-project .button--primary {
+  color: #fff;
+  background: var(--purple);
+  border-color: var(--purple);
+  box-shadow: 5px 5px 0 #d9c2e1;
+}
+
+.lanna-project .button--primary:hover:not(:disabled) {
+  background: var(--purple-dark);
+  border-color: var(--purple-dark);
+  box-shadow: 7px 7px 0 #d9c2e1;
+}
+
+.lanna-project .button--outline {
+  color: var(--purple);
+  background: transparent;
+  border-color: var(--purple);
+}
+
+.lanna-project .button--outline:hover:not(:disabled) {
+  color: #fff;
+  background: var(--purple);
+}
+
+.lanna-project .button--soft {
+  color: var(--purple-dark);
+  background: #eee2f2;
+  border-color: #cdb5d5;
+}
+
+.lanna-project .button--soft:hover:not(:disabled) {
+  background: #e2d2e8;
+  border-color: var(--purple);
+}
+
+.lanna-project .button--quiet {
+  color: var(--purple);
+  background: transparent;
+  border-color: transparent;
+}
+
+.lanna-project .button--quiet:hover:not(:disabled) {
+  background: #f1e7f3;
+}
+
+.lanna-project .button--light {
+  color: var(--purple-dark);
+  background: #fff;
+  border-color: #fff;
+}
+
+.lanna-project .button--selected {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.lanna-project .button--ghost-light {
+  color: #fff;
+  background: rgba(35, 9, 48, 0.45);
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
+.lanna-project .button--ghost-light:hover {
+  background: #fff;
+  color: var(--purple-dark);
+}
+
+.lanna-project .button--accent {
+  color: var(--purple-deep);
+  background: var(--yellow);
+  border-color: var(--yellow);
+  box-shadow: 6px 6px 0 #8d5eb0;
+}
+
+.lanna-project .icon-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper-strong);
+  cursor: pointer;
+}
+
+.lanna-project .site-header {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 78px;
+  padding: 12px clamp(20px, 4vw, 68px);
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 34px;
+  background: rgba(251, 248, 241, 0.94);
+  border-bottom: 1px solid rgba(92, 38, 131, 0.14);
+  backdrop-filter: blur(16px);
+}
+
+.lanna-project .brand-lockup {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+}
+
+.lanna-project .brand-lockup__mark,
+.lanna-project .brand-lockup img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.lanna-project .desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.8vw, 42px);
+}
+
+.lanna-project .desktop-nav .site-nav-link {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: inherit;
+  font-size: 0.9rem;
+  font-weight: 620;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lanna-project .desktop-nav .site-nav-link:hover {
+  color: var(--purple);
+}
+
+.lanna-project .desktop-nav .site-nav-link.is-active {
+  color: var(--purple);
+  box-shadow: inset 0 -2px var(--orange);
+}
+
+.lanna-project .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lanna-project .language-switcher {
+  position: relative;
+}
+
+.lanna-project .language-switcher__trigger {
+  min-width: 78px;
+  height: 48px;
+  padding: 0 12px;
+  border: 1px solid #cdbed1;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: var(--purple-dark);
+  background: var(--paper-strong);
+  font-size: 0.78rem;
+  font-weight: 780;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 rgba(92, 38, 131, 0.09);
+}
+
+.lanna-project .language-switcher__trigger:hover,
+.lanna-project .language-switcher__trigger[aria-expanded="true"] {
+  color: #fff;
+  background: var(--purple);
+  border-color: var(--purple);
+}
+
+.lanna-project .language-switcher__menu {
+  position: absolute;
+  z-index: 70;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 224px;
+  padding: 10px;
+  color: var(--ink);
+  background: #fffdf8;
+  border: 1px solid #cab9cf;
+  box-shadow: 9px 9px 0 rgba(53, 17, 73, 0.16);
+}
+
+.lanna-project .language-switcher__eyebrow {
+  min-height: 28px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  color: #827489;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.lanna-project .language-switcher__menu [role="option"] {
+  width: 100%;
+  min-height: 51px;
+  padding: 7px 10px;
+  border: 0;
+  border-top: 1px solid #eee5f0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lanna-project .language-switcher__menu [role="option"]:hover,
+.lanna-project .language-switcher__menu [role="option"].is-active {
+  color: var(--purple);
+  background: var(--purple-soft);
+}
+
+.lanna-project .language-switcher__menu [role="option"] > span {
+  font-size: 0.9rem;
+  font-weight: 760;
+}
+
+.lanna-project .language-switcher__menu [role="option"] > small {
+  color: #817687;
+  font-size: 0.65rem;
+}
+
+.lanna-project .language-switcher__menu [role="option"] > svg {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.lanna-project .mobile-menu-button,
+.lanna-project .mobile-nav {
+  display: none;
+}

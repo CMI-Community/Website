@@ -64,8 +64,8 @@ describe("public project series catalog", () => {
           title: "博物馆奇妙日",
           date: "2026-07-26",
           publication: {
-            kind: "external",
-            href: "https://lanna-museum-day-chiang-mai.vercel.app/",
+            kind: "native",
+            moduleKey: "lanna-museum",
           },
         },
       ],

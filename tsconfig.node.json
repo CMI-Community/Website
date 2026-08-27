@@ -12,8 +12,10 @@
     "app/modules/photo-museum/photo-catalog.ts",
     "app/modules/projects/archive-model/public-pattern-entry.ts",
     "app/modules/projects/project-catalog.ts",
-    "app/modules/projects/project-module-registry.tsx",
-    "app/modules/projects/project-route.tsx",
+    "app/modules/projects/project-path.ts",
+    "app/modules/projects/project-meta.ts",
+    "app/modules/projects/lanna-museum/pattern-archive/public-pattern-adapter.ts",
+    "app/modules/projects/lanna-museum/content/messages/**/*.ts",
     "app/modules/publishing/public-content.ts"
   ],
   "compilerOptions": {

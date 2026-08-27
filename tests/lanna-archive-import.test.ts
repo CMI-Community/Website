@@ -49,6 +49,7 @@ describe("Lanna archive import transformer", () => {
     });
 
     expect(first.manifest.manifestSha256).toBe(second.manifest.manifestSha256);
+    expect(first.sql).toBe(second.sql);
     expect(first.manifest).toMatchObject({
       recordCount: 1,
       objectCount: 2,
@@ -60,6 +61,9 @@ describe("Lanna archive import transformer", () => {
     );
     expect(first.manifest.entries[0].rightsStatus).toBe("research_only");
     expect(first.sql).toContain("ON CONFLICT");
+    expect(first.sql).toMatch(
+      /INSERT INTO audit_logs .* ON CONFLICT \(id\) DO NOTHING;/,
+    );
     expect(first.sql).not.toContain("example.supabase.co");
     expect(first.sql).not.toContain(storageRoot);
   });
@@ -121,5 +125,33 @@ describe("Lanna archive import transformer", () => {
       createdBy: "admin",
       snapshotAt: "2026-08-27T12:00:00Z",
     })).toThrow(/Duplicate archive number/);
+  });
+
+  it("keeps unverified AI interpretation out of the public D1 projection", () => {
+    const storageRoot = mkdtempSync(join(tmpdir(), "cmi-lanna-import-"));
+    mkdirSync(join(storageRoot, "source"), { recursive: true });
+    writeFileSync(join(storageRoot, "source", "detail.jpg"), "detail");
+    writeFileSync(join(storageRoot, "source", "context.jpg"), "context");
+    const result = buildLannaArchiveImport({
+      input: [{
+        id: "source-46",
+        archive_number: "CMI-LN-0046",
+        museum: "fam",
+        source_title: "蜡染枕套",
+        status: "published",
+        rights_review: false,
+        verified_information: "ChatGPT 猜测这是苗族迁徙符号，应当作为事实展示。",
+        detail_image_urls: ["https://example.supabase.co/storage/v1/object/public/pattern-submissions/source/detail.jpg"],
+        context_image_urls: ["https://example.supabase.co/storage/v1/object/public/pattern-submissions/source/context.jpg"],
+      }],
+      storageRoot,
+      createdBy: "admin",
+      snapshotAt: "2026-08-27T12:00:00Z",
+    });
+
+    expect(result.manifest.publicContentPolicy).toBe("lanna-archive-provenance/v1");
+    expect(result.manifest.entries[0].verifiedInformation).toMatch(/^UNKNOWN \/ 未经核验/);
+    expect(result.manifest.entries[0].verifiedInformation).not.toContain("应当作为事实");
+    expect(result.sql).not.toContain("应当作为事实");
   });
 });
