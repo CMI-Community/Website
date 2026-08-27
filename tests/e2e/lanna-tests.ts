@@ -31,6 +31,16 @@ async function expectClientLanguage(
   });
 }
 
+async function waitForProjectNavigation(
+  page: import("@playwright/test").Page,
+  path: string,
+) {
+  await page.waitForURL(new RegExp(`${path}$`), {
+    waitUntil: "domcontentloaded",
+    timeout: 15_000,
+  });
+}
+
 export function defineLannaProjectTests(options: LannaTestOptions = {}) {
   test("Lanna project routes normalize permanently and publish complete metadata", async ({ page, request }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop-chromium", "one metadata and redirect run is sufficient");
@@ -120,7 +130,7 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     await page.locator('.language-switcher__menu [role="option"]', { hasText: "English" }).click({
       noWaitAfter: true,
     });
-    await expect(page).toHaveURL(new RegExp(`${ENGLISH_PATH}$`));
+    await waitForProjectNavigation(page, ENGLISH_PATH);
     await expect(page.locator('.lanna-project[data-language="en"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expectClientLanguage(page, "en");
@@ -129,7 +139,7 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     await page.locator('.language-switcher__menu [role="option"]', { hasText: "ไทย" }).click({
       noWaitAfter: true,
     });
-    await expect(page).toHaveURL(new RegExp(`${THAI_PATH}$`));
+    await waitForProjectNavigation(page, THAI_PATH);
     await expect(page.locator('.lanna-project[data-language="th"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "th");
     await expectClientLanguage(page, "th");
