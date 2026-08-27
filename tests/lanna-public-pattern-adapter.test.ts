@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PublicPatternEntry } from "../app/modules/projects/archive-model/public-pattern-entry";
-import { toLannaPatternViewModel } from "../app/modules/projects/lanna-museum/archive/public-pattern-adapter";
+import { toLannaPatternViewModel } from "../app/modules/projects/lanna-museum/pattern-archive/public-pattern-adapter";
 
 const entry: PublicPatternEntry = {
   archiveNumber: "CMI-LN-0045",

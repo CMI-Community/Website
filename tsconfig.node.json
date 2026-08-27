@@ -14,7 +14,7 @@
     "app/modules/projects/project-catalog.ts",
     "app/modules/projects/project-path.ts",
     "app/modules/projects/project-meta.ts",
-    "app/modules/projects/lanna-museum/archive/public-pattern-adapter.ts",
+    "app/modules/projects/lanna-museum/pattern-archive/public-pattern-adapter.ts",
     "app/modules/projects/lanna-museum/content/messages/**/*.ts",
     "app/modules/publishing/public-content.ts"
   ],

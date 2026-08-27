@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ArchiveSection } from "./archive/archive-section";
-import { PatternDetailDialog } from "./archive/pattern-detail-dialog";
+import { ArchiveSection } from "./pattern-archive/archive-section";
+import { PatternDetailDialog } from "./pattern-archive/pattern-detail-dialog";
 import { PossibilityGenerator } from "./ideas/possibility-generator";
 import { CollectionSection } from "./sections/collection";
 import { CreationVideo } from "./sections/creation-video";

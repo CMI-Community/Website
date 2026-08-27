@@ -1,6 +1,6 @@
 import { redirect, type RouterContextProvider } from "react-router";
 import { cloudflareContext } from "../../shared/cloudflare-context";
-import { readPublicLannaArchive } from "./lanna-museum/archive/project-archive.server";
+import { readPublicLannaArchive } from "./lanna-museum/pattern-archive/project-archive.server";
 import {
   findProjectIssue,
   getProjectIssuePath,

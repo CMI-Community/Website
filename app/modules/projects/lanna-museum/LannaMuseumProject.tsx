@@ -5,7 +5,7 @@ import { Footer } from "./components/footer";
 import { Header } from "./components/header";
 import { I18nProvider } from "./content/i18n";
 import type { LannaLanguage } from "./content/messages";
-import { toLannaPatternViewModel } from "./archive/public-pattern-adapter";
+import { toLannaPatternViewModel } from "./pattern-archive/public-pattern-adapter";
 import "./styles/foundation.css";
 
 const ProjectExperience = lazy(() => import("./LannaProjectPage"));
