@@ -1,0 +1,568 @@
+/* Scoped to .lanna-project */
+.lanna-project .idea-generator {
+  padding: 108px 0 0;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.lanna-project .idea-generator__header {
+  margin-bottom: 42px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.48fr);
+  align-items: end;
+  gap: 60px;
+}
+
+.lanna-project .idea-generator__header h2 {
+  max-width: 860px;
+  margin: 12px 0 0;
+  color: var(--purple-dark);
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(3rem, 6vw, 6.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.lanna-project .idea-generator__header > p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+
+.lanna-project .idea-generator__categories {
+  width: min(100% - 40px, 1340px);
+  margin: 0 auto 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.lanna-project .idea-generator__categories::-webkit-scrollbar {
+  display: none;
+}
+
+.lanna-project .idea-generator__category-track {
+  width: max-content;
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.lanna-project .idea-generator__category-track button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--purple-dark);
+  background: var(--paper-strong);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 760;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.lanna-project .idea-generator__category-track button:hover {
+  border-color: var(--purple);
+  transform: translateY(-2px);
+}
+
+.lanna-project .idea-generator__category-track button.is-active {
+  color: #fff;
+  border-color: var(--purple);
+  background: var(--purple);
+}
+
+.lanna-project .idea-stage {
+  --idea-accent: var(--orange);
+  position: relative;
+  width: min(100% - 40px, 1340px);
+  min-height: 740px;
+  margin: 0 auto 110px;
+  display: grid;
+  grid-template-columns: minmax(270px, 0.7fr) minmax(0, 1.55fr);
+  grid-template-rows: 1fr auto;
+  color: #fff;
+  background: var(--purple-deep);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 18px 18px 0 #e5d7e9;
+  overflow: hidden;
+}
+
+.lanna-project .idea-stage::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 22px;
+  height: 22px;
+  top: 34px;
+  right: 42px;
+  background: var(--pink);
+  box-shadow:
+    34px 0 0 var(--orange),
+    68px 0 0 var(--green),
+    102px 0 0 var(--cyan);
+}
+
+.lanna-project .idea-stage--pink {
+  --idea-accent: var(--pink);
+}
+
+.lanna-project .idea-stage--cyan {
+  --idea-accent: var(--cyan);
+}
+
+.lanna-project .idea-stage--green {
+  --idea-accent: var(--green);
+}
+
+.lanna-project .idea-stage--yellow {
+  --idea-accent: var(--yellow);
+}
+
+.lanna-project .idea-stage__number {
+  position: absolute;
+  z-index: 2;
+  left: -8px;
+  bottom: 100px;
+  color: rgba(255, 255, 255, 0.07);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(8rem, 18vw, 18rem);
+  font-weight: 800;
+  line-height: 0.72;
+  pointer-events: none;
+}
+
+.lanna-project .idea-stage__media {
+  position: relative;
+  z-index: 1;
+  min-height: 560px;
+  border-right: 1px solid rgba(255, 255, 255, 0.17);
+  overflow: hidden;
+}
+
+.lanna-project .idea-stage__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(36, 11, 51, 0.36);
+  pointer-events: none;
+}
+
+.lanna-project .idea-stage__media > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.08);
+  animation: idea-image-enter 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lanna-project .idea-stage__medium {
+  position: absolute;
+  z-index: 2;
+  left: 28px;
+  right: 28px;
+  bottom: 30px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 7px 10px;
+}
+
+.lanna-project .idea-stage__medium svg {
+  grid-row: 1 / 3;
+  color: var(--idea-accent);
+}
+
+.lanna-project .idea-stage__medium span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+}
+
+.lanna-project .idea-stage__medium strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+}
+
+.lanna-project .idea-stage__content {
+  position: relative;
+  z-index: 1;
+  padding: 82px clamp(36px, 5vw, 76px) 42px;
+  display: grid;
+  align-content: center;
+  animation: idea-content-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lanna-project .idea-line {
+  padding: 20px 0 22px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: start;
+  gap: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.lanna-project .idea-line:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.lanna-project .idea-line > span {
+  padding-top: 5px;
+  color: var(--idea-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  line-height: 1.5;
+}
+
+.lanna-project .idea-line p {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.08rem, 1.6vw, 1.48rem);
+  line-height: 1.62;
+}
+
+.lanna-project .idea-line--make p {
+  font-size: clamp(1.28rem, 2vw, 1.85rem);
+  font-weight: 750;
+  line-height: 1.52;
+}
+
+.lanna-project .idea-stage__source {
+  position: relative;
+  z-index: 3;
+  min-height: 116px;
+  padding: 18px 24px;
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  background: #180722;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.lanna-project .idea-stage__source > img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+}
+
+.lanna-project .idea-stage__source > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.lanna-project .idea-stage__source span,
+.lanna-project .idea-stage__source small {
+  color: #bfaac8;
+  font-size: 0.63rem;
+}
+
+.lanna-project .idea-stage__source span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+}
+
+.lanna-project .idea-stage__source strong {
+  overflow: hidden;
+  font-size: 0.83rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lanna-project .idea-stage__source button {
+  min-height: 42px;
+  padding: 0 4px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.46);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  background: transparent;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.lanna-project .idea-stage__action {
+  position: relative;
+  z-index: 3;
+  min-height: 116px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: var(--idea-accent);
+}
+
+.lanna-project .idea-stage--yellow .idea-stage__action {
+  color: var(--purple-deep);
+}
+
+.lanna-project .idea-stage__action > button {
+  min-width: min(100%, 370px);
+  min-height: 72px;
+  padding: 0 24px;
+  border: 2px solid currentColor;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 13px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.lanna-project .idea-stage__action > button:hover {
+  color: var(--idea-accent);
+  background: var(--purple-deep);
+  transform: translateY(-3px);
+}
+
+.lanna-project .idea-stage__action > button span {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.12rem;
+  font-weight: 850;
+}
+
+.lanna-project .idea-stage__action > button small {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+}
+
+.lanna-project .idea-stage__action > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+}
+
+@keyframes idea-content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes idea-image-enter {
+  from {
+    opacity: 0.7;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.lanna-project .creation-video {
+  position: relative;
+  padding: 110px max(24px, calc((100vw - 1340px) / 2)) 120px;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.55fr) minmax(0, 1.45fr);
+  align-items: end;
+  gap: clamp(38px, 6vw, 100px);
+  color: #fff;
+  background: #0f0714;
+  overflow: hidden;
+}
+
+.lanna-project .creation-video::before {
+  content: "PLAY";
+  position: absolute;
+  left: -18px;
+  bottom: -48px;
+  color: rgba(255, 255, 255, 0.035);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(12rem, 27vw, 28rem);
+  font-weight: 800;
+  line-height: 0.7;
+  pointer-events: none;
+}
+
+.lanna-project .creation-video__copy {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 10px;
+}
+
+.lanna-project .creation-video__copy h2 {
+  margin: 14px 0 22px;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2.8rem, 5.4vw, 6rem);
+  line-height: 1.06;
+  letter-spacing: -0.055em;
+}
+
+.lanna-project .creation-video__copy > p {
+  max-width: 420px;
+  margin: 0;
+  color: #cbbdd1;
+  line-height: 1.85;
+}
+
+.lanna-project .creation-video__credit {
+  position: relative;
+  max-width: 420px;
+  margin-top: 30px;
+  padding: 16px 18px 17px 20px;
+  border-left: 3px solid var(--yellow);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.lanna-project .creation-video__credit > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--yellow);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.lanna-project .creation-video__credit p {
+  margin: 0;
+  color: #e2d8e6;
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.lanna-project .creation-video__credit strong {
+  color: #fff;
+  font-weight: 780;
+}
+
+.lanna-project .creation-video__labels {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lanna-project .creation-video__labels span {
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #d7c8dc;
+  font-size: 0.64rem;
+  font-weight: 760;
+}
+
+.lanna-project .creation-video__player {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  box-shadow: 18px 18px 0 var(--orange);
+}
+
+.lanna-project .creation-video__player video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.lanna-project .creation-video__playmark {
+  position: absolute;
+  top: -25px;
+  left: -25px;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  color: var(--purple-deep);
+  background: var(--yellow);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.lanna-project .site-footer {
+  position: relative;
+  padding: 96px clamp(24px, 5vw, 78px) 30px;
+  background: var(--purple-deep);
+  color: #fff;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lanna-project .site-footer__art {
+  position: absolute;
+  z-index: -1;
+  width: 720px;
+  right: -180px;
+  top: -60px;
+  opacity: 0.3;
+}
+
+.lanna-project .site-footer__content {
+  width: min(1340px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 50px;
+}
+
+.lanna-project .site-footer__content h2 {
+  max-width: 980px;
+  margin: 14px 0 14px;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2.5rem, 5.2vw, 6.2rem);
+  line-height: 1.12;
+  letter-spacing: -0.055em;
+}
+
+.lanna-project .site-footer__content p {
+  margin: 0;
+  color: #d7c8dc;
+  font-size: 1rem;
+}
+
+.lanna-project .site-footer__bottom {
+  width: min(1340px, 100%);
+  margin: 90px auto 0;
+  padding-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  color: #c9b7d0;
+  font-size: 0.72rem;
+}
+
+.lanna-project .brand-lockup--light {
+  color: #fff;
+}
+
+.lanna-project .brand-lockup--light img {
+  width: 38px;
+  height: 38px;
+}

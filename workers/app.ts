@@ -110,6 +110,21 @@ async function publicProjectAsset(request: Request, env: CloudflareEnv): Promise
 
   const object = await env.MEDIA.get(match[1]);
   if (!object) return new Response("Not found", { status: 404 });
+  if (match[1].includes("/archive/media/")) {
+    const publicMedia = await env.DB.prepare(
+      `SELECT 1
+       FROM media_assets ma
+       JOIN project_archive_media pam ON pam.media_asset_id = ma.id
+       JOIN project_archive_entries pae ON pae.id = pam.entry_id
+       WHERE ma.object_key = ?
+         AND ma.status = 'ready'
+         AND ma.rights_status = 'cleared'
+         AND pae.status = 'published'
+         AND pae.rights_status = 'cleared'
+       LIMIT 1`,
+    ).bind(match[1]).first();
+    if (!publicMedia) return new Response("Not found", { status: 404 });
+  }
   const headers = new Headers();
   object.writeHttpMetadata(headers);
   headers.set("cache-control", "public, max-age=31536000, immutable");

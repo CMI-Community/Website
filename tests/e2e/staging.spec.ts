@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { defineLannaProjectTests } from "./lanna-tests";
+
+defineLannaProjectTests({ expectedArchiveCount: 14 });
 
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL ?? "https://staging.cmi.community";
 const expectedEnvironment = new URL(externalBaseURL).hostname === "cmi.community" ? "production" : "staging";
@@ -19,6 +22,8 @@ test("staging serves the formal three-screen homepage", async ({ page, request }
 });
 
 test("Projects menu is available before and after the hero", async ({ page }) => {
+  const homepageRequests: string[] = [];
+  page.on("request", (request) => homepageRequests.push(request.url()));
   await page.goto("/");
 
   const heroTrigger = page.locator(".home-hero__topline .project-menu__trigger");
@@ -32,8 +37,10 @@ test("Projects menu is available before and after the hero", async ({ page }) =>
   const issueLink = heroPanel.locator("a");
   await expect(issueLink).toContainText("第 26 期 · 博物馆奇妙日");
   await expect(issueLink).toContainText("2026.07.26");
-  await expect(issueLink).toHaveAttribute("href", "https://lanna-museum-day-chiang-mai.vercel.app/");
-  await expect(issueLink).toHaveAttribute("target", "_blank");
+  await expect(issueLink).toHaveAttribute("href", "/project/waytoagi/26-lanna-museum");
+  await expect(issueLink).not.toHaveAttribute("target", "_blank");
+  expect(homepageRequests.some((url) => url.includes("/lanna-museum/"))).toBe(false);
+  expect(homepageRequests.some((url) => url.includes("/media/projects/waytoagi/26-lanna-museum/"))).toBe(false);
 
   await page.keyboard.press("Escape");
   await expect(heroPanel).toHaveCount(0);
@@ -50,7 +57,7 @@ test("Projects menu is available before and after the hero", async ({ page }) =>
   await expect(stickyPanel).toBeVisible();
   await expect(stickyPanel.locator("a")).toHaveAttribute(
     "href",
-    "https://lanna-museum-day-chiang-mai.vercel.app/",
+    "/project/waytoagi/26-lanna-museum",
   );
 
   const dimensions = await page.evaluate(() => ({
@@ -58,6 +65,9 @@ test("Projects menu is available before and after the hero", async ({ page }) =>
     clientWidth: document.documentElement.clientWidth,
   }));
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+
+  await stickyPanel.locator("a").click();
+  await expect(page).toHaveURL(/\/project\/waytoagi\/26-lanna-museum$/);
 });
 
 test("Photo Museum preserves every image and supports navigation and full-screen viewing", async ({ page }) => {

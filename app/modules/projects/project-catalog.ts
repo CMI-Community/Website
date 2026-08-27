@@ -42,8 +42,8 @@ export const PROJECT_SERIES = [
         date: "2026-07-26",
         locales: PROJECT_LOCALES,
         publication: {
-          kind: "external",
-          href: "https://lanna-museum-day-chiang-mai.vercel.app/",
+          kind: "native",
+          moduleKey: "lanna-museum",
         },
       },
     ],
