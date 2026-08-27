@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 21:01 Asia/Bangkok
+Last updated: 2026-08-27 21:09 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -9,7 +9,7 @@ Last updated: 2026-08-27 21:01 Asia/Bangkok
 - Status: `In Progress`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
 - Current focus: [#22](https://github.com/CMI-Community/Website/issues/22) 正在建立 Projects 原生路由、D1/R2 档案边界，并迁移 WaytoAGI 清迈场第 26 期兰纳博物馆站。
-- Next step: `codex/22-lanna-cutover` 通过 required CI 并建立 draft cutover PR；在旧站已部署提交的独立干净分支准备 308 配置，但不部署。22 条待权利复核记录、6 个孤立源对象与内容负责人 production 批准继续阻止正式切换。
+- Next step：[Draft PR #25](https://github.com/CMI-Community/Website/pull/25) 通过 required CI 后保持未合并；旧站 [Draft PR #1](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) 保持未部署。22 条待权利复核记录、6 个孤立源对象与内容负责人 production 批准继续阻止正式切换。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -30,6 +30,7 @@ Last updated: 2026-08-27 21:01 Asia/Bangkok
 - `VERIFIED`：[PR #24](https://github.com/CMI-Community/Website/pull/24) 已合并到 `main` 提交 `72b1b586`；staging Worker `ffea982c-584e-4983-8d55-2b52d201d98b` 部署成功，production job 明确跳过，Issue #22 保持开放。
 - `VERIFIED`：首次 staging 导出用例点击早于客户端挂载的问题已用明确挂载信号修正；导出专项连续 3/3 通过，完整远端套件最终为 21 passed / 5 skipped，覆盖三语、14 条 cleared 档案、首页两处菜单、Museum、社交、海报、权限和 1080×1350 PNG。
 - `VERIFIED`：staging 目视检查覆盖 1440×900 中文项目、390×844 中文档案、泰文回顾和首页 Projects 面板；四个视图均无横向溢出，泰文头部原图和元素边界确认菜单完整可点。
+- `VERIFIED`：[Draft PR #25](https://github.com/CMI-Community/Website/pull/25) 汇总最终 cutover 证据并保留人工 production 门禁；旧站 [Draft PR #1](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) 从已部署提交 `8714afac` 的独立干净 worktree 准备三语与 `/recap` 永久跳转，当前均未合并、未部署。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -102,7 +103,8 @@ Last updated: 2026-08-27 21:01 Asia/Bangkok
 - [x] 合并项目路由、D1 模型、幂等导入器与第一组 PR。
 - [x] 从已冻结 Supabase 完成数据库/Storage 受控导出与逐项校验。
 - [x] 拆分兰纳模块、迁移三语页面、只读档案与媒体工具。
-- [ ] 完成第二组 PR required CI、staging D1/R2/Worker 和桌面/手机验收。
+- [x] 完成第二组 PR required CI、staging D1/R2/Worker 和桌面/手机验收。
+- [ ] 内容负责人处理权利与孤立对象门禁并明确批准后，完成第三组 production cutover、旧站跳转与 Release Record。
 
 ### Later
 
@@ -132,7 +134,7 @@ Last updated: 2026-08-27 21:01 Asia/Bangkok
 | Rights | 36 条在线档案中 22 条仍标记需要权利复核 | 不能把源端 `rights_review=true` 误标为已授权；会阻止这些记录进入公共投影 | staging 保留为 `research_only`；production 切换前由内容负责人完成权利审核 | `BLOCKS CUTOVER` |
 | Integrity | 源 Storage 有 6 个对象未被任何档案引用 | 直接删除会破坏原始证据，直接公开会制造孤立媒体；源 Storage 与公共 R2 对象数不能虚假宣称一一相等 | 完整保留在非公开迁移证据；目标公共档案不建立虚假关联，production 切换记录必须先获得明确处置决定 | `VERIFIED EXCEPTION / BLOCKS CUTOVER` |
 | Source | 兰纳旧仓库存在未提交 FAM 扩充 | 直接复制会把未审核内容混入线上基线 | 不改脏工作区；线上行为为基线，新增内容走独立审核 | `OBSERVED` |
-| Release | Projects T3 涉及 Worker、D1、R2 与旧 Vercel | 错序切换会失去回滚入口 | staging 先行；CMI production 验收后才执行旧站 308 | `PLANNED` |
+| Release | Projects T3 涉及 Worker、D1、R2 与旧 Vercel | 错序切换会失去回滚入口 | staging 已通过；两份 Draft PR 已准备，CMI production 验收后才执行旧站 308 | `PREPARED / BLOCKED` |
 
 ## Implementation Notes
 
@@ -200,9 +202,11 @@ Last updated: 2026-08-27 21:01 Asia/Bangkok
 | 2026-08-27 | #22 staging 首轮远端全套 | `OBSERVED / CORRECTING` | 20 passed / 5 skipped / 1 failed；唯一失败为导出点击早于客户端挂载，其余项目与官网回归通过；已增加挂载信号等待 |
 | 2026-08-27 | #22 staging 最终远端全套 | `VERIFIED` | 导出专项 3/3；完整套件 21 passed / 5 skipped，桌面与 390px 项目、官网和 R2 路径无回归 |
 | 2026-08-27 | #22 staging 目视验收 | `VERIFIED` | 1440×900 项目首屏、390×844 档案、泰文回顾和首页 Projects 面板均正确；四视图 `scrollWidth === clientWidth` |
+| 2026-08-27 | [旧站 Draft PR #1](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) | `VERIFIED / NOT DEPLOYED` | 从线上提交 `8714afac` 建立干净分支；9 条三语与回顾永久跳转规则、cutover tests 2/2、Sites tests 4/4、production build 与 diff check 通过；旧 Vercel production 未改变 |
 
 ## Recent Updates
 
+- 2026-08-27 21:09 Asia/Bangkok：[Draft PR #25](https://github.com/CMI-Community/Website/pull/25) 已建立并保持未合并；首次 CI 只因正文未使用固定 T3 标题被 traceability gate 拦截，现已按模板修正。在旧站线上提交 `8714afac` 的独立干净 worktree 创建 [Draft PR #1](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1)，9 条三语与 `/recap` 永久跳转规则通过 2/2 cutover tests、4/4 Sites tests、production build 与 diff check；旧站脏工作区、CMI production、旧 Vercel production 均未改变。
 - 2026-08-27 21:01 Asia/Bangkok：staging 导出专项连续 3/3 通过，完整远端套件最终为 21 passed / 5 skipped；三语、14 条公开档案、两处 Projects 菜单、Museum、社交、海报、权限、网络边界和 1080×1350 PNG 均通过。1440×900 中文项目及 390×844 档案、泰文回顾、首页菜单完成目视验收，四视图无横向溢出；泰文头部经原图放大和元素边界确认完整可点，无需修改视觉 CSS。
 - 2026-08-27 20:56 Asia/Bangkok：PR #24 合并为 `72b1b586`，staging Worker `ffea982c-584e-4983-8d55-2b52d201d98b` 发布成功，production job 跳过。远端全套首轮 20 passed / 5 skipped / 1 failed；唯一失败是导出用例的 SSR 卡片已可见但客户端尚未接管，点击没有打开详情框。第三组 `codex/22-lanna-cutover` 从最新 main 建立，导出用例增加与三语流程相同的客户端挂载等待后复验。
 - 2026-08-27 20:47 Asia/Bangkok：staging D1 完成 36/158/174 导入与全量结构校验；同一 SQL 重放时发现末尾审计 INSERT 使用随机 ID。改为按导入批次派生稳定审计 ID 并冲突忽略，新增逐字确定性 SQL 测试；修正 SQL 在本地与 staging 均连续重放两次成功，`npm run check` 全绿，并精确清理 1 条旧重复 staging 审计。staging R2 上传回读和独立 verify-only 均为 217/217、217,384,137 字节、清单 `d7889bf9…`。
