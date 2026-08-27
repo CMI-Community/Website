@@ -82,6 +82,7 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     await page.goto(`${PROJECT_PATH}#archive`);
     await expect(page.locator('.lanna-project[data-language="zh"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
+    await expect(page.locator("html")).toHaveAttribute("data-language", "zh");
     await expect(page.locator("#archive")).toBeInViewport();
     await expect(page.getByText("第 26 期已结束，纹样档案继续开放")).toBeAttached();
     await expect(page.locator(".ended-button").first()).toBeDisabled();
@@ -106,12 +107,14 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     await expect(page).toHaveURL(new RegExp(`${ENGLISH_PATH}$`));
     await expect(page.locator('.lanna-project[data-language="en"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.locator("html")).toHaveAttribute("data-language", "en");
 
     await page.locator(".language-switcher__trigger").click();
     await page.locator('.language-switcher__menu [role="option"]', { hasText: "ไทย" }).click();
     await expect(page).toHaveURL(new RegExp(`${THAI_PATH}$`));
     await expect(page.locator('.lanna-project[data-language="th"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "th");
+    await expect(page.locator("html")).toHaveAttribute("data-language", "th");
 
     await page.goto(THAI_RECAP_PATH);
     await expect(page.locator('.lanna-project[data-language="th"] .recap-page')).toBeVisible();

@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 20:12 Asia/Bangkok
+Last updated: 2026-08-27 20:17 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -184,9 +184,11 @@ Last updated: 2026-08-27 20:12 Asia/Bangkok
 | 2026-08-27 | #22 兰纳本地 Playwright | `VERIFIED` | 桌面与 390×844 共 13 passed、3 skipped；规范路由、三语、回顾、只读档案、焦点、无溢出与 1080×1350 PNG 导出通过 |
 | 2026-08-27 | #22 兰纳本地视觉对照 | `VERIFIED` | 1440×900 首屏与线上基线布局一致；390×844 档案和泰文回顾无横向溢出，局部样式未污染官网首页 |
 | 2026-08-27 | [PR #24 前三次 CI](https://github.com/CMI-Community/Website/actions/runs/33075153499) | `OBSERVED / CORRECTED` | 首次正文未采用 T3 模板；第二次 Linux 类型检查发现 `archive/` 忽略规则漏源文件；第三次进入浏览器阶段后发现空库 SVG 测试图可展示但不能稳定触发 Canvas 下载，且共享负载下手机流程撞到 30 秒。功能目录已更名，测试图改为确定性 PNG，三语流程上限统一为 60 秒 |
+| 2026-08-27 | [PR #24 第四次 CI](https://github.com/CMI-Community/Website/actions/runs/33075641076) | `VERIFIED / STABILIZING` | required CI 全部通过：46 tests、D1、SSR、dry-run 与双视口浏览器成功；桌面三语流程有 1 次重试，定位为整页切换后点击早于客户端挂载。测试改为等待 `html[data-language]` 挂载信号后再操作 |
 
 ## Recent Updates
 
+- 2026-08-27 20:17 Asia/Bangkok：PR #24 required CI 首次完整通过；CI 空库 PNG 成功完成 1080×1350 Canvas 下载。桌面三语流程出现一次自动重试，原因是英文整页导航后测试早于客户端挂载点击泰文菜单；增加 `html[data-language]` 挂载断言以消除时序波动，再运行最终 required CI。
 - 2026-08-27 20:12 Asia/Bangkok：PR #24 第三次 CI 的依赖、追踪、Linux 类型、D1、构建和 dry-run 均通过；浏览器阶段发现 CI 空库 SVG fixture 无法完成 Canvas 下载，390px 三语流程在共享负载下达到 30 秒。改为脚本生成可被 Chromium 解码和重绘的标准 PNG，并增加确定性单元测试；三语流程使用 60 秒完整路径上限。
 - 2026-08-27 20:06 Asia/Bangkok：PR #24 第二次 CI 已通过 T3 追踪门禁；Linux 类型检查发现 `archive/` 通用私有归档忽略规则使六个兰纳功能源文件未进入提交。将功能目录更名为不冲突的 `pattern-archive/`，本地 TypeScript 与 45 项单元测试通过，触发第三次 CI。
 - 2026-08-27 20:04 Asia/Bangkok：[PR #24](https://github.com/CMI-Community/Website/pull/24) 已创建。首次 CI 在实现测试前被 PR 正文格式门禁拦截；补为标准 T3 模板并把失败原因写回工作台，以新提交触发使用最新 PR 上下文的 required CI。
