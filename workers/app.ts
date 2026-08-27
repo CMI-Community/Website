@@ -95,6 +95,29 @@ async function publicPhotoAsset(request: Request, env: CloudflareEnv): Promise<R
   return new Response(request.method === "HEAD" ? null : object.body, { headers });
 }
 
+async function publicProjectAsset(request: Request, env: CloudflareEnv): Promise<Response | null> {
+  const url = new URL(request.url);
+  const match = url.pathname.match(
+    /^\/media\/(projects\/waytoagi\/26-lanna-museum\/v1\/[a-zA-Z0-9][a-zA-Z0-9._/-]{0,1023})$/,
+  );
+  if (!match) return null;
+  if (match[1].includes("..") || match[1].includes("//")) {
+    return new Response("Not found", { status: 404 });
+  }
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
+  }
+
+  const object = await env.MEDIA.get(match[1]);
+  if (!object) return new Response("Not found", { status: 404 });
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("cache-control", "public, max-age=31536000, immutable");
+  headers.set("etag", object.httpEtag);
+  headers.set("x-content-type-options", "nosniff");
+  return new Response(request.method === "HEAD" ? null : object.body, { headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const redirect = canonicalRedirect(request);
@@ -103,6 +126,8 @@ export default {
     const url = new URL(request.url);
     const photoAsset = await publicPhotoAsset(request, env);
     if (photoAsset) return photoAsset;
+    const projectAsset = await publicProjectAsset(request, env);
+    if (projectAsset) return projectAsset;
     const socialLogin = url.pathname.match(/^\/login\/(google|github)$/);
     if (socialLogin) {
       return socialLoginRedirect(request, env, ctx, socialLogin[1] as SocialProvider);

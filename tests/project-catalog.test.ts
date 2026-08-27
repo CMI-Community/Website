@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  findProjectIssue,
   formatProjectDate,
+  getProjectIssueHref,
+  getProjectIssuePath,
   orderProjectIssues,
+  PROJECT_LOCALES,
   PROJECT_SERIES,
 } from "../app/modules/projects/project-catalog";
 
@@ -14,15 +18,18 @@ describe("public project series catalog", () => {
     expect(new Set(issueIds).size).toBe(issueIds.length);
     for (const series of PROJECT_SERIES) {
       expect(series.id.trim()).not.toBe("");
+      expect(series.slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
       expect(series.name.trim()).not.toBe("");
       expect(series.credit.trim()).not.toBe("");
       expect(series.issues.length).toBeGreaterThan(0);
       for (const issue of series.issues) {
         expect(issue.id.trim()).not.toBe("");
+        expect(issue.slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+        expect(issue.routeSegment).toBe(`${issue.number}-${issue.slug}`);
         expect(issue.title.trim()).not.toBe("");
         expect(issue.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
         expect(Number.isNaN(Date.parse(`${issue.date}T00:00:00Z`))).toBe(false);
-        expect(issue.href.trim()).not.toBe("");
+        expect(issue.locales).toEqual(PROJECT_LOCALES);
       }
     }
   });
@@ -35,7 +42,12 @@ describe("public project series catalog", () => {
       expect(ordered.map((issue) => issue.date)).toEqual(catalogDates);
       for (const issue of ordered) {
         expect(issue.number).toBeGreaterThan(0);
-        expect(new URL(issue.href).protocol).toBe("https:");
+        const href = getProjectIssueHref(series, issue);
+        if (issue.publication.kind === "external") {
+          expect(new URL(href).protocol).toBe("https:");
+        } else {
+          expect(href.startsWith("/project/")).toBe(true);
+        }
       }
     }
   });
@@ -47,12 +59,37 @@ describe("public project series catalog", () => {
       issues: [
         {
           number: 26,
+          slug: "lanna-museum",
+          routeSegment: "26-lanna-museum",
           title: "博物馆奇妙日",
           date: "2026-07-26",
-          href: "https://lanna-museum-day-chiang-mai.vercel.app/",
+          publication: {
+            kind: "external",
+            href: "https://lanna-museum-day-chiang-mai.vercel.app/",
+          },
         },
       ],
     });
     expect(formatProjectDate(PROJECT_SERIES[0].issues[0].date)).toBe("2026.07.26");
+  });
+
+  it("derives canonical language and recap paths from the approved route segment", () => {
+    const series = PROJECT_SERIES[0];
+    const issue = series.issues[0];
+
+    expect(getProjectIssuePath(series, issue)).toBe(
+      "/project/waytoagi/26-lanna-museum",
+    );
+    expect(getProjectIssuePath(series, issue, "en")).toBe(
+      "/en/project/waytoagi/26-lanna-museum",
+    );
+    expect(getProjectIssuePath(series, issue, "th", "recap")).toBe(
+      "/th/project/waytoagi/26-lanna-museum/recap",
+    );
+    expect(findProjectIssue("waytoagi", "26-lanna-museum")).toEqual({
+      series,
+      issue,
+    });
+    expect(findProjectIssue("waytoagi", "99-missing")).toBeNull();
   });
 });

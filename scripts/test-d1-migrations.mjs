@@ -41,12 +41,32 @@ try {
     "content_entries",
     "content_revisions",
     "media_assets",
+    "project_archive_imports",
+    "project_archive_entries",
+    "project_archive_media",
     "audit_logs",
     "cmi_feedback_ideas",
     "cmi_feedback_votes",
   ];
   const missing = required.filter((name) => !names.has(name));
   if (missing.length) throw new Error(`Missing D1 tables: ${missing.join(", ")}`);
+  const columnsRaw = wrangler([
+    "d1",
+    "execute",
+    "DB",
+    "--local",
+    "--persist-to",
+    persistTo,
+    "--command",
+    "PRAGMA table_info(media_assets);",
+    "--json",
+  ]);
+  const columns = new Set(
+    JSON.parse(columnsRaw).flatMap((entry) => entry.results ?? []).map((row) => row.name),
+  );
+  for (const name of ["checksum_sha256", "source_system", "rights_status"]) {
+    if (!columns.has(name)) throw new Error(`Missing media_assets column: ${name}`);
+  }
   console.log(`D1 migration smoke passed with ${required.length} required tables.`);
 } finally {
   rmSync(persistTo, { recursive: true, force: true });
