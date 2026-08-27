@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-27 15:53 Asia/Bangkok
+Last updated: 2026-08-27 16:44 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -8,14 +8,14 @@ Last updated: 2026-08-27 15:53 Asia/Bangkok
 
 - Status: `Needs Review`
 - Current milestone: [v0.2.0 — Homepage Museums](https://github.com/CMI-Community/Website/milestone/2) 已完成；当前为独立 T1 增量。
-- Current focus: [#20](https://github.com/CMI-Community/Website/issues/20) 在首页顶部与吸顶导航增加共用的 Projects 系列菜单。
-- Next step: 创建 PR、通过 required CI，并将当前分支部署到 staging 供内容负责人验收。
+- Current focus: [#20](https://github.com/CMI-Community/Website/issues/20) / [PR #21](https://github.com/CMI-Community/Website/pull/21) 已在 staging 提供两处共用的 Projects 系列菜单。
+- Next step: 内容负责人检查 [staging](https://staging.cmi.community/)；明确验收后再合并 main、补 Release Record 并单独批准 production。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
-- 等待决定：无；内容负责人已确认 #20 使用两处同步的纯排版下拉菜单和审核式目录，production 继续等待 staging 验收与单独批准。
+- 等待决定：内容负责人是否接受 [staging](https://staging.cmi.community/) 上的 #20 桌面与手机版菜单；production 继续等待单独批准。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -146,12 +146,17 @@ Last updated: 2026-08-27 15:53 Asia/Bangkok
 | 2026-08-27 | #20 本地完整检查 | `VERIFIED` | `npm run check` 通过：lint、公开边界、trace、typecheck、28 tests、D1 migration、SSR build 与 staging dry-run |
 | 2026-08-27 | #20 本地 Playwright | `VERIFIED` | 桌面与 390×844 共 9 passed、1 skipped；两处 Projects 菜单、键盘焦点、外部点击、Museum 与社交入口回归通过 |
 | 2026-08-27 | #20 本地视觉检查 | `VERIFIED` | 1440×900 与 390×844 的首屏/吸顶面板均在视口内，字体、纸张色与细边框一致；控制台 0 errors / 0 warnings |
+| 2026-08-27 | [PR #21 required CI](https://github.com/CMI-Community/Website/actions/runs/33056144969) | `VERIFIED` | 首次被新增 nanoid 公告拦下；补丁更新后 foundation 1m39s 通过，production dependency audit 为 0 vulnerabilities |
+| 2026-08-27 | [#20 staging deploy](https://github.com/CMI-Community/Website/actions/runs/33056362208) | `VERIFIED` | staging Worker `1e15bae5-6bdf-4755-b7ea-bc50584badc5`；production job 未运行；上一 staging 版本 `c1d868da-f541-4bb8-9cf4-11a3c99c65a2` 可回滚 |
+| 2026-08-27 | #20 staging Playwright | `VERIFIED` | 桌面与 390×844 共 17 passed、3 skipped；1056 个 Photo Museum WebP、Projects、Museum、社交、海报、OAuth 与反馈路径通过 |
+| 2026-08-27 | #20 staging 视觉检查 | `VERIFIED` | 1440×900 首屏与 390×844 首屏/吸顶菜单无越界；新浏览器会话控制台 0 errors / 0 warnings |
 
 ## Recent Updates
 
 - 2026-08-27 15:32 Asia/Bangkok：创建 [#20](https://github.com/CMI-Community/Website/issues/20) 并开始 T1 实施；确认两处导航共用 `Projects` 单层分组菜单，首个系列为 WaytoAGI 切磋大会清迈场，production 仍保持未授权。
 - 2026-08-27 15:50 Asia/Bangkok：完成类型化目录、共用菜单、目录单元测试与双视口 E2E；两次移动端目视检查分别暴露并修复首屏左越界和吸顶右越界，完整 E2E 固定为 3 workers 后稳定通过，进入 PR / staging review。
 - 2026-08-27 15:53 Asia/Bangkok：[PR #21](https://github.com/CMI-Community/Website/pull/21) 首次 CI 被当日新增的 `nanoid < 3.3.18` 高危公告拦下；确认其为 Vite → PostCSS 间接依赖，只将锁文件从 3.3.17 补丁升级至 3.3.18，`npm audit --omit=dev` 恢复为 0 vulnerabilities。
+- 2026-08-27 16:44 Asia/Bangkok：PR required CI 通过并从提交 `22db021` 部署 staging；远端完整套件首次因 Photo Museum 并发加载下的 5 秒滚动时序失败 1 项，截图显示吸顶导航随后已出现，单独复跑通过；改为先确认目标进入视口并使用 15 秒远端上限后，完整套件稳定为 17 passed / 3 skipped，双视口目视与控制台复核完成，等待内容负责人验收。
 - 2026-08-11 12:24 Asia/Bangkok：确认旧 `CMI 海报工程/poster-wall` Worker 误覆盖 production，创建 Issue #16；从官网 `main` 与正确 production 配置恢复三屏首页，Worker 为 `6cb12718-4630-43b1-8988-7598e6043f8d`。
 - 2026-08-11 12:24 Asia/Bangkok：开始 v0.2.1 修复，将共享小红书入口更新为用户提供的新短链，并增加固定目标测试。
 - 2026-08-11 12:27 Asia/Bangkok：v0.2.1 `npm run check` 全部通过；本地 Playwright 桌面与 390px 为 7 passed、1 skipped，生产依赖审计为 0 个漏洞。

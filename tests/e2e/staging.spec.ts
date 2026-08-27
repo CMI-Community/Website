@@ -40,7 +40,10 @@ test("Projects menu is available before and after the hero", async ({ page }) =>
   await expect(heroTrigger).toBeFocused();
 
   await page.locator('.home-museum-entries a[href="#photo-museum"]').click();
-  await expect(page.locator('.home-sticky-nav[data-visible="true"]')).toBeVisible();
+  await expect(page.locator("#photo-museum")).toBeInViewport({ timeout: 15_000 });
+  await expect(page.locator('.home-sticky-nav[data-visible="true"]')).toBeVisible({
+    timeout: 15_000,
+  });
   const stickyTrigger = page.locator(".home-sticky-nav .project-menu__trigger");
   await stickyTrigger.click();
   const stickyPanel = page.locator(".home-sticky-nav .project-menu__panel");
