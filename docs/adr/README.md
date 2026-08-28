@@ -13,6 +13,7 @@ ADR 保存跨任务仍然有效、影响长期边界或难以回滚的决定。�
 | [0005](./0005-homepage-museums-and-public-photo-catalog.md) | Accepted | 根路径承载三屏首页，照片使用版本化 R2 公共目录 |
 | [0006](./0006-photo-museum-v2-density-and-scale.md) | Accepted | Photo Museum v2 使用 528 张规模化目录与七条高密度轨道 |
 | [0007](./0007-project-native-routing-and-lanna-migration.md) | Accepted | Projects 原生路由与兰纳档案迁移 |
-| [0008](./0008-upcoming-activity-lifecycle.md) | Accepted | 近期活动目录与 Event Museum 自动流转 |
+| [0008](./0008-upcoming-activity-lifecycle.md) | Superseded | 近期活动目录与 Event Museum 自动流转 |
+| [0009](./0009-recent-activity-timeline.md) | Accepted | 近期活动使用双侧连续时间线 |
 
 新增 ADR 时复制 [template.md](./template.md)，使用下一个四位编号。状态只能是 Proposed、Accepted、Rejected 或 Superseded；已接受 ADR 不直接重写结论。
