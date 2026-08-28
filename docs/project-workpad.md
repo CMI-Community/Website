@@ -1,21 +1,21 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-28 07:38 Asia/Bangkok
+Last updated: 2026-08-28 07:54 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Review`
+- Status: `In Progress`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
-- Current focus：[#26](https://github.com/CMI-Community/Website/issues/26) / [Draft PR #27](https://github.com/CMI-Community/Website/pull/27) 已在 staging 加入 8 月 29 日“清迈新云南市场 CMI 社区义卖 #1”，三期按开始时间从近到远、从左到右自动排列，并通过双视口验收。
-- Next step：等待内容负责人验收 [staging](https://staging.cmi.community/)；确认后再单独决定是否推进合并与受保护的 production 发布。旧 Vercel 与 production 继续保持不变。
+- Current focus：内容负责人已明确批准 v0.3.0 正式发布；正在锁定 PR #25 / #27、production D1/R2 和 Worker 回滚点，准备受保护 production 切换。
+- Next step：完成最终 CI 与 stacked PR 合并；幂等同步 production D1/R2 和三张活动海报，通过 GitHub production Environment 发布，再执行 production 双视口与主要用户路径验收。
 - Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
-- 等待决定：无实施前产品决策；CMI production 与旧 Vercel 308 继续等待迁移完成后的单独批准。
+- 等待决定：无；内容负责人已在 2026-08-28 明确批准 CMI production。旧 Vercel 308 只在新 Worker 完成验收后切换。
 - `VERIFIED`：[PR #21](https://github.com/CMI-Community/Website/pull/21) 已通过验收并合并，[#20](https://github.com/CMI-Community/Website/issues/20) 已关闭；production 未发布该 T1。
 - `VERIFIED`：[PR #23](https://github.com/CMI-Community/Website/pull/23) 已合并项目路由、审核式目录、D1 模型与幂等导入器；第二组迁移从该 `main` 基线独立实施。
 - `VERIFIED`：旧 Supabase 已恢复并冻结：36 条档案均为公开状态；`pattern-submissions` 有 160 个对象、150,120,950 字节；档案表三类运行角色只保留读取权限，提交函数固定返回 410。
@@ -52,6 +52,7 @@ Last updated: 2026-08-28 07:38 Asia/Bangkok
 - `VERIFIED`：义卖活动已进入统一审核式目录；8 月 28 日 16:00 前首页顺序为《牛来》→ 新云南市场义卖 → 第 27 期，达到各自开始时刻后逐期进入 Event Museum。`npm run check` 全绿；本地 Playwright 桌面/390px 为 17 passed / 3 skipped，三期标题、详情、生命周期、放大层、焦点和无横向溢出通过。
 - `VERIFIED`：[Draft PR #27 本轮 required CI](https://github.com/CMI-Community/Website/actions/runs/33129773926) 全绿；从提交 `e62a612` 发布 staging Worker `8c62debd-80bc-458f-874a-49c7bd5efcfd`。义卖同域 WebP 为 337,432 字节，SHA-256 `ef9a2aae…b2a6d2` 与上传前一致；远端 Playwright 为 23 passed / 5 skipped。
 - `VERIFIED`：staging 1440×900 与 390×844 目视确认三张海报顺序、手机横向滑动、新义卖放大层、日期时间、详情链接和 Escape 焦点恢复；真实尺寸为 941 / 1024 / 864，页面无横向溢出，Projects 面板在手机视口内，控制台 0 errors / 0 warnings。
+- `APPROVED`：内容负责人于 2026-08-28 明确要求把已验收 staging 推送到正式版；production 仍按 D1/R2 → Worker → 双视口验收 → Release Record/GitHub Release 的门禁执行。22 条 `research_only` 继续隐藏，6 个孤立源对象继续不公开。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
 - `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
@@ -248,6 +249,7 @@ Last updated: 2026-08-28 07:38 Asia/Bangkok
 
 ## Recent Updates
 
+- 2026-08-28 07:54 Asia/Bangkok：内容负责人明确确认 staging 可以推送正式版。发布源锁定为当前 stacked PR #25 / #27；production Worker 回滚点为 `d5703143-aeb3-4676-9f07-6c42e860fe92`，package 版本升至 0.3.0。22 条 `research_only` 继续服务端隐藏、6 个孤立源对象继续排除，production 发布不会扩大公开范围。Release Record 只能在真实发布后标记 `Released`，将在 production 验收后补齐；下一步完成最终 CI/合并，再同步 production D1/R2 和三张活动海报。
 - 2026-08-28 07:38 Asia/Bangkok：提交 `e62a612` 的 required CI 全绿后，仅发布 staging Worker `8c62debd-80bc-458f-874a-49c7bd5efcfd`。义卖同域海报回读为 337,432 字节，SHA-256 `ef9a2aae…b2a6d2`；远端 Playwright 最终 23 passed / 5 skipped。1440×900 与 390×844 真实浏览器确认《牛来》→ 新云南市场义卖 → 第 27 期从左到右，手机可横向滚到三张海报；义卖放大层、日期时间、详情外链、Escape 焦点恢复、Projects 面板、390/390 无溢出和控制台 0 errors / 0 warnings 均通过。production 与旧 Vercel 未改变，进入内容负责人 staging 验收。
 - 2026-08-28 07:27 Asia/Bangkok：公众号自动提取触发验证码，按技能要求改用真实浏览器核实“8月29日｜ 清迈新云南市场 CMI 社区义卖 #1”、07:00–12:00、清迈新云南市场、二手书籍与 3D 打印玩具。用户原图在仓库外优化为 337,432 字节 WebP，上传 staging R2 后回读 SHA-256 `ef9a2aae…b2a6d2` 一致。统一目录和 E2E 已扩展为三期动态期望，当前按 8 月 28/29/30 日从左到右，并逐期在开始时刻进入 Event Museum；`npm run check` 全绿，本地 Playwright 为 17 passed / 3 skipped，准备提交现有 Draft PR #27。
 - 2026-08-28 06:29 Asia/Bangkok：提交 `c1ecb17` 推送 Draft PR #27，required CI 2m06s 全绿后仅发布 staging Worker `8aee0ea9-97b5-42d5-8c8f-03be02a2bc5e`。同域《牛来》海报返回 200 `image/webp`、immutable，SHA-256 `4d022246…af6dfc`；远端 Playwright 23 passed / 5 skipped。1440×900 与 390×844 目视确认《牛来》在左、第 27 期在右；手机可横向看到第二张，Projects 完整在视口内，页面 390/390 无溢出，放大层 Escape 焦点恢复，控制台 0 errors / 0 warnings。production 与旧 Vercel 未改变，进入内容负责人 staging 验收。
