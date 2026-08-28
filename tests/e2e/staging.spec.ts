@@ -5,10 +5,33 @@ defineLannaProjectTests({ expectedArchiveCount: 14 });
 
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL ?? "https://staging.cmi.community";
 const expectedEnvironment = new URL(externalBaseURL).hostname === "cmi.community" ? "production" : "staging";
-const DINNER_ACTIVITY_START = Date.parse("2026-08-28T16:00:00+07:00");
-const DINNER_ACTIVITY_URL = "https://mp.weixin.qq.com/s/0Z1DTbX93zrAfwlCVxjzGg";
-const WAYTOAGI_ACTIVITY_START = Date.parse("2026-08-30T12:30:00+07:00");
 const WAYTOAGI_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg";
+const ACTIVITY_EXPECTATIONS = [
+  {
+    startsAt: Date.parse("2026-08-28T16:00:00+07:00"),
+    title: "CMI 吃饭俱乐部 #1 · 周五《牛来》观影",
+    detailUrl: "https://mp.weixin.qq.com/s/0Z1DTbX93zrAfwlCVxjzGg",
+    dateLabel: "2026.08.28 · 周五",
+    posterWidth: 941,
+    posterKey: "activity-cmi-dinner-club-01-niulai-screening.webp",
+  },
+  {
+    startsAt: Date.parse("2026-08-29T07:00:00+07:00"),
+    title: "8月29日｜ 清迈新云南市场 CMI 社区义卖 #1",
+    detailUrl: "https://mp.weixin.qq.com/s/SW_BaQ3eFgWgsYBxWoftlQ",
+    dateLabel: "2026.08.29 · 周六",
+    posterWidth: 1024,
+    posterKey: "activity-cmi-community-sale-01-new-yunnan-market.webp",
+  },
+  {
+    startsAt: Date.parse("2026-08-30T12:30:00+07:00"),
+    title: "即兴戏剧 + AI 短剧共创",
+    detailUrl: WAYTOAGI_ACTIVITY_URL,
+    dateLabel: "2026.08.30 · 周日",
+    posterWidth: 864,
+    posterKey: "activity-waytoagi-27-improv-ai-shortfilm.webp",
+  },
+] as const;
 
 test("staging serves the formal three-screen homepage", async ({ page, request }) => {
   const root = await request.get("/", { maxRedirects: 0 });
@@ -86,57 +109,43 @@ test("staging orders current activities nearest-first and preserves their lifecy
   await page.goto("/");
   const section = page.locator(".upcoming-activities");
   const now = Date.now();
-  if (now >= WAYTOAGI_ACTIVITY_START) {
+  const upcoming = ACTIVITY_EXPECTATIONS.filter((activity) => activity.startsAt > now);
+  const started = ACTIVITY_EXPECTATIONS.filter((activity) => activity.startsAt <= now);
+  if (upcoming.length === 0) {
     await expect(section).toHaveCount(0);
-    await expect(
-      page.locator('[data-poster-key="activity-cmi-dinner-club-01-niulai-screening.webp"]'),
-    ).toBeAttached();
-    await expect(
-      page.locator('[data-poster-key="activity-waytoagi-27-improv-ai-shortfilm.webp"]'),
-    ).toBeAttached();
+    for (const activity of started) {
+      await expect(page.locator(`[data-poster-key="${activity.posterKey}"]`)).toBeAttached();
+    }
     return;
   }
 
   await expect(section).toBeVisible();
   const cards = section.locator(".upcoming-activity");
-  if (now < DINNER_ACTIVITY_START) {
-    await expect(cards).toHaveCount(2);
-    await expect(cards.locator("h3")).toHaveText([
-      "CMI 吃饭俱乐部 #1 · 周五《牛来》观影",
-      "即兴戏剧 + AI 短剧共创",
-    ]);
-    const dinnerPoster = cards.nth(0).locator("img");
-    const waytoagiPoster = cards.nth(1).locator("img");
-    await expect.poll(() => dinnerPoster.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(941);
-    await expect.poll(() => waytoagiPoster.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(864);
-    await expect(cards.nth(0).getByRole("link", { name: /查看详情/ })).toHaveAttribute(
+  await expect(cards).toHaveCount(upcoming.length);
+  await expect(cards.locator("h3")).toHaveText(upcoming.map((activity) => activity.title));
+  for (const [index, activity] of upcoming.entries()) {
+    const card = cards.nth(index);
+    await expect.poll(() => card.locator("img").evaluate(
+      (image: HTMLImageElement) => image.naturalWidth,
+    )).toBe(activity.posterWidth);
+    await expect(card.getByRole("link", { name: /查看详情/ })).toHaveAttribute(
       "href",
-      DINNER_ACTIVITY_URL,
+      activity.detailUrl,
     );
-    await expect(cards.nth(1).getByRole("link", { name: /查看详情/ })).toHaveAttribute(
-      "href",
-      WAYTOAGI_ACTIVITY_URL,
-    );
-  } else {
-    await expect(cards).toHaveCount(1);
-    await expect(cards.locator("h3")).toHaveText("即兴戏剧 + AI 短剧共创");
-    await expect(
-      page.locator('[data-poster-key="activity-cmi-dinner-club-01-niulai-screening.webp"]'),
-    ).toBeAttached();
+  }
+  for (const activity of started) {
+    await expect(page.locator(`[data-poster-key="${activity.posterKey}"]`)).toBeAttached();
   }
 
-  const posterButton = now < DINNER_ACTIVITY_START
-    ? section.getByRole("button", { name: /放大海报：CMI 吃饭俱乐部 #1/ })
-    : section.getByRole("button", { name: /放大海报：即兴戏剧 \+ AI 短剧共创/ });
+  const selected = upcoming[0]!;
+  const posterButton = cards.nth(0).getByRole("button", {
+    name: `放大海报：${selected.title}`,
+  });
   const poster = posterButton.locator("img");
-  await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(
-    now < DINNER_ACTIVITY_START ? 941 : 864,
-  );
+  await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBe(selected.posterWidth);
   await expect(posterButton.locator("xpath=ancestor::article").getByRole("link", { name: /查看详情/ }))
-    .toHaveAttribute(
-      "href",
-      now < DINNER_ACTIVITY_START ? DINNER_ACTIVITY_URL : WAYTOAGI_ACTIVITY_URL,
-    );
+    .toHaveAttribute("href", selected.detailUrl);
 
   if (testInfo.project.name === "desktop-chromium") {
     await posterButton.hover({ position: { x: 24, y: 50 } });
@@ -146,13 +155,9 @@ test("staging orders current activities nearest-first and preserves their lifecy
   }
 
   await posterButton.click();
-  const dialog = now < DINNER_ACTIVITY_START
-    ? page.getByRole("dialog", { name: /CMI 吃饭俱乐部 #1/ })
-    : page.getByRole("dialog", { name: /即兴戏剧 \+ AI 短剧共创/ });
+  const dialog = page.getByRole("dialog", { name: selected.title });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByText(
-    now < DINNER_ACTIVITY_START ? "2026.08.28 · 周五" : "2026.08.30 · 周日",
-  )).toBeVisible();
+  await expect(dialog.getByText(selected.dateLabel)).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
   await expect(posterButton).toBeFocused();

@@ -14,6 +14,9 @@ import {
 const dinnerActivity = ACTIVITY_CATALOG.find(
   (activity) => activity.id === "cmi-dinner-club-01-niulai-screening",
 )!;
+const communitySaleActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-community-sale-01-new-yunnan-market",
+)!;
 const waytoagiActivity = ACTIVITY_CATALOG.find(
   (activity) => activity.id === "waytoagi-27-improv-ai-shortfilm",
 )!;
@@ -59,15 +62,29 @@ describe("upcoming activity catalog", () => {
     const beforeDinner = partitionActivities(ACTIVITY_CATALOG, "2026-08-28T08:59:59Z");
     expect(beforeDinner.upcoming.map((activity) => activity.id)).toEqual([
       dinnerActivity.id,
+      communitySaleActivity.id,
       waytoagiActivity.id,
     ]);
     expect(beforeDinner.started).toHaveLength(0);
 
     const atDinnerStart = partitionActivities(ACTIVITY_CATALOG, "2026-08-28T09:00:00Z");
     expect(atDinnerStart.upcoming.map((activity) => activity.id)).toEqual([
+      communitySaleActivity.id,
       waytoagiActivity.id,
     ]);
     expect(atDinnerStart.started.map((activity) => activity.id)).toEqual([
+      dinnerActivity.id,
+    ]);
+
+    const atCommunitySaleStart = partitionActivities(
+      ACTIVITY_CATALOG,
+      "2026-08-29T00:00:00Z",
+    );
+    expect(atCommunitySaleStart.upcoming.map((activity) => activity.id)).toEqual([
+      waytoagiActivity.id,
+    ]);
+    expect(atCommunitySaleStart.started.map((activity) => activity.id)).toEqual([
+      communitySaleActivity.id,
       dinnerActivity.id,
     ]);
 
@@ -76,6 +93,7 @@ describe("upcoming activity catalog", () => {
       waytoagiActivity.id,
     ]);
     expect(beforeWaytoagi.started.map((activity) => activity.id)).toEqual([
+      communitySaleActivity.id,
       dinnerActivity.id,
     ]);
 
@@ -83,6 +101,7 @@ describe("upcoming activity catalog", () => {
     expect(atStart.upcoming).toHaveLength(0);
     expect(atStart.started.map((activity) => activity.id)).toEqual([
       waytoagiActivity.id,
+      communitySaleActivity.id,
       dinnerActivity.id,
     ]);
   });
