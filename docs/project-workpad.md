@@ -1,42 +1,45 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-28 07:54 Asia/Bangkok
+Last updated: 2026-08-28 08:49 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
+- Status: `Shipped`
 - Current milestone: [v0.3.0 — Projects 原生发布框架](https://github.com/CMI-Community/Website/milestone/3)。
-- Current focus：内容负责人已明确批准 v0.3.0 正式发布；正在锁定 PR #25 / #27、production D1/R2 和 Worker 回滚点，准备受保护 production 切换。
-- Next step：完成最终 CI 与 stacked PR 合并；幂等同步 production D1/R2 和三张活动海报，通过 GitHub production Environment 发布，再执行 production 双视口与主要用户路径验收。
-- Latest production runtime release: [v0.2.1](https://github.com/CMI-Community/Website/releases/tag/v0.2.1)
+- Current focus：v0.3.0 已从受保护 production 流程发布并完成 CMI/旧兰纳域名双视口与三语验收；进入 48 小时稳定观察。
+- Next step：只记录经验证的 production 回归；若无异常，不在观察期内删除旧 Worker、旧 Vercel 部署或迁移源证据。
+- Latest production runtime release: [v0.3.0](https://github.com/CMI-Community/Website/releases/tag/v0.3.0)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
-- 等待决定：无；内容负责人已在 2026-08-28 明确批准 CMI production。旧 Vercel 308 只在新 Worker 完成验收后切换。
-- `VERIFIED`：[PR #21](https://github.com/CMI-Community/Website/pull/21) 已通过验收并合并，[#20](https://github.com/CMI-Community/Website/issues/20) 已关闭；production 未发布该 T1。
+- 等待决定：无；v0.3.0 与旧 Vercel 308 已完成，当前仅观察 production。
+- `VERIFIED`：production D1 为 36 entries / 158 media / 174 associations / 1 import，14 cleared 对外可见、22 research_only 服务端隐藏；production R2 217/217 双重回读验证通过，三张活动海报公开回读哈希一致。
+- `VERIFIED`：[production run 33132639117](https://github.com/CMI-Community/Website/actions/runs/33132639117) 从 `main@6cdff7dd` 发布 Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4`；最终远端 Playwright 23 passed / 5 skipped，1440×900 与 390×844 真实浏览器无横向溢出或持续控制台告警。
+- `VERIFIED`：[旧站 PR #1](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) 已合并；Vercel `dpl_9TgfGckPLhTSnieL5XVioePGNLNd` 提升后，9 条中英泰首页/回顾规则均为 308，静态资产保持 200，六个用户入口最终均落到 CMI 200。
+- `VERIFIED`：[PR #21](https://github.com/CMI-Community/Website/pull/21) 已通过验收并合并，[#20](https://github.com/CMI-Community/Website/issues/20) 已关闭；该 T1 随 v0.3.0 进入 production。
 - `VERIFIED`：[PR #23](https://github.com/CMI-Community/Website/pull/23) 已合并项目路由、审核式目录、D1 模型与幂等导入器；第二组迁移从该 `main` 基线独立实施。
 - `VERIFIED`：旧 Supabase 已恢复并冻结：36 条档案均为公开状态；`pattern-submissions` 有 160 个对象、150,120,950 字节；档案表三类运行角色只保留读取权限，提交函数固定返回 410。
 - `VERIFIED`：160 个 Storage 对象已完整下载到仓库外受控目录；对象数、总字节和 160/160 ETag/MD5 均一致，并生成逐对象 SHA-256 manifest。
-- `VERIFIED`：Vercel 当前 production 部署为 `dpl_3ZTaLWQoe9xWdEAcwwnt3mQ1FFok`，对应已提交版本 `8714afac`；迁移基线已从较早的 `65d4918` 切换为该线上版本。
+- `VERIFIED`：旧站迁移基线为 Vercel 部署 `dpl_3ZTaLWQoe9xWdEAcwwnt3mQ1FFok` / 提交 `8714afac`；当前旧域名由 `dpl_9TgfGckPLhTSnieL5XVioePGNLNd` 执行 308，原部署保留回滚。
 - `VERIFIED`：兰纳站已拆为项目壳、体验模块、回顾、三语字典、档案投影、Canvas 导出和局部样式；首页不加载兰纳代码或媒体，项目页不再包含 Supabase 浏览器客户端、提交表单或旧 Vercel 资产请求。
 - `VERIFIED`：本地 D1 导入为 36 条档案、158 个去重媒体对象、174 个角色关联；14 条 `cleared` 对外可见，22 条 `research_only` 由服务端隔离。CMI-LN-0046/0047 的未经核验生成式叙述已转换为明确 `UNKNOWN`，原始导出保持不改且不入 Git。
 - `VERIFIED`：本地 R2 迁移清单包含 158 个档案对象与 59 个线上基线站点资产，共 217 个对象、217,384,137 字节；217/217 已逐对象回读并核对 SHA-256。
 - `VERIFIED`：staging D1 已导入 36 条公开档案、158 个媒体对象与 174 个角色关联；14 cleared / 22 research_only、1 个导入批次、零缺失详情图、零外键异常。同一修正后 SQL 连续重放两次成功。
 - `VERIFIED`：staging R2 已写入版本前缀内 217 个对象、217,384,137 字节；上传回读与独立 `verify-only` 均为 217/217，清单 SHA-256 为 `d7889bf9…`。
 - `CORRECTED`：首次 staging 重放发现导入器的固定批次审计日志仍使用随机 ID，导致第二次执行冲突；现改为由批次清单派生稳定 ID 并 `ON CONFLICT DO NOTHING`。旧生成器产生的 1 条重复 staging 审计已精确删除，保留 1 条稳定审计；档案数据未删除。
-- `VERIFIED`：[PR #24](https://github.com/CMI-Community/Website/pull/24) 已合并到 `main` 提交 `72b1b586`；staging Worker `ffea982c-584e-4983-8d55-2b52d201d98b` 部署成功，production job 明确跳过，Issue #22 保持开放。
+- `VERIFIED`：[PR #24](https://github.com/CMI-Community/Website/pull/24) 已合并到 `main` 提交 `72b1b586`；staging Worker `ffea982c-584e-4983-8d55-2b52d201d98b` 部署成功，当次 production job 明确跳过；#22 已在最终 cutover 后关闭。
 - `VERIFIED`：首次 staging 导出用例点击早于客户端挂载的问题已用明确挂载信号修正；导出专项连续 3/3 通过，完整远端套件最终为 21 passed / 5 skipped，覆盖三语、14 条 cleared 档案、首页两处菜单、Museum、社交、海报、权限和 1080×1350 PNG。
 - `VERIFIED`：staging 目视检查覆盖 1440×900 中文项目、390×844 中文档案、泰文回顾和首页 Projects 面板；四个视图均无横向溢出，泰文头部原图和元素边界确认菜单完整可点。
-- `VERIFIED`：[Draft PR #25](https://github.com/CMI-Community/Website/pull/25) 汇总最终 cutover 证据并保留人工 production 门禁；旧站 [Draft PR #1](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) 从已部署提交 `8714afac` 的独立干净 worktree 准备三语与 `/recap` 永久跳转，当前均未合并、未部署。
+- `VERIFIED`：[PR #25](https://github.com/CMI-Community/Website/pull/25) 与 [PR #27](https://github.com/CMI-Community/Website/pull/27) 已依次合并；旧站 [PR #1](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) 从已部署提交 `8714afac` 的独立干净 worktree 完成三语与 `/recap` 永久跳转。
 - `VERIFIED`：[Draft PR #25 required CI](https://github.com/CMI-Community/Website/actions/runs/33080710778) 全部通过：依赖审计、公开边界、T3 追踪、类型、46 tests、D1、SSR、staging dry-run 与桌面/390px 浏览器 13 passed / 3 skipped。
 - `VERIFIED`：[#26](https://github.com/CMI-Community/Website/issues/26) 已建立；第 27 期公众号原文核实活动为 2026-08-30 12:30–17:30（清迈时间），标题、公开海报与详情链接齐全。实现使用 [ADR 0008](./adr/0008-upcoming-activity-lifecycle.md) 的代码审核式目录，不建设活动 CMS。
 - `VERIFIED`：第 27 期海报已优化为 864×1821 WebP，并写入 staging R2 版本化路径；回读后的 361,972 字节与 SHA-256 `37f8b7ac…e71e42c` 一致。原始公众号抓取、临时导出与源文件均未进入 Git，production R2 未改变。
 - `VERIFIED`：#26 本地实现已完成：Projects 面板明确显示一级系列和二级期次，第 27 期外链与第 26 期内链并列；Discord 降为普通末位入口；首页近期区支持最多 5 条、横向滚动、指针 3D、放大层、焦点恢复和减少动画，开始时刻后自动投影到 Event Museum。
 - `VERIFIED`：#26 本地 `npm run check` 全绿（50 unit tests、16 表 D1 smoke、SSR 与 staging dry-run）；Playwright 桌面/390px 为 17 passed / 3 skipped。真实浏览器复核两级菜单、手机放大层与横向布局，控制台无 errors / warnings。
-- `VERIFIED`：[Draft PR #27](https://github.com/CMI-Community/Website/pull/27) 已从 `codex/22-lanna-cutover` 建立为 stacked review，使用 `Refs #26` 保持 Issue 开放；production 与旧 Vercel 均未改变。
+- `VERIFIED`：[PR #27](https://github.com/CMI-Community/Website/pull/27) 以 stacked review 完成并合并；#26 在 production 证据 PR 中关闭。
 - `VERIFIED`：[Draft PR #27 required CI](https://github.com/CMI-Community/Website/actions/runs/33084658539) 全绿：依赖审计、公开边界、T3 追踪、类型、50 tests、D1、SSR、dry-run 与桌面/390px 浏览器 17 passed / 3 skipped。
 - `VERIFIED`：staging Worker `b90d343c-3ea8-49fc-8ef5-e321188bdea7` 已从提交 `8b48a06` 发布；production 与旧 Vercel 均保持 200 且未切换。海报同域入口为 200 `image/webp`、immutable，远端 SHA-256 与上传前一致。
 - `VERIFIED`：staging 完整远端 Playwright 为 23 passed / 5 skipped，覆盖三语兰纳、第 26/27 期、Photo Museum 1056 个变体、Event Museum 180 条公共目录、身份与反馈。1440×900 与 390×844 的首页、两级面板和放大层目视通过，控制台 0 errors / 0 warnings。
@@ -52,10 +55,10 @@ Last updated: 2026-08-28 07:54 Asia/Bangkok
 - `VERIFIED`：义卖活动已进入统一审核式目录；8 月 28 日 16:00 前首页顺序为《牛来》→ 新云南市场义卖 → 第 27 期，达到各自开始时刻后逐期进入 Event Museum。`npm run check` 全绿；本地 Playwright 桌面/390px 为 17 passed / 3 skipped，三期标题、详情、生命周期、放大层、焦点和无横向溢出通过。
 - `VERIFIED`：[Draft PR #27 本轮 required CI](https://github.com/CMI-Community/Website/actions/runs/33129773926) 全绿；从提交 `e62a612` 发布 staging Worker `8c62debd-80bc-458f-874a-49c7bd5efcfd`。义卖同域 WebP 为 337,432 字节，SHA-256 `ef9a2aae…b2a6d2` 与上传前一致；远端 Playwright 为 23 passed / 5 skipped。
 - `VERIFIED`：staging 1440×900 与 390×844 目视确认三张海报顺序、手机横向滑动、新义卖放大层、日期时间、详情链接和 Escape 焦点恢复；真实尺寸为 941 / 1024 / 864，页面无横向溢出，Projects 面板在手机视口内，控制台 0 errors / 0 warnings。
-- `APPROVED`：内容负责人于 2026-08-28 明确要求把已验收 staging 推送到正式版；production 仍按 D1/R2 → Worker → 双视口验收 → Release Record/GitHub Release 的门禁执行。22 条 `research_only` 继续隐藏，6 个孤立源对象继续不公开。
+- `SHIPPED`：内容负责人于 2026-08-28 明确要求把已验收 staging 推送到正式版；production 已按 D1/R2 → Worker → 双视口验收 → Release Record/GitHub Release 的门禁执行。22 条 `research_only` 继续隐藏，6 个孤立源对象继续不公开。
 - `VERIFIED`：2026-08-11 旧 `poster-wall` Worker 误覆盖 production 后，已从本仓库 `main` 恢复 `cmi-community-platform` Worker `6cb12718-4630-43b1-8988-7598e6043f8d`；根路径重新直接呈现三屏正式首页。
 - `VERIFIED`：公开仓库、Apache-2.0、Issues、Discussions、required CI 和 production 人工批准均已启用。
-- `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 提供服务，根路径直接呈现三屏正式首页。
+- `VERIFIED`：`cmi.community` 当前由 `cmi-community-platform` Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4` 提供服务；上一 Worker `d5703143-aeb3-4676-9f07-6c42e860fe92` 保留为回滚点。
 - `VERIFIED`：当前公共档案为 180 张海报；新 D1 保留 3 条留言和 2 条投票；首位管理员已建立，一次性 bootstrap Secret 已删除。
 - `VERIFIED`：三位一体工作台、T1/T2/T3 记录和 required traceability gate 已通过真实 PR CI。
 - `ASSUMED`：旧 Worker 与旧反馈 D1 继续保留到明确结束稳定观察期；删除前必须另建 Issue 并给出回滚替代方案。
@@ -122,8 +125,7 @@ Last updated: 2026-08-28 07:54 Asia/Bangkok
 
 ### Now
 
-- [ ] [#22 建立 Projects 原生发布框架并迁移兰纳博物馆第 26 期](https://github.com/CMI-Community/Website/issues/22)
-- [ ] [#26 建立近期活动自动流转与 Projects 层级展示](https://github.com/CMI-Community/Website/issues/26)
+- 暂无；v0.3.0 进入 48 小时 production 稳定观察。
 
 ### Next
 
@@ -131,7 +133,7 @@ Last updated: 2026-08-28 07:54 Asia/Bangkok
 - [x] 从已冻结 Supabase 完成数据库/Storage 受控导出与逐项校验。
 - [x] 拆分兰纳模块、迁移三语页面、只读档案与媒体工具。
 - [x] 完成第二组 PR required CI、staging D1/R2/Worker 和桌面/手机验收。
-- [ ] 内容负责人处理权利与孤立对象门禁并明确批准后，完成第三组 production cutover、旧站跳转与 Release Record。
+- [x] 内容负责人确认公开边界并批准后，完成 production cutover、旧站跳转与 Release Record。
 
 ### Later
 
@@ -139,6 +141,9 @@ Last updated: 2026-08-28 07:54 Asia/Bangkok
 
 ### Done
 
+- [x] [v0.3.0：Projects、兰纳原生迁移与近期活动](https://github.com/CMI-Community/Website/releases/tag/v0.3.0)
+- [x] [#26 建立近期活动自动流转与 Projects 层级展示](https://github.com/CMI-Community/Website/issues/26)
+- [x] [#22 建立 Projects 原生发布框架并迁移兰纳第 26 期](https://github.com/CMI-Community/Website/issues/22)
 - [x] [#20 在两处导航增加 Projects 系列与期次菜单](https://github.com/CMI-Community/Website/issues/20)
 - [x] [#16 恢复三屏官网并发布 v0.2.1 小红书入口](https://github.com/CMI-Community/Website/issues/16)
 - [x] [#13 建设 Community / Photo Museum / Event Museum 三屏首页](https://github.com/CMI-Community/Website/issues/13)
@@ -156,15 +161,15 @@ Last updated: 2026-08-28 07:54 Asia/Bangkok
 | Media | Photo Museum v2 为 528 张、1056 个 WebP | 损坏源图、重复项或漏传会破坏墙面与全屏浏览 | 本地目录完整性和 staging 两档公开入口已逐项通过 | `VERIFIED` |
 | Performance | 七条动态轨道会逐步加载 528 张缩略图 | 手机内存、流量和帧率可能上升 | 720px 缩略图、内容负责人真机验收、390×844 production 动画/全屏交互已通过 | `VERIFIED` |
 | Maintenance | Dependabot 已产生多项待审 PR | 依赖升级可能影响 Node 24 和 Cloudflare 兼容性 | 逐项通过 CI 后合并，不批量猜测兼容性 | `OBSERVED` |
-| Navigation | Projects 菜单在顶部与吸顶导航各有一个实例 | 可能造成手机拥挤、隐藏焦点或下拉越界 | 共用目录与组件；staging 自动化与真实浏览器验证 Escape、外部点击、390px 和隐藏导航焦点 | `VERIFIED (STAGING)` |
-| Migration | 兰纳旧 Supabase 已恢复、冻结并完成受控导出 | 36 条记录、160 个对象、总字节、ETag/MD5 与 SHA-256 已锁定；仍需完成 D1/R2 目标核验 | 先导入本地与 staging；目标记录、关联、对象和哈希任何差异都停止切换 | `VERIFIED / IN PROGRESS` |
-| Rights | 36 条在线档案中 22 条仍标记需要权利复核 | 不能把源端 `rights_review=true` 误标为已授权；会阻止这些记录进入公共投影 | staging 保留为 `research_only`；production 切换前由内容负责人完成权利审核 | `BLOCKS CUTOVER` |
-| Integrity | 源 Storage 有 6 个对象未被任何档案引用 | 直接删除会破坏原始证据，直接公开会制造孤立媒体；源 Storage 与公共 R2 对象数不能虚假宣称一一相等 | 完整保留在非公开迁移证据；目标公共档案不建立虚假关联，production 切换记录必须先获得明确处置决定 | `VERIFIED EXCEPTION / BLOCKS CUTOVER` |
+| Navigation | Projects 菜单在顶部与吸顶导航各有一个实例 | 可能造成手机拥挤、隐藏焦点或下拉越界 | 共用目录与组件；production 自动化与真实浏览器验证 Escape、外部点击、390px 和隐藏导航焦点 | `VERIFIED` |
+| Migration | 兰纳旧 Supabase 已恢复、冻结并完成受控导出 | 36 条记录、160 个源对象和哈希已锁定；目标需保持公开边界 | production 为 36 entries / 158 media / 174 associations；217 个 R2 对象上传回读和独立验证一致 | `VERIFIED` |
+| Rights | 36 条在线档案中 22 条仍标记需要权利复核 | 不能把源端 `rights_review=true` 误标为已授权 | production 保留为 `research_only` 并由服务端隔离；只有 14 cleared 对外投影 | `VERIFIED / OPEN` |
+| Integrity | 源 Storage 有 6 个对象未被任何档案引用 | 直接删除会破坏原始证据，直接公开会制造孤立媒体 | 保留为非公开迁移证据；production 未删除、未公开且未建立虚假关联 | `VERIFIED EXCEPTION` |
 | Source | 兰纳旧仓库存在未提交 FAM 扩充 | 直接复制会把未审核内容混入线上基线 | 不改脏工作区；线上行为为基线，新增内容走独立审核 | `OBSERVED` |
-| Release | Projects T3 涉及 Worker、D1、R2 与旧 Vercel | 错序切换会失去回滚入口 | staging 已通过；两份 Draft PR 已准备，CMI production 验收后才执行旧站 308 | `PREPARED / BLOCKED` |
-| Time | 近期活动在开始时刻自动转入 Event Museum | 错误时区会提前或延后隐藏招募 | 目录强制 ISO offset；固定测试时钟覆盖开始前、等于开始时刻和开始后，staging 当前招募态正确 | `VERIFIED (STAGING)` |
-| Media | 第 27 期公开海报需要进入版本化 R2 | 原始抓取进 Git 或路径过宽会破坏内容与公开边界 | staging R2 与同域 Worker 路由回读哈希一致；只开放目录精确白名单的 GET/HEAD | `VERIFIED (STAGING)` |
-| Time | 《牛来》活动于 2026-08-28 16:00 开始 | staging 招募态验收窗口较短；开始后按规则进入 Event Museum | 06:12 已完成事实与 R2 核验；部署前后使用固定时钟单测和实时 staging 双重确认 | `IN PROGRESS` |
+| Release | Projects T3 涉及 Worker、D1、R2 与旧 Vercel | 错序切换会失去回滚入口 | D1/R2 → Worker → production 验收 → 旧 Vercel 308 已按序完成；两个旧运行版本保留 | `VERIFIED` |
+| Time | 近期活动在开始时刻自动转入 Event Museum | 错误时区会提前或延后隐藏招募 | 目录强制 ISO offset；固定测试时钟和实时 production 招募态均通过 | `VERIFIED` |
+| Media | 三张近期活动海报进入版本化 R2 | 原始抓取进 Git 或路径过宽会破坏内容与公开边界 | production 同域路由逐张回读大小与 SHA-256；只开放目录精确白名单 GET/HEAD | `VERIFIED` |
+| Time | 《牛来》活动于 2026-08-28 16:00 开始 | 发布后招募态验收窗口较短；开始后按规则进入 Event Museum | production 发布时仍按 8 月 28 / 29 / 30 顺序展示；固定时钟覆盖边界瞬间 | `VERIFIED` |
 
 ## Implementation Notes
 
@@ -246,9 +251,14 @@ Last updated: 2026-08-28 07:54 Asia/Bangkok
 | 2026-08-28 | [《牛来》PR CI 与 staging](https://github.com/CMI-Community/Website/actions/runs/33126046778) | `VERIFIED` | required CI 通过；Worker `8aee0ea9…`；远端 23 passed / 5 skipped，同域海报哈希、双视口顺序、放大层、390px 和零控制台告警通过 |
 | 2026-08-28 | 新云南市场义卖本地目录与媒体 | `VERIFIED` | 公众号原文、1024×1535 WebP、staging R2 回读哈希、`npm run check` 与桌面/390px 17 passed / 3 skipped 均通过；production 未改变 |
 | 2026-08-28 | [新云南市场义卖 PR CI 与 staging](https://github.com/CMI-Community/Website/actions/runs/33129773926) | `VERIFIED` | required CI 通过；Worker `8c62debd…`；远端 23 passed / 5 skipped，三期排序、义卖同域海报哈希、桌面/390px 滑动与放大层、焦点、无溢出和零控制台告警通过 |
+| 2026-08-28 | v0.3.0 production D1/R2 | `VERIFIED` | D1 为 36 entries / 158 media / 174 associations / 1 import，14 cleared / 22 research_only，重复导入幂等且外键正常；R2 217/217 双重回读，三张活动海报公开哈希一致 |
+| 2026-08-28 | [v0.3.0 production deploy](https://github.com/CMI-Community/Website/actions/runs/33132639117) | `VERIFIED` | `main@6cdff7dd` 经 protected Environment 发布 Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4`，健康接口为 production |
+| 2026-08-28 | v0.3.0 production Playwright 与目视 | `VERIFIED` | 最终 23 passed / 5 skipped；1440×900 与 390×844 的三期顺序、3D、放大、焦点、Projects、三语兰纳、14 条公开档案、Museum 与无溢出通过，新会话控制台 0 errors / 0 warnings |
+| 2026-08-28 | [旧站 PR #1 与 Vercel cutover](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) | `VERIFIED` | merge `3f37b25b`；候选版先验证 9 条 308 与静态资产 200，再提升 `dpl_9TgfGckPLhTSnieL5XVioePGNLNd`；中英泰首页/回顾最终均为 CMI 200 |
 
 ## Recent Updates
 
+- 2026-08-28 08:49 Asia/Bangkok：v0.3.0 已正式上线。production D1/R2 依序完成幂等导入与双重回读；受保护 [run 33132639117](https://github.com/CMI-Community/Website/actions/runs/33132639117) 从 `main@6cdff7dd` 发布 Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4`。最终 production Playwright 23 passed / 5 skipped，桌面与 390px 真实浏览器确认三期顺序、横向滑动、3D、放大层、焦点、两级 Projects、三语兰纳、Museum 和 14 条公开档案，无横向溢出或持续控制台告警。旧站 PR #1 合并后先验证候选部署，再提升 Vercel `dpl_9TgfGckPLhTSnieL5XVioePGNLNd`；六个旧入口最终均落到 CMI 200，旧静态资产保持 200。CMI 回滚 Worker 为 `d5703143…`，旧站回滚部署为 `dpl_3ZTa…`，进入 48 小时观察。
 - 2026-08-28 07:54 Asia/Bangkok：内容负责人明确确认 staging 可以推送正式版。发布源锁定为当前 stacked PR #25 / #27；production Worker 回滚点为 `d5703143-aeb3-4676-9f07-6c42e860fe92`，package 版本升至 0.3.0。22 条 `research_only` 继续服务端隐藏、6 个孤立源对象继续排除，production 发布不会扩大公开范围。Release Record 只能在真实发布后标记 `Released`，将在 production 验收后补齐；下一步完成最终 CI/合并，再同步 production D1/R2 和三张活动海报。
 - 2026-08-28 07:38 Asia/Bangkok：提交 `e62a612` 的 required CI 全绿后，仅发布 staging Worker `8c62debd-80bc-458f-874a-49c7bd5efcfd`。义卖同域海报回读为 337,432 字节，SHA-256 `ef9a2aae…b2a6d2`；远端 Playwright 最终 23 passed / 5 skipped。1440×900 与 390×844 真实浏览器确认《牛来》→ 新云南市场义卖 → 第 27 期从左到右，手机可横向滚到三张海报；义卖放大层、日期时间、详情外链、Escape 焦点恢复、Projects 面板、390/390 无溢出和控制台 0 errors / 0 warnings 均通过。production 与旧 Vercel 未改变，进入内容负责人 staging 验收。
 - 2026-08-28 07:27 Asia/Bangkok：公众号自动提取触发验证码，按技能要求改用真实浏览器核实“8月29日｜ 清迈新云南市场 CMI 社区义卖 #1”、07:00–12:00、清迈新云南市场、二手书籍与 3D 打印玩具。用户原图在仓库外优化为 337,432 字节 WebP，上传 staging R2 后回读 SHA-256 `ef9a2aae…b2a6d2` 一致。统一目录和 E2E 已扩展为三期动态期望，当前按 8 月 28/29/30 日从左到右，并逐期在开始时刻进入 Event Museum；`npm run check` 全绿，本地 Playwright 为 17 passed / 3 skipped，准备提交现有 Draft PR #27。
