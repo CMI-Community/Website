@@ -125,6 +125,7 @@ test("staging orders current activities nearest-first and preserves their lifecy
   await expect(cards.locator("h3")).toHaveText(upcoming.map((activity) => activity.title));
   for (const [index, activity] of upcoming.entries()) {
     const card = cards.nth(index);
+    await card.scrollIntoViewIfNeeded();
     await expect.poll(() => card.locator("img").evaluate(
       (image: HTMLImageElement) => image.naturalWidth,
     )).toBe(activity.posterWidth);
