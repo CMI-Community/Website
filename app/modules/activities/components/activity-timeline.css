@@ -1,0 +1,618 @@
+.activity-timeline {
+  position: relative;
+  z-index: 65;
+  min-width: 0;
+  margin: 4px 22px 12px;
+  border-block: 1px solid var(--home-ink);
+  background: rgb(239 239 233 / 62%);
+}
+
+.activity-timeline__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: end;
+  padding: 9px 0 8px;
+  border-bottom: 1px solid var(--home-line);
+}
+
+.activity-timeline__intro {
+  display: flex;
+  gap: 11px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.activity-timeline__intro > span {
+  color: var(--home-signal);
+  font: 700 8px "DM Mono", monospace;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.activity-timeline__intro h2 {
+  overflow: hidden;
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  text-wrap: balance;
+  white-space: nowrap;
+}
+
+.activity-timeline__jumps,
+.activity-timeline__controls {
+  display: flex;
+  border: 1px solid var(--home-ink);
+}
+
+.activity-timeline__jumps button,
+.activity-timeline__controls button {
+  display: flex;
+  min-height: 31px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  border: 0;
+  color: var(--home-ink);
+  background: transparent;
+  font: 700 7px "DM Mono", monospace;
+  letter-spacing: .04em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.activity-timeline__jumps button + button,
+.activity-timeline__controls button + button {
+  border-left: 1px solid var(--home-ink);
+}
+
+.activity-timeline__jumps button:hover,
+.activity-timeline__jumps button:focus-visible,
+.activity-timeline__controls button:hover,
+.activity-timeline__controls button:focus-visible {
+  color: var(--home-paper);
+  outline: 2px solid var(--home-signal);
+  outline-offset: 1px;
+  background: var(--home-ink);
+}
+
+.activity-timeline__jumps b {
+  margin-left: 7px;
+  color: var(--home-signal);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-timeline__controls button {
+  width: 33px;
+  padding: 0;
+  font-size: 11px;
+}
+
+.activity-timeline__track {
+  display: flex;
+  gap: clamp(16px, 2vw, 26px);
+  align-items: stretch;
+  justify-content: safe center;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding: 12px 8px 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-padding-inline: 8px;
+  scroll-snap-type: x proximity;
+  scrollbar-color: var(--home-signal) transparent;
+  scrollbar-width: thin;
+  touch-action: pan-x;
+}
+
+.activity-timeline__track:focus-visible {
+  outline: 2px solid var(--home-signal);
+  outline-offset: -2px;
+}
+
+.activity-timeline__group {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+  scroll-margin-inline: 8px;
+}
+
+.activity-timeline__group-header {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--home-line);
+}
+
+.activity-timeline__group-header h3 {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.activity-timeline__group-header span {
+  color: var(--home-muted);
+  font: 500 8px "DM Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-timeline__group-list {
+  display: flex;
+  gap: clamp(14px, 2vw, 26px);
+  align-items: flex-start;
+}
+
+.activity-timeline__empty {
+  display: grid;
+  width: clamp(148px, 13vw, 184px);
+  min-height: 116px;
+  margin: 0;
+  padding: 14px;
+  place-items: center;
+  border-block: 1px solid var(--home-line);
+  color: var(--home-muted);
+  font: 500 9px/1.6 "Noto Sans SC", sans-serif;
+  text-align: center;
+}
+
+.activity-timeline__now {
+  display: grid;
+  flex: 0 0 58px;
+  min-height: 100%;
+  place-content: center;
+  align-self: stretch;
+  border-inline: 1px solid var(--home-ink);
+  color: var(--home-paper);
+  background: var(--home-ink);
+  text-align: center;
+  scroll-snap-align: center;
+}
+
+.activity-timeline__now span {
+  color: var(--home-signal);
+  font: 700 8px "DM Mono", monospace;
+  letter-spacing: .08em;
+  writing-mode: vertical-rl;
+}
+
+.activity-timeline__now b {
+  margin-top: 8px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 10px;
+  font-weight: 500;
+  writing-mode: vertical-rl;
+}
+
+.activity-timeline__activity {
+  display: grid;
+  flex: 0 0 clamp(148px, 13vw, 184px);
+  width: clamp(148px, 13vw, 184px);
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+  scroll-snap-align: center;
+}
+
+.activity-timeline__poster-button {
+  --activity-tilt-x: 0deg;
+  --activity-tilt-y: 0deg;
+  --activity-shine-x: 50%;
+  --activity-shine-y: 42%;
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  color: var(--home-paper);
+  background: transparent;
+  perspective: 950px;
+  cursor: zoom-in;
+  touch-action: manipulation;
+}
+
+.activity-timeline__poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--home-ink);
+  background: #d9d8cf;
+  box-shadow: 0 7px 0 rgb(20 21 17 / 15%);
+  transform: rotateX(var(--activity-tilt-x)) rotateY(var(--activity-tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 160ms ease-out, box-shadow 220ms ease-out, filter 220ms ease-out;
+  will-change: transform;
+}
+
+.activity-timeline__poster img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 864 / 1821;
+  object-fit: contain;
+}
+
+.activity-timeline__poster i {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--activity-shine-x) var(--activity-shine-y),
+    rgb(255 255 255 / 32%),
+    transparent 32%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
+
+.activity-timeline__poster-button:hover .activity-timeline__poster,
+.activity-timeline__poster-button:focus-visible .activity-timeline__poster {
+  box-shadow: 0 9px 0 rgb(255 77 31 / 24%), 0 12px 8px rgb(20 21 17 / 20%);
+  filter: saturate(1.04) contrast(1.02);
+  transform: rotateX(var(--activity-tilt-x)) rotateY(var(--activity-tilt-y)) translateY(-7px) scale(1.018);
+}
+
+.activity-timeline__poster-button:hover .activity-timeline__poster i,
+.activity-timeline__poster-button:focus-visible .activity-timeline__poster i {
+  opacity: .7;
+}
+
+.activity-timeline__poster-button:focus-visible {
+  outline: 2px solid var(--home-signal);
+  outline-offset: 4px;
+}
+
+.activity-timeline__sequence,
+.activity-timeline__zoom {
+  position: absolute;
+  z-index: 2;
+  transform: translateZ(25px);
+}
+
+.activity-timeline__sequence {
+  top: 7px;
+  left: 7px;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 1px solid currentColor;
+  background: rgb(20 21 17 / 72%);
+  font: 700 7px "DM Mono", monospace;
+}
+
+.activity-timeline__zoom {
+  right: 5px;
+  bottom: 5px;
+  padding: 4px 5px;
+  background: rgb(20 21 17 / 78%);
+  font: 600 6px "DM Mono", monospace;
+  letter-spacing: .05em;
+}
+
+.activity-timeline__copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.activity-timeline__status {
+  justify-self: start;
+  padding: 3px 6px;
+  border: 1px solid currentColor;
+  color: var(--home-ink);
+  font: 700 7px "DM Mono", monospace;
+  letter-spacing: .04em;
+}
+
+.activity-timeline__status--ongoing {
+  border-color: var(--home-signal);
+  color: var(--home-paper);
+  background: var(--home-signal);
+}
+
+.activity-timeline__status--completed {
+  color: var(--home-muted);
+  background: transparent;
+}
+
+.activity-timeline__copy p,
+.activity-timeline__copy h4 {
+  margin: 0;
+}
+
+.activity-timeline__copy p {
+  display: grid;
+  gap: 2px;
+  color: var(--home-signal);
+  font: 700 8px "DM Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-timeline__copy p span {
+  color: var(--home-muted);
+  font-size: 7px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.activity-timeline__copy h4 {
+  min-height: 2.7em;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.activity-timeline__copy > a {
+  display: flex;
+  min-height: 31px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border: 1px solid var(--home-ink);
+  color: var(--home-ink);
+  font: 700 7px "DM Mono", monospace;
+  letter-spacing: .04em;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+
+.activity-timeline__copy > a:hover,
+.activity-timeline__copy > a:focus-visible {
+  color: var(--home-paper);
+  outline: 2px solid var(--home-signal);
+  outline-offset: 1px;
+  background: var(--home-ink);
+}
+
+.activity-timeline__copy > a span {
+  color: var(--home-signal);
+  font-size: 12px;
+}
+
+.activity-timeline-dialog {
+  position: fixed;
+  z-index: 700;
+  inset: 0;
+  display: grid;
+  padding: 24px;
+  place-items: center;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: rgb(12 12 10 / 86%);
+  backdrop-filter: blur(18px) saturate(.75);
+}
+
+.activity-timeline-dialog__content {
+  position: relative;
+  width: min(960px, 100%);
+  max-height: calc(100svh - 48px);
+  padding: 18px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgb(239 239 233 / 38%);
+  color: var(--home-paper);
+  background: #11110e;
+  box-shadow: 0 8px 0 rgb(0 0 0 / 45%);
+}
+
+.activity-timeline-dialog__close {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  float: right;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--home-paper);
+  color: var(--home-paper);
+  background: #11110e;
+  font: 700 7px "DM Mono", monospace;
+  letter-spacing: .04em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.activity-timeline-dialog__close:hover,
+.activity-timeline-dialog__close:focus-visible {
+  color: var(--home-ink);
+  outline: 2px solid var(--home-signal);
+  outline-offset: 1px;
+  background: var(--home-paper);
+}
+
+.activity-timeline-dialog figure {
+  display: grid;
+  grid-template-columns: minmax(220px, 430px) minmax(220px, 1fr);
+  gap: clamp(18px, 4vw, 52px);
+  align-items: end;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.activity-timeline-dialog figure > img {
+  display: block;
+  width: min(430px, calc((100svh - 86px) * 864 / 1821));
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100svh - 86px);
+  justify-self: center;
+  border: 1px solid rgb(239 239 233 / 35%);
+  object-fit: contain;
+}
+
+.activity-timeline-dialog figcaption {
+  display: grid;
+  gap: 11px;
+  padding: 0 8px 14px 0;
+}
+
+.activity-timeline-dialog figcaption p,
+.activity-timeline-dialog figcaption h2 {
+  margin: 0;
+}
+
+.activity-timeline-dialog figcaption p {
+  display: grid;
+  gap: 3px;
+  color: #ffab74;
+  font: 700 9px "DM Mono", monospace;
+}
+
+.activity-timeline-dialog figcaption p span {
+  color: rgb(239 239 233 / 68%);
+  font-size: 8px;
+  font-weight: 400;
+}
+
+.activity-timeline-dialog figcaption h2 {
+  max-width: 12em;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: clamp(24px, 4vw, 50px);
+  font-weight: 500;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.activity-timeline-dialog figcaption a {
+  display: flex;
+  width: min(240px, 100%);
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border: 1px solid #ffab74;
+  color: var(--home-paper);
+  font: 700 9px "DM Mono", monospace;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+
+.activity-timeline-dialog figcaption a:hover,
+.activity-timeline-dialog figcaption a:focus-visible {
+  color: var(--home-ink);
+  outline: 2px solid var(--home-signal);
+  outline-offset: 1px;
+  background: #ffab74;
+}
+
+@media (max-width: 840px) {
+  .activity-timeline {
+    margin: 5px 12px 10px;
+  }
+
+  .activity-timeline__header {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+    padding-block: 7px;
+  }
+
+  .activity-timeline__intro {
+    display: grid;
+    gap: 3px;
+  }
+
+  .activity-timeline__intro h2 {
+    font-size: 12px;
+  }
+
+  .activity-timeline__jumps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .activity-timeline__jumps button {
+    min-height: 44px;
+  }
+
+  .activity-timeline__controls {
+    display: none;
+  }
+
+  .activity-timeline__track {
+    gap: 16px;
+    margin-inline: -4px;
+    padding: 12px 4px 15px;
+  }
+
+  .activity-timeline__group-list {
+    gap: 16px;
+  }
+
+  .activity-timeline__activity {
+    flex-basis: clamp(178px, 56vw, 218px);
+    width: clamp(178px, 56vw, 218px);
+  }
+
+  .activity-timeline__empty {
+    width: clamp(152px, 46vw, 180px);
+  }
+
+  .activity-timeline__now {
+    flex-basis: 50px;
+  }
+
+  .activity-timeline__copy h4 {
+    font-size: 13px;
+  }
+
+  .activity-timeline-dialog {
+    padding: 10px max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .activity-timeline-dialog__content {
+    max-height: calc(100svh - 20px);
+    padding: 10px;
+  }
+
+  .activity-timeline-dialog__close,
+  .activity-timeline-dialog figcaption a {
+    min-height: 44px;
+  }
+
+  .activity-timeline-dialog figure {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .activity-timeline-dialog figure > img {
+    width: min(100%, calc(64svh * 864 / 1821));
+    max-height: 64svh;
+  }
+
+  .activity-timeline-dialog figcaption {
+    padding: 0 2px 4px;
+  }
+
+  .activity-timeline-dialog figcaption h2 {
+    font-size: 23px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activity-timeline__poster,
+  .activity-timeline__poster-button:hover .activity-timeline__poster,
+  .activity-timeline__poster-button:focus-visible .activity-timeline__poster {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .activity-timeline__poster i {
+    display: none;
+  }
+}

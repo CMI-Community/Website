@@ -5,9 +5,11 @@ import { defineLannaProjectTests } from "./lanna-tests";
 defineLannaProjectTests();
 
 const WAYTOAGI_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg";
+const ACTIVITY_TIMELINE_TEST_NOW = Date.parse("2026-08-28T20:30:00+07:00");
 const ACTIVITY_EXPECTATIONS = [
   {
     startsAt: Date.parse("2026-08-28T16:00:00+07:00"),
+    endsAt: Date.parse("2026-08-28T20:00:00+07:00"),
     title: "CMI 吃饭俱乐部 #1 · 周五《牛来》观影",
     detailUrl: "https://mp.weixin.qq.com/s/0Z1DTbX93zrAfwlCVxjzGg",
     dateLabel: "2026.08.28 · 周五",
@@ -16,6 +18,7 @@ const ACTIVITY_EXPECTATIONS = [
   },
   {
     startsAt: Date.parse("2026-08-29T07:00:00+07:00"),
+    endsAt: Date.parse("2026-08-29T12:00:00+07:00"),
     title: "8月29日｜ 清迈新云南市场 CMI 社区义卖 #1",
     detailUrl: "https://mp.weixin.qq.com/s/SW_BaQ3eFgWgsYBxWoftlQ",
     dateLabel: "2026.08.29 · 周六",
@@ -24,6 +27,7 @@ const ACTIVITY_EXPECTATIONS = [
   },
   {
     startsAt: Date.parse("2026-08-30T12:30:00+07:00"),
+    endsAt: Date.parse("2026-08-30T17:30:00+07:00"),
     title: "即兴戏剧 + AI 短剧共创",
     detailUrl: WAYTOAGI_ACTIVITY_URL,
     dateLabel: "2026.08.30 · 周日",
@@ -31,6 +35,26 @@ const ACTIVITY_EXPECTATIONS = [
     posterKey: "activity-waytoagi-27-improv-ai-shortfilm.webp",
   },
 ] as const;
+
+function expectedActivityTimeline(now: number) {
+  const ongoing = ACTIVITY_EXPECTATIONS
+    .filter((activity) => activity.startsAt <= now && activity.endsAt > now)
+    .sort((left, right) => left.endsAt - right.endsAt);
+  const upcoming = ACTIVITY_EXPECTATIONS
+    .filter((activity) => activity.startsAt > now)
+    .sort((left, right) => left.startsAt - right.startsAt)
+    .slice(0, Math.max(0, 5 - ongoing.length));
+  const museumReady = ACTIVITY_EXPECTATIONS
+    .filter((activity) => activity.endsAt <= now)
+    .sort((left, right) => right.endsAt - left.endsAt);
+  const guaranteed = museumReady.filter((activity) => now - activity.endsAt < 24 * 60 * 60 * 1000);
+  const guaranteedSet = new Set(guaranteed);
+  const completed = [
+    ...guaranteed,
+    ...museumReady.filter((activity) => !guaranteedSet.has(activity)).slice(0, Math.max(0, 5 - guaranteed.length)),
+  ];
+  return { ongoing, upcoming, completed, museumReady };
+}
 
 function d1(command: string): string {
   return execFileSync(
@@ -69,6 +93,7 @@ test("root renders the formal community homepage with independent museum fallbac
 });
 
 test("Projects menu exposes series and issues from both navigation states", async ({ page }) => {
+  test.setTimeout(60_000);
   const homepageRequests: string[] = [];
   page.on("request", (request) => homepageRequests.push(request.url()));
   await page.goto("/");
@@ -148,61 +173,87 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await expect(page).toHaveURL(/\/project\/waytoagi\/26-lanna-museum$/);
 });
 
-test("upcoming activities are nearest-first, tilt, expand and move into Event Museum", async ({ page }, testInfo) => {
-  await page.goto("/");
-  const section = page.locator(".upcoming-activities");
-  const now = Date.now();
-  const upcoming = ACTIVITY_EXPECTATIONS.filter((activity) => activity.startsAt > now);
-  const started = ACTIVITY_EXPECTATIONS.filter((activity) => activity.startsAt <= now);
-  if (upcoming.length === 0) {
-    await expect(section).toHaveCount(0);
-    if (await page.locator("#event-museum .cmi-poster-wall").count()) {
-      for (const activity of started) {
-        await expect(page.locator(`[data-poster-key="${activity.posterKey}"]`)).toBeAttached();
-      }
-    }
-    return;
-  }
-
+test("activity timeline keeps future and completed events around NOW", async ({ page }, testInfo) => {
+  await page.goto(`/?__activityNow=${encodeURIComponent(new Date(ACTIVITY_TIMELINE_TEST_NOW).toISOString())}`);
+  const section = page.locator(".activity-timeline");
+  const expected = expectedActivityTimeline(ACTIVITY_TIMELINE_TEST_NOW);
+  const active = [...expected.ongoing, ...expected.upcoming];
+  const displayed = [...active, ...expected.completed];
   await expect(section).toBeVisible();
   await expect(section.getByRole("heading", { name: "最近，可以一起做什么" })).toBeVisible();
-  const cards = section.locator(".upcoming-activity");
-  await expect(cards).toHaveCount(upcoming.length);
-  await expect(cards.locator("h3")).toHaveText(upcoming.map((activity) => activity.title));
-  for (const [index, activity] of upcoming.entries()) {
-    await expect(cards.nth(index).getByRole("link", { name: /查看详情/ })).toHaveAttribute(
+  await expect(section.locator('[role="separator"][aria-label="现在"]')).toContainText("NOW");
+  const activeGroup = section.locator("#activity-timeline-active");
+  const completedGroup = section.locator("#activity-timeline-completed");
+  const activeCards = activeGroup.locator(".activity-timeline__activity");
+  const completedCards = completedGroup.locator(".activity-timeline__activity");
+  await expect(activeCards).toHaveCount(active.length);
+  await expect(completedCards).toHaveCount(expected.completed.length);
+  if (active.length) {
+    await expect(activeCards.locator("h4")).toHaveText(active.map((activity) => activity.title));
+  } else {
+    await expect(activeGroup.getByText("暂无即将举行的活动")).toBeVisible();
+  }
+  if (expected.completed.length) {
+    await expect(completedCards.locator("h4")).toHaveText(
+      expected.completed.map((activity) => activity.title),
+    );
+    await expect(completedCards.locator(".activity-timeline__status")).toHaveText(
+      expected.completed.map(() => "已完成"),
+    );
+  } else {
+    await expect(completedGroup.getByText("近期还没有已完成活动")).toBeVisible();
+  }
+  for (const [index, activity] of active.entries()) {
+    const expectedStatus = expected.ongoing.includes(activity) ? "进行中" : "即将举行";
+    await expect(activeCards.nth(index).locator(".activity-timeline__status")).toHaveText(expectedStatus);
+    await expect(activeCards.nth(index).getByRole("link", { name: /查看活动详情/ })).toHaveAttribute(
       "href",
       activity.detailUrl,
     );
   }
   if (await page.locator("#event-museum .cmi-poster-wall").count()) {
-    for (const activity of started) {
-      await expect(page.locator(`[data-poster-key="${activity.posterKey}"]`)).toBeAttached();
+    for (const activity of expected.museumReady) {
+      await expect(page.locator(`[data-poster-key="${activity.posterKey}"]`).first()).toBeAttached();
     }
   }
 
-  const selected = upcoming[0]!;
-  const posterButton = cards.nth(0).getByRole("button", {
-    name: `放大海报：${selected.title}`,
+  const selected = displayed[0]!;
+  const selectedStatus = expected.ongoing.includes(selected)
+    ? "进行中"
+    : expected.upcoming.includes(selected)
+      ? "即将举行"
+      : "已完成";
+  const selectedCard = section.locator(".activity-timeline__activity").filter({
+    has: page.getByRole("heading", { name: selected.title, exact: true }),
+  });
+  const posterButton = selectedCard.getByRole("button", {
+    name: `放大海报（${selectedStatus}）：${selected.title}`,
   });
   const poster = posterButton.locator("img");
   await expect(poster).toBeVisible();
   await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
-  const selectedCard = posterButton.locator("xpath=ancestor::article");
-  const detail = selectedCard.getByRole("link", { name: /查看详情/ });
+  const detail = selectedCard.getByRole("link", { name: /查看活动详情/ });
   await expect(detail).toHaveAttribute("href", selected.detailUrl);
   await expect(detail).toHaveAttribute("target", "_blank");
 
   if (testInfo.project.name === "desktop-chromium") {
     await posterButton.hover({ position: { x: 20, y: 40 } });
-    await expect.poll(() => posterButton.locator(".upcoming-activity__poster").evaluate(
+    await expect.poll(() => posterButton.locator(".activity-timeline__poster").evaluate(
       (element) => getComputedStyle(element).transform,
     )).not.toBe("none");
+  } else {
+    await section.getByRole("button", { name: /已完成 \d+/ }).click();
+    await expect.poll(() => completedGroup.evaluate((group) => {
+      const groupRect = group.getBoundingClientRect();
+      const trackRect = group.parentElement!.getBoundingClientRect();
+      return Math.min(groupRect.right, trackRect.right) - Math.max(groupRect.left, trackRect.left);
+    })).toBeGreaterThan(50);
   }
 
   await posterButton.click();
   const dialog = page.getByRole("dialog", { name: selected.title });
   await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(selectedStatus, { exact: true })).toBeVisible();
   await expect(dialog.getByText(selected.dateLabel)).toBeVisible();
   await expect(dialog.getByText(selected.timeLabel)).toBeVisible();
   await page.keyboard.press("Escape");
@@ -239,16 +290,12 @@ test("page fits the active viewport", async ({ page }) => {
   expect(archiveDimensions.scrollWidth).toBeLessThanOrEqual(archiveDimensions.clientWidth + 1);
 });
 
-test("upcoming activity removes its 3D motion when reduced motion is requested", async ({ page }) => {
-  test.skip(
-    ACTIVITY_EXPECTATIONS.every((activity) => activity.startsAt <= Date.now()),
-    "all activities have already moved to Event Museum",
-  );
+test("activity timeline removes its 3D motion when reduced motion is requested", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  const posterButton = page.locator(".upcoming-activity").first().getByRole("button");
+  await page.goto(`/?__activityNow=${encodeURIComponent(new Date(ACTIVITY_TIMELINE_TEST_NOW).toISOString())}`);
+  const posterButton = page.locator(".activity-timeline__activity").first().getByRole("button");
   await posterButton.hover({ position: { x: 18, y: 36 } });
-  await expect.poll(() => posterButton.locator(".upcoming-activity__poster").evaluate(
+  await expect.poll(() => posterButton.locator(".activity-timeline__poster").evaluate(
     (element) => getComputedStyle(element).transform,
   )).toBe("none");
 });

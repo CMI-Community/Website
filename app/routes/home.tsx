@@ -5,7 +5,7 @@ import {
   mergeEventMuseumPosters,
   partitionActivities,
 } from "../modules/activities/activity-catalog";
-import { UpcomingActivities } from "../modules/activities/components/UpcomingActivities";
+import { ActivityTimeline } from "../modules/activities/components/ActivityTimeline";
 import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.jsx";
 import { PhotoMuseum } from "../modules/photo-museum/components/PhotoMuseum";
 import { ProjectMenu } from "../modules/projects/components/ProjectMenu";
@@ -80,9 +80,15 @@ async function loadPosterCatalog(env: CloudflareEnv): Promise<PosterCatalog> {
   return { posters };
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const activityLifecycle = partitionActivities(ACTIVITY_CATALOG, new Date());
+  const requestedActivityTime = new URL(request.url).searchParams.get("__activityNow");
+  const activityReferenceTime = env.APP_ENV === "development"
+    && requestedActivityTime
+    && Number.isFinite(Date.parse(requestedActivityTime))
+    ? new Date(requestedActivityTime)
+    : new Date();
+  const activityLifecycle = partitionActivities(ACTIVITY_CATALOG, activityReferenceTime);
   const [photoResult, posterResult] = await Promise.allSettled([
     loadPhotoCatalog(env),
     loadPosterCatalog(env),
@@ -91,14 +97,18 @@ export async function loader({ context }: Route.LoaderArgs) {
   // environments. Keeping this projection stable also makes local homepage
   // review useful without copying the complete poster archive into local R2.
   const posterAssetBase = "https://assets.cmi.community";
-  const startedActivityPosters = activityLifecycle.started;
+  const completedActivityPosters = activityLifecycle.museumReady;
   const mergedEventPosters = mergeEventMuseumPosters(
     posterResult.status === "fulfilled" ? posterResult.value.posters : [],
-    startedActivityPosters,
+    completedActivityPosters,
   );
 
   return {
-    upcomingActivities: activityLifecycle.upcoming,
+    activityTimeline: {
+      upcoming: activityLifecycle.upcoming,
+      ongoing: activityLifecycle.ongoing,
+      completed: activityLifecycle.completed,
+    },
     photoMuseum:
       photoResult.status === "fulfilled"
         ? {
@@ -299,7 +309,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <p className="home-hero__manifesto">连接彼此，一起创造，让影响发生。</p>
         </div>
 
-        <UpcomingActivities activities={loaderData.upcomingActivities} />
+        <ActivityTimeline {...loaderData.activityTimeline} />
 
         <nav className="home-museum-entries" aria-label="进入 CMI Museums">
           <a href="#photo-museum">

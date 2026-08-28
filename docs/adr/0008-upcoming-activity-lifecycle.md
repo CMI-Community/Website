@@ -1,9 +1,10 @@
 # ADR 0008：近期活动目录与 Event Museum 自动流转
 
-- 状态：Accepted
+- 状态：Superseded
 - 日期：2026-08-27
 - 关联 Issue：[#26](https://github.com/CMI-Community/Website/issues/26)
 - Supersedes：无
+- Superseded by：[ADR 0009](./0009-recent-activity-timeline.md)
 
 ## 上下文
 

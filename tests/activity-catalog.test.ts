@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   ACTIVITY_CATALOG,
+  COMPLETED_ACTIVITY_GRACE_MS,
   getActivityPosterSrc,
+  getActivityStatus,
   isPublicActivityObjectKey,
-  MAX_UPCOMING_ACTIVITIES,
+  MAX_ACTIVE_ACTIVITIES,
+  MAX_COMPLETED_ACTIVITIES,
   mergeEventMuseumPosters,
   partitionActivities,
   toEventMuseumPoster,
@@ -22,12 +25,16 @@ const waytoagiActivity = ACTIVITY_CATALOG.find(
 )!;
 const approvedActivity = waytoagiActivity;
 
-function activityAt(id: string, startsAt: string): ActivityDefinition {
+function activityAt(
+  id: string,
+  startsAt: string,
+  durationMs = 60 * 60 * 1000,
+): ActivityDefinition {
   return {
     ...approvedActivity,
     id,
     startsAt,
-    endsAt: new Date(Date.parse(startsAt) + 60 * 60 * 1000).toISOString(),
+    endsAt: new Date(Date.parse(startsAt) + durationMs).toISOString(),
     poster: {
       ...approvedActivity.poster,
       objectKey: `activities/waytoagi/${id}/v1/poster.webp`,
@@ -35,7 +42,11 @@ function activityAt(id: string, startsAt: string): ActivityDefinition {
   };
 }
 
-describe("upcoming activity catalog", () => {
+function activityEndingAt(id: string, endsAt: string): ActivityDefinition {
+  return activityAt(id, new Date(Date.parse(endsAt) - 60 * 60 * 1000).toISOString());
+}
+
+describe("activity catalog", () => {
   it("keeps unique, typed, HTTPS and versioned public entries", () => {
     expect(new Set(ACTIVITY_CATALOG.map((activity) => activity.id)).size).toBe(
       ACTIVITY_CATALOG.length,
@@ -58,73 +69,113 @@ describe("upcoming activity catalog", () => {
     expect(isPublicActivityObjectKey("activities/../secret.webp")).toBe(false);
   });
 
-  it("orders activities nearest-first and moves each one at its exact start", () => {
-    const beforeDinner = partitionActivities(ACTIVITY_CATALOG, "2026-08-28T08:59:59Z");
-    expect(beforeDinner.upcoming.map((activity) => activity.id)).toEqual([
-      dinnerActivity.id,
-      communitySaleActivity.id,
-      waytoagiActivity.id,
-    ]);
-    expect(beforeDinner.started).toHaveLength(0);
+  it("uses startsAt and endsAt as exact three-state boundaries", () => {
+    const beforeStart = "2026-08-28T08:59:59Z";
+    const atStart = "2026-08-28T09:00:00Z";
+    const beforeEnd = "2026-08-28T12:59:59Z";
+    const atEnd = "2026-08-28T13:00:00Z";
 
-    const atDinnerStart = partitionActivities(ACTIVITY_CATALOG, "2026-08-28T09:00:00Z");
-    expect(atDinnerStart.upcoming.map((activity) => activity.id)).toEqual([
-      communitySaleActivity.id,
-      waytoagiActivity.id,
-    ]);
-    expect(atDinnerStart.started.map((activity) => activity.id)).toEqual([
-      dinnerActivity.id,
-    ]);
+    expect(getActivityStatus(dinnerActivity, beforeStart)).toBe("upcoming");
+    expect(getActivityStatus(dinnerActivity, atStart)).toBe("ongoing");
+    expect(getActivityStatus(dinnerActivity, beforeEnd)).toBe("ongoing");
+    expect(getActivityStatus(dinnerActivity, atEnd)).toBe("completed");
 
-    const atCommunitySaleStart = partitionActivities(
-      ACTIVITY_CATALOG,
-      "2026-08-29T00:00:00Z",
-    );
-    expect(atCommunitySaleStart.upcoming.map((activity) => activity.id)).toEqual([
+    const before = partitionActivities(ACTIVITY_CATALOG, beforeStart);
+    expect(before.upcoming.map((activity) => activity.id)).toEqual([
+      dinnerActivity.id,
+      communitySaleActivity.id,
       waytoagiActivity.id,
     ]);
-    expect(atCommunitySaleStart.started.map((activity) => activity.id)).toEqual([
-      communitySaleActivity.id,
-      dinnerActivity.id,
-    ]);
+    expect(before.ongoing).toHaveLength(0);
+    expect(before.completed).toHaveLength(0);
+    expect(before.museumReady).toHaveLength(0);
 
-    const beforeWaytoagi = partitionActivities(ACTIVITY_CATALOG, "2026-08-30T05:29:59Z");
-    expect(beforeWaytoagi.upcoming.map((activity) => activity.id)).toEqual([
+    const running = partitionActivities(ACTIVITY_CATALOG, atStart);
+    expect(running.ongoing.map((activity) => activity.id)).toEqual([dinnerActivity.id]);
+    expect(running.upcoming.map((activity) => activity.id)).toEqual([
+      communitySaleActivity.id,
       waytoagiActivity.id,
     ]);
-    expect(beforeWaytoagi.started.map((activity) => activity.id)).toEqual([
-      communitySaleActivity.id,
-      dinnerActivity.id,
-    ]);
+    expect(running.completed).toHaveLength(0);
 
-    const atStart = partitionActivities(ACTIVITY_CATALOG, "2026-08-30T05:30:00Z");
-    expect(atStart.upcoming).toHaveLength(0);
-    expect(atStart.started.map((activity) => activity.id)).toEqual([
-      waytoagiActivity.id,
-      communitySaleActivity.id,
-      dinnerActivity.id,
-    ]);
+    const completed = partitionActivities(ACTIVITY_CATALOG, atEnd);
+    expect(completed.completed.map((activity) => activity.id)).toEqual([dinnerActivity.id]);
+    expect(completed.museumReady.map((activity) => activity.id)).toEqual([dinnerActivity.id]);
   });
 
-  it("orders upcoming entries by start time and limits the homepage to five", () => {
-    const activities = Array.from({ length: 7 }, (_, index) =>
-      activityAt(
-        `future-${7 - index}`,
-        `2026-09-${String(7 - index).padStart(2, "0")}T12:00:00+07:00`,
-      ),
+  it("orders ongoing first, then future activities, with five active slots total", () => {
+    const reference = "2026-09-01T12:00:00Z";
+    const ongoingSoon = activityAt("ongoing-soon", "2026-09-01T11:30:00Z", 60 * 60 * 1000);
+    const ongoingLater = activityAt("ongoing-later", "2026-09-01T11:00:00Z", 3 * 60 * 60 * 1000);
+    const future = Array.from({ length: 5 }, (_, index) =>
+      activityAt(`future-${index + 1}`, `2026-09-0${index + 2}T12:00:00Z`),
     );
-    const result = partitionActivities(activities, "2026-08-27T00:00:00Z");
-    expect(result.upcoming).toHaveLength(MAX_UPCOMING_ACTIVITIES);
+
+    const result = partitionActivities([future[4], ongoingLater, ...future.slice(0, 4), ongoingSoon], reference);
+    expect(result.ongoing.map((activity) => activity.id)).toEqual([
+      "ongoing-soon",
+      "ongoing-later",
+    ]);
     expect(result.upcoming.map((activity) => activity.id)).toEqual([
       "future-1",
       "future-2",
       "future-3",
-      "future-4",
-      "future-5",
     ]);
+    expect(result.ongoing.length + result.upcoming.length).toBe(MAX_ACTIVE_ACTIVITIES);
   });
 
-  it("projects started activities into the public poster shape and removes duplicates", () => {
+  it("keeps every completion younger than 24 hours even when the right side exceeds five", () => {
+    const referenceMs = Date.parse("2026-09-10T12:00:00Z");
+    const recent = Array.from({ length: 6 }, (_, index) =>
+      activityEndingAt(
+        `recent-${index + 1}`,
+        new Date(referenceMs - (index + 1) * 60 * 60 * 1000).toISOString(),
+      ),
+    );
+    const older = Array.from({ length: 3 }, (_, index) =>
+      activityEndingAt(
+        `older-${index + 1}`,
+        new Date(referenceMs - (48 + index * 24) * 60 * 60 * 1000).toISOString(),
+      ),
+    );
+
+    const result = partitionActivities([...older, ...recent], new Date(referenceMs));
+    expect(result.completed.map((activity) => activity.id)).toEqual([
+      "recent-1",
+      "recent-2",
+      "recent-3",
+      "recent-4",
+      "recent-5",
+      "recent-6",
+    ]);
+    expect(result.completed.length).toBeGreaterThan(MAX_COMPLETED_ACTIVITIES);
+    expect(result.museumReady).toHaveLength(recent.length + older.length);
+  });
+
+  it("fills the completed timeline to five after the 24-hour guarantee expires", () => {
+    const referenceMs = Date.parse("2026-09-10T12:00:00Z");
+    const recent = [1, 2].map((hours) =>
+      activityEndingAt(`recent-${hours}`, new Date(referenceMs - hours * 60 * 60 * 1000).toISOString()),
+    );
+    const older = [25, 26, 27, 28, 29].map((hours) =>
+      activityEndingAt(`older-${hours}`, new Date(referenceMs - hours * 60 * 60 * 1000).toISOString()),
+    );
+
+    const result = partitionActivities([...older, ...recent], new Date(referenceMs));
+    expect(result.completed.map((activity) => activity.id)).toEqual([
+      "recent-1",
+      "recent-2",
+      "older-25",
+      "older-26",
+      "older-27",
+    ]);
+    expect(result.completed).toHaveLength(MAX_COMPLETED_ACTIVITIES);
+    expect(referenceMs - Date.parse(result.completed[1].endsAt)).toBeLessThan(
+      COMPLETED_ACTIVITY_GRACE_MS,
+    );
+  });
+
+  it("projects completed activities into the Event Museum and removes duplicates", () => {
     const projected = toEventMuseumPoster(approvedActivity);
     expect(projected).toMatchObject({
       imagePath: "/media/activities/waytoagi/27-improv-ai-shortfilm/v1/poster.webp",

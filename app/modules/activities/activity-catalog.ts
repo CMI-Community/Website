@@ -1,6 +1,17 @@
 import { WAYTOAGI_27_ISSUE } from "../projects/project-catalog";
 
-export const MAX_UPCOMING_ACTIVITIES = 5;
+export const MAX_ACTIVE_ACTIVITIES = 5;
+export const MAX_COMPLETED_ACTIVITIES = 5;
+export const COMPLETED_ACTIVITY_GRACE_MS = 24 * 60 * 60 * 1000;
+
+export type ActivityStatus = "upcoming" | "ongoing" | "completed";
+
+export interface ActivityLifecycle {
+  upcoming: ActivityDefinition[];
+  ongoing: ActivityDefinition[];
+  completed: ActivityDefinition[];
+  museumReady: ActivityDefinition[];
+}
 
 export interface ActivityDefinition {
   id: string;
@@ -132,22 +143,49 @@ export function getActivityPosterSrc(activity: ActivityDefinition): string {
   return `/media/${activity.poster.objectKey}`;
 }
 
+export function getActivityStatus(
+  activity: ActivityDefinition,
+  referenceTime: string | Date = new Date(),
+): ActivityStatus {
+  const reference = asTimestamp(referenceTime);
+  if (reference < asTimestamp(activity.startsAt)) return "upcoming";
+  if (reference < asTimestamp(activity.endsAt)) return "ongoing";
+  return "completed";
+}
+
 export function partitionActivities(
   activities: readonly ActivityDefinition[],
   referenceTime: string | Date = new Date(),
-) {
+): ActivityLifecycle {
   const reference = asTimestamp(referenceTime);
-  const ordered = [...activities].sort(
+  const upcoming = [...activities]
+    .filter((activity) => getActivityStatus(activity, referenceTime) === "upcoming")
+    .sort(
     (left, right) => asTimestamp(left.startsAt) - asTimestamp(right.startsAt),
   );
+  const ongoing = [...activities]
+    .filter((activity) => getActivityStatus(activity, referenceTime) === "ongoing")
+    .sort((left, right) => asTimestamp(left.endsAt) - asTimestamp(right.endsAt));
+  const activeSlots = Math.max(0, MAX_ACTIVE_ACTIVITIES - ongoing.length);
+  const museumReady = [...activities]
+    .filter((activity) => getActivityStatus(activity, referenceTime) === "completed")
+    .sort((left, right) => asTimestamp(right.endsAt) - asTimestamp(left.endsAt));
+  const guaranteed = museumReady.filter(
+    (activity) => reference - asTimestamp(activity.endsAt) < COMPLETED_ACTIVITY_GRACE_MS,
+  );
+  const guaranteedIds = new Set(guaranteed.map((activity) => activity.id));
+  const completed = [
+    ...guaranteed,
+    ...museumReady
+      .filter((activity) => !guaranteedIds.has(activity.id))
+      .slice(0, Math.max(0, MAX_COMPLETED_ACTIVITIES - guaranteed.length)),
+  ];
 
   return {
-    upcoming: ordered
-      .filter((activity) => asTimestamp(activity.startsAt) > reference)
-      .slice(0, MAX_UPCOMING_ACTIVITIES),
-    started: ordered
-      .filter((activity) => asTimestamp(activity.startsAt) <= reference)
-      .reverse(),
+    upcoming: upcoming.slice(0, activeSlots),
+    ongoing: ongoing.slice(0, MAX_ACTIVE_ACTIVITIES),
+    completed,
+    museumReady,
   };
 }
 
@@ -171,9 +209,9 @@ export function toEventMuseumPoster(activity: ActivityDefinition): EventMuseumPo
 
 export function mergeEventMuseumPosters(
   catalogPosters: readonly EventMuseumPoster[],
-  startedActivities: readonly ActivityDefinition[],
+  completedActivities: readonly ActivityDefinition[],
 ): EventMuseumPoster[] {
-  const activityPosters = startedActivities.map(toEventMuseumPoster);
+  const activityPosters = completedActivities.map(toEventMuseumPoster);
   const activityIds = new Set(activityPosters.map((poster) => poster.id));
   const activityUrls = new Set(activityPosters.map((poster) => poster.articleUrl));
   return [
