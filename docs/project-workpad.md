@@ -7,7 +7,7 @@ Last updated: 2026-08-28 12:10 Asia/Bangkok
 ## Snapshot
 
 - Status: `Shipped`
-- Current task：[Issue #29：将近期活动改为双侧连续时间线](https://github.com/CMI-Community/Website/issues/29) 已随 v0.3.1 发布；production 证据与 Release Record 正在合并归档。
+- Current task：[Issue #29：将近期活动改为双侧连续时间线](https://github.com/CMI-Community/Website/issues/29) 已随 v0.3.1 发布；[production evidence PR #31](https://github.com/CMI-Community/Website/pull/31) 正在合并归档 Release Record。
 - Current focus：观察 v0.3.1 production；活动将在各自 `endsAt` 后进入右侧“已完成”和 Event Museum。
 - Next step：完成 48 小时观察；若无生产异常，不再改动本版本。后续活动继续通过统一审核目录发布。
 - Latest production runtime release: [v0.3.1](https://github.com/CMI-Community/Website/releases/tag/v0.3.1)
