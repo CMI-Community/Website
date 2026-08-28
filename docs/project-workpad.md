@@ -1,22 +1,24 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-28 11:48 Asia/Bangkok
+Last updated: 2026-08-28 12:10 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
-- Current task：[Issue #29：将近期活动改为双侧连续时间线](https://github.com/CMI-Community/Website/issues/29)。
-- Current focus：内容负责人已明确批准 production；将版本提升为 `0.3.1`，重新通过 required CI 与 staging 后合并 PR #30，并从固定 `main` 提交执行受保护生产发布。
-- Next step：完成最终 CI / staging、合并 main、发布 production、双视口验收；验收通过后补齐 v0.3.1 Release Record 与 GitHub Release。
-- Latest production runtime release: [v0.3.0](https://github.com/CMI-Community/Website/releases/tag/v0.3.0)
+- Status: `Shipped`
+- Current task：[Issue #29：将近期活动改为双侧连续时间线](https://github.com/CMI-Community/Website/issues/29) 已随 v0.3.1 发布；production 证据与 Release Record 正在合并归档。
+- Current focus：观察 v0.3.1 production；活动将在各自 `endsAt` 后进入右侧“已完成”和 Event Museum。
+- Next step：完成 48 小时观察；若无生产异常，不再改动本版本。后续活动继续通过统一审核目录发布。
+- Latest production runtime release: [v0.3.1](https://github.com/CMI-Community/Website/releases/tag/v0.3.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
-- 等待决定：无；内容负责人于 2026-08-28 11:48 Asia/Bangkok 明确要求发布到正式环境。
-- `DECIDED`：v0.3.1 production 发布源锁定为 PR #30 最终合并后的 `main` 提交；当前 Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4` 作为直接回滚点。本轮无 D1 migration、R2 写入或公共 API 变化。
+- 等待决定：无；v0.3.1 已完成 production 发布与验收。
+- `SHIPPED`：[PR #30](https://github.com/CMI-Community/Website/pull/30) 合并为 `main@fd0c945e`；受保护 [production run 33143337095](https://github.com/CMI-Community/Website/actions/runs/33143337095) 发布 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f`。健康接口为 production，`www` 308 保留 path/query；本轮无 D1 migration、R2 写入或公共 API 变化。
+- `VERIFIED`：production 完整单 worker 套件为 21 passed / 5 skipped / 2 冷加载超时；两条超时路径随后各连续复测 3 次，共 6/6 通过。1440×900 与 390×844 目视确认连续时间带、三期顺序、NOW、空的已完成分组和无页面横向溢出；控制台 0 errors / 0 warnings。
+- `VERIFIED`：[v0.3.1 Release Record](./releases/v0.3.1.md) 固定发布源、运行版本、验收证据和回滚点；上一 Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4` 保留为直接回滚版本。
 - `DECIDED`：[ADR 0009](./adr/0009-recent-activity-timeline.md) 替代 ADR 0008 的“开始即移出”规则；活动在 `endsAt` 后立即进入右侧和 Event Museum，首页默认保留最近 5 场且为每场提供至少 24 小时可见保障。
 - `VERIFIED`：#29 本地实现完成：左侧按进行中→即将举行排列，右侧展示已完成，NOW 分隔、两组快捷定位、三态文字、空状态、3D、放大层、详情新窗口与焦点恢复均由同一目录投影；Event Museum 只接收 `now >= endsAt` 的活动。
 - `VERIFIED`：#29 本地 `npm run check` 全绿（52 unit tests、16 表 D1 smoke、SSR 与 staging dry-run）；干净临时服务下 Playwright 桌面/390px 为 17 passed / 3 skipped。1440×900 与 390×844 目视确认连续时间带、已完成定位和放大层无页面横向溢出，控制台无 errors / warnings。
@@ -180,9 +182,9 @@ Last updated: 2026-08-28 11:48 Asia/Bangkok
 | Integrity | 源 Storage 有 6 个对象未被任何档案引用 | 直接删除会破坏原始证据，直接公开会制造孤立媒体 | 保留为非公开迁移证据；production 未删除、未公开且未建立虚假关联 | `VERIFIED EXCEPTION` |
 | Source | 兰纳旧仓库存在未提交 FAM 扩充 | 直接复制会把未审核内容混入线上基线 | 不改脏工作区；线上行为为基线，新增内容走独立审核 | `OBSERVED` |
 | Release | Projects T3 涉及 Worker、D1、R2 与旧 Vercel | 错序切换会失去回滚入口 | D1/R2 → Worker → production 验收 → 旧 Vercel 308 已按序完成；两个旧运行版本保留 | `VERIFIED` |
-| Time | 近期活动在开始时刻自动转入 Event Museum | 错误时区会提前或延后隐藏招募 | 目录强制 ISO offset；固定测试时钟和实时 production 招募态均通过 | `VERIFIED` |
+| Time | 近期活动在结束时刻转入右侧时间线和 Event Museum | 错误时区会提前或延后状态切换 | 目录强制 ISO offset；开始、结束、结束后 24 小时固定测试时钟和实时 production 招募态均通过 | `VERIFIED` |
 | Media | 三张近期活动海报进入版本化 R2 | 原始抓取进 Git 或路径过宽会破坏内容与公开边界 | production 同域路由逐张回读大小与 SHA-256；只开放目录精确白名单 GET/HEAD | `VERIFIED` |
-| Time | 《牛来》活动于 2026-08-28 16:00 开始 | 发布后招募态验收窗口较短；开始后按规则进入 Event Museum | production 发布时仍按 8 月 28 / 29 / 30 顺序展示；固定时钟覆盖边界瞬间 | `VERIFIED` |
+| Time | 《牛来》活动于 2026-08-28 16:00 开始、20:00 结束 | 发布后状态验收窗口较短；需区分进行中与已完成 | production 发布时仍按 8 月 28 / 29 / 30 顺序展示；固定时钟覆盖开始、结束与 24 小时保障边界 | `VERIFIED` |
 
 ## Implementation Notes
 
@@ -271,10 +273,14 @@ Last updated: 2026-08-28 11:48 Asia/Bangkok
 | 2026-08-28 | [#29 staging deploy](https://github.com/CMI-Community/Website/actions/runs/33141592425) | `VERIFIED` | Worker `260d52a9-a7a9-494a-8cdb-288b0639f28a`；无 D1 migration，production job 未运行 |
 | 2026-08-28 | #29 staging 首轮远端套件 | `OBSERVED / RETRIED` | 三 worker 并发同时回读 Photo Museum 大量媒体时出现 socket hang up、hydration 和导航超时；SSR 与真实页面可返回，失败跨兰纳、Projects、Photo 与时间线，不作为通过证据 |
 | 2026-08-28 | #29 staging 最终远端套件与目视 | `VERIFIED` | 单 worker 顺序运行 23 passed / 5 skipped；1440×900 与 390×844 连续时间带、空的已完成分组、Projects 和 Museum 正常，控制台 0 errors / 0 warnings |
+| 2026-08-28 | [#29 final CI 与 staging](https://github.com/CMI-Community/Website/actions/runs/33143044968) | `VERIFIED` | package 0.3.1 的 required CI 全绿；branch staging Worker `8bf8424d…`、目标用例 6/6，合并后 main staging 继续成功；D1 均无迁移 |
+| 2026-08-28 | [v0.3.1 production deploy](https://github.com/CMI-Community/Website/actions/runs/33143337095) | `VERIFIED` | `main@fd0c945e` 经 protected Environment 发布 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f`；健康接口为 production，上一 Worker `07a64070…` 为回滚点 |
+| 2026-08-28 | v0.3.1 production Playwright 与目视 | `VERIFIED / RETRIED` | 完整套件 21 passed / 5 skipped / 2 桌面冷加载超时；相同两项随后连续 6/6 通过。1440×900 与 390×844 时间线、三期顺序、Museum、Projects 和无溢出通过，控制台 0 errors / 0 warnings |
 | 2026-08-28 | [旧站 PR #1 与 Vercel cutover](https://github.com/CMI-Community/lanna-museum-day-chiang-mai/pull/1) | `VERIFIED` | merge `3f37b25b`；候选版先验证 9 条 308 与静态资产 200，再提升 `dpl_9TgfGckPLhTSnieL5XVioePGNLNd`；中英泰首页/回顾最终均为 CMI 200 |
 
 ## Recent Updates
 
+- 2026-08-28 12:10 Asia/Bangkok：v0.3.1 已正式上线。PR #30 合并为 `main@fd0c945e`，受保护 [production run 33143337095](https://github.com/CMI-Community/Website/actions/runs/33143337095) 发布 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f`；D1 无迁移、R2 无写入。production 健康与 `www` 308 正常；完整远端套件 21 passed / 5 skipped，2 条桌面冷加载超时随后各 3/3 通过。1440×900 与 390×844 目视确认三期位于左侧、NOW 和右侧空状态正确、无横向溢出，控制台 0 errors / 0 warnings。回滚点为上一 Worker `07a64070…`，进入 48 小时观察。
 - 2026-08-28 11:48 Asia/Bangkok：内容负责人明确要求发布到正式环境。当前仓库只有一个 worktree；PR #30 头提交 `569439bf` 相对最新 `main@086178fe` 仅前进两条本轮提交，工作区干净、required CI 全绿、staging 远端 23 passed / 5 skipped。production 当前健康且 Worker 为 `07a64070-bf94-4d55-96c1-493a1c9aaec4`，锁定为直接回滚点；本轮不迁移 D1、不写 R2。package 版本升至 0.3.1，准备重新通过最终 CI / staging 后合并并走受保护 production 发布。
 - 2026-08-28 11:35 Asia/Bangkok：[Draft PR #30](https://github.com/CMI-Community/Website/pull/30) required CI 全绿；staging Worker `260d52a9-a7a9-494a-8cdb-288b0639f28a` 从 `314169bb` 发布，D1 无迁移、production 未运行。首轮三 worker 远端套件因并发回读 Photo Museum 发生跨页面网络超时；改用单 worker 顺序重跑后完整 23 passed / 5 skipped。staging 1440×900 与 390×844 目视确认三张即将活动、NOW、已完成空状态、无页面溢出和控制台 0 errors / 0 warnings。等待用户验收，production 尚未获批准。
 - 2026-08-28 11:18 Asia/Bangkok：#29 本地实现与验收完成。新增三态活动投影和双侧连续时间带，Event Museum 归档边界从开始时刻改为结束时刻；桌面短轨道居中，390px 保持同一分组顺序与快捷定位。`npm run check` 全绿；Playwright 在清理 15 小时旧开发服务后由干净临时服务运行，结果为 17 passed / 3 skipped；真实浏览器桌面、手机、已完成放大层和控制台目视通过。下一步为 Draft PR、required CI 与 staging，production 未改变。
