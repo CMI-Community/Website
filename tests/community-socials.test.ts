@@ -2,18 +2,22 @@ import { describe, expect, it } from "vitest";
 import { COMMUNITY_LINKS, COMMUNITY_SOCIALS } from "../app/shared/community-socials";
 
 describe("CMI community social entries", () => {
-  it("includes all seven public entries with Discord first and featured", () => {
+  it("includes all seven public entries without emphasizing Discord", () => {
     expect(COMMUNITY_SOCIALS).toHaveLength(7);
     expect(COMMUNITY_SOCIALS.map((entry) => entry.id)).toEqual([
-      "discord",
-      "bilibili",
       "official",
       "xiaohongshu",
-      "reddit",
-      "github",
+      "bilibili",
       "wechat",
+      "github",
+      "reddit",
+      "discord",
     ]);
-    expect(COMMUNITY_SOCIALS[0]).toMatchObject({ id: "discord", featured: true });
+    expect(COMMUNITY_SOCIALS.at(-1)).toMatchObject({
+      id: "discord",
+      detail: "社区群聊",
+    });
+    expect(COMMUNITY_SOCIALS.every((entry) => !("featured" in entry))).toBe(true);
   });
 
   it("uses the approved Discord, Bilibili, and Xiaohongshu destinations", () => {

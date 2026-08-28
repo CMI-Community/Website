@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { Route } from "./+types/home";
+import {
+  ACTIVITY_CATALOG,
+  mergeEventMuseumPosters,
+  partitionActivities,
+} from "../modules/activities/activity-catalog";
+import { UpcomingActivities } from "../modules/activities/components/UpcomingActivities";
 import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.jsx";
 import { PhotoMuseum } from "../modules/photo-museum/components/PhotoMuseum";
 import { ProjectMenu } from "../modules/projects/components/ProjectMenu";
@@ -76,6 +82,7 @@ async function loadPosterCatalog(env: CloudflareEnv): Promise<PosterCatalog> {
 
 export async function loader({ context }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
+  const activityLifecycle = partitionActivities(ACTIVITY_CATALOG, new Date());
   const [photoResult, posterResult] = await Promise.allSettled([
     loadPhotoCatalog(env),
     loadPosterCatalog(env),
@@ -84,8 +91,14 @@ export async function loader({ context }: Route.LoaderArgs) {
   // environments. Keeping this projection stable also makes local homepage
   // review useful without copying the complete poster archive into local R2.
   const posterAssetBase = "https://assets.cmi.community";
+  const startedActivityPosters = activityLifecycle.started;
+  const mergedEventPosters = mergeEventMuseumPosters(
+    posterResult.status === "fulfilled" ? posterResult.value.posters : [],
+    startedActivityPosters,
+  );
 
   return {
+    upcomingActivities: activityLifecycle.upcoming,
     photoMuseum:
       photoResult.status === "fulfilled"
         ? {
@@ -95,10 +108,10 @@ export async function loader({ context }: Route.LoaderArgs) {
           }
         : { available: false as const, photos: [], assetBase: "" },
     eventMuseum:
-      posterResult.status === "fulfilled"
+      posterResult.status === "fulfilled" || mergedEventPosters.length
         ? {
             available: true as const,
-            posters: posterResult.value.posters,
+            posters: mergedEventPosters,
             assetBase: `${posterAssetBase}/poster-wall/v1/posters/`,
           }
         : { available: false as const, posters: [], assetBase: "" },
@@ -152,7 +165,6 @@ function HeroSocials() {
                 <b>{social.label}</b>
                 <small>{social.detail}</small>
               </span>
-              {"featured" in social && social.featured && <em>PRIMARY</em>}
               {"href" in social && <span className="home-social__arrow" aria-hidden="true">↗</span>}
             </>
           );
@@ -160,7 +172,7 @@ function HeroSocials() {
           if ("href" in social) {
             return (
               <a
-                className={`home-social__item ${"featured" in social && social.featured ? "is-featured" : ""}`}
+                className="home-social__item"
                 href={social.href}
                 target="_blank"
                 rel="noreferrer"
@@ -260,9 +272,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <a href="#event-museum" tabIndex={navVisible ? 0 : -1} aria-current={activeSection === "event-museum" ? "page" : undefined}>Event Museum</a>
           {navVisible && <ProjectMenu placement="sticky" />}
         </div>
-        <a className="home-sticky-nav__discord" href={COMMUNITY_LINKS.discord} target="_blank" rel="noreferrer" tabIndex={navVisible ? 0 : -1}>
-          <span>JOIN</span> Discord ↗
-        </a>
       </nav>
 
       <section className="home-hero" id="home" ref={heroRef} aria-labelledby="home-title">
@@ -289,6 +298,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
           <p className="home-hero__manifesto">连接彼此，一起创造，让影响发生。</p>
         </div>
+
+        <UpcomingActivities activities={loaderData.upcomingActivities} />
 
         <nav className="home-museum-entries" aria-label="进入 CMI Museums">
           <a href="#photo-museum">

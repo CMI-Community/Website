@@ -37,7 +37,7 @@ body:has(.cmi-home-page) {
   right: 0;
   left: 0;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   min-height: 58px;
   padding: 7px 16px;
@@ -100,26 +100,10 @@ body:has(.cmi-home-page) {
   outline: none;
 }
 
-.home-sticky-nav__discord {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 36px;
-  padding: 7px 12px;
-  color: #17130f;
-  background: #ffab74;
-  font: 700 9px "DM Mono", monospace;
-  letter-spacing: .08em;
-}
-
-.home-sticky-nav__discord span { color: #8d280d; font-size: 7px; }
-.home-sticky-nav__discord:hover,
-.home-sticky-nav__discord:focus-visible { background: #efefe9; outline: 2px solid #ff4d1f; }
-
 .home-hero {
   position: relative;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto auto;
   isolation: isolate;
   color: var(--home-ink);
   background:
@@ -319,7 +303,7 @@ body:has(.cmi-home-page) {
 
 .home-social__heading span { color: var(--home-signal); font: 700 8px "DM Mono", monospace; letter-spacing: .06em; }
 .home-social__heading b { font-family: "Noto Serif SC", serif; font-size: 13px; font-weight: 500; }
-.home-social__grid { display: grid; grid-template-columns: 1.35fr repeat(6, 1fr); min-width: 0; }
+.home-social__grid { display: grid; grid-template-columns: repeat(7, 1fr); min-width: 0; }
 
 .home-social__item {
   position: relative;
@@ -342,8 +326,6 @@ body:has(.cmi-home-page) {
 .home-social__item:last-child { border-right: 0; }
 .home-social__item:hover,
 .home-social__item:focus-visible { z-index: 2; color: var(--home-paper); outline: none; background: var(--home-ink); }
-.home-social__item.is-featured { color: #241309; background: #ffab74; }
-.home-social__item.is-featured:hover { background: var(--home-signal); }
 .home-social__glyph {
   display: grid;
   flex: none;
@@ -358,7 +340,6 @@ body:has(.cmi-home-page) {
 .home-social__copy b { font-size: 10px; }
 .home-social__copy small { overflow: hidden; color: var(--home-muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .home-social__item:hover small { color: rgb(239 239 233 / 62%); }
-.home-social__item em { position: absolute; top: 3px; right: 4px; color: #7a290f; font: 700 6px "DM Mono", monospace; letter-spacing: .04em; }
 .home-social__arrow { position: absolute; right: 4px; bottom: 2px; font-size: 9px; }
 
 .home-social__qr {
@@ -430,8 +411,6 @@ body:has(.cmi-home-page) {
   .home-sticky-nav__brand span { display: none; }
   .home-sticky-nav__sections { justify-content: start; }
   .home-sticky-nav__sections > a { padding-inline: 8px; font-size: 8px; letter-spacing: .04em; }
-  .home-sticky-nav__discord { min-height: 34px; padding-inline: 8px; font-size: 9px; letter-spacing: .03em; }
-  .home-sticky-nav__discord span { display: none; }
 
   .home-hero__topline { min-height: 52px; padding: 6px 12px; }
   .home-hero__brand img { width: 35px; height: 35px; }
@@ -463,7 +442,6 @@ body:has(.cmi-home-page) {
   .home-social__heading { display: none; }
   .home-social__grid { grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--home-line); border-left: 1px solid var(--home-line); }
   .home-social__item { min-height: 47px; padding: 6px 7px; border-right: 1px solid var(--home-line); border-bottom: 1px solid var(--home-line); }
-  .home-social__item.is-featured { grid-column: 1 / -1; min-height: 48px; }
   .home-social__glyph { width: 26px; height: 26px; font-size: 8px; }
   .home-social__copy b { font-size: 10px; }
   .home-social__copy small { font-size: 7px; }
@@ -482,10 +460,13 @@ body:has(.cmi-home-page) {
   .home-hero__manifesto { display: none; }
   .home-museum-entries > a { min-height: 73px; }
   .home-social__item { min-height: 40px; }
-  .home-social__item.is-featured { min-height: 41px; }
   .home-social__glyph { width: 22px; height: 22px; }
   .home-social__copy b { font-size: 9px; }
   .home-social__copy small { font-size: 6px; }
+}
+
+@media (max-width: 520px) {
+  .home-hero__location { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

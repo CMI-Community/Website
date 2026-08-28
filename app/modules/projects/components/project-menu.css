@@ -88,7 +88,9 @@
 }
 
 .project-menu__series > header {
-  padding: 13px 11px 11px;
+  position: relative;
+  padding: 14px 13px 13px 38px;
+  border-left: 4px solid var(--home-signal);
 }
 
 .project-menu__series h2,
@@ -104,6 +106,17 @@
   text-wrap: balance;
 }
 
+.project-menu__level {
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  color: var(--home-signal);
+  font: 700 7px/1.25 "DM Mono", monospace;
+  letter-spacing: .04em;
+  text-orientation: mixed;
+  writing-mode: vertical-rl;
+}
+
 .project-menu__series header p {
   margin-top: 4px;
   color: var(--home-muted);
@@ -112,11 +125,25 @@
   overflow-wrap: anywhere;
 }
 
+.project-menu__issues-label {
+  margin: 0;
+  padding: 7px 11px 7px 39px;
+  border-top: 1px solid var(--home-ink);
+  color: var(--home-muted);
+  background: rgb(20 21 17 / 4%);
+  font: 700 7px "DM Mono", monospace;
+  letter-spacing: .08em;
+}
+
 .project-menu__series ul {
   margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--home-ink);
+  padding: 0 0 0 22px;
+  border-left: 1px solid var(--home-ink);
   list-style: none;
+}
+
+.project-menu__series li + li {
+  border-top: 1px solid var(--home-line);
 }
 
 .project-menu__series a {
@@ -124,8 +151,8 @@
   grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
   gap: 9px;
-  min-height: 54px;
-  padding: 8px 11px;
+  min-height: 58px;
+  padding: 9px 11px 9px 9px;
   text-decoration: none;
   touch-action: manipulation;
 }
@@ -154,12 +181,11 @@
 }
 
 .project-menu__issue-copy b {
-  overflow: hidden;
   font-family: "Noto Serif SC", serif;
   font-size: 12px;
   font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  text-wrap: balance;
 }
 
 .project-menu__issue-copy small {
