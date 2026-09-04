@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-09-04 10:34 Asia/Bangkok
+Last updated: 2026-09-04 11:18 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -8,8 +8,8 @@ Last updated: 2026-09-04 10:34 Asia/Bangkok
 
 - Status: `In Progress`
 - Current task：[Issue #32：发布 9 月 6 日分享会与两场 AI+3D 工坊](https://github.com/CMI-Community/Website/issues/32)。
-- Current focus：三条活动记录、staging R2 媒体与本地全量验收已完成，准备提交 PR 并执行 required CI / staging 远端验收。
-- Next step：PR required CI → staging Worker 与远端验收 → production 发布、Release Record 和 GitHub Release。
+- Current focus：staging Worker `c3e289a3…` 的真实媒体、双视口、控制台和首轮失败路径均已验收；准备完成最终 CI 后合并。
+- Next step：最终 required CI → 合并 PR → production R2 / Worker 发布 → 远端验收、Release Record 和 GitHub Release。
 - Latest production runtime release: [v0.3.1](https://github.com/CMI-Community/Website/releases/tag/v0.3.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -213,6 +213,9 @@ Last updated: 2026-09-04 10:34 Asia/Bangkok
 | --- | --- | --- | --- |
 | 2026-09-04 | #32 本地完整检查 | `VERIFIED` | `npm run check` 全绿：公开边界、trace、类型、53 tests、16 表 D1 smoke、SSR build 与 staging dry-run 通过 |
 | 2026-09-04 | #32 本地 Playwright 与双视口 | `VERIFIED` | 17 passed / 3 skipped；固定 09-04 时钟下 09-06 分享会在即将举行，两场 AI+3D 分别进入已完成和 Event Museum；1440×900 与 390×844 均无页面横向溢出 |
+| 2026-09-04 | [#32 required CI](https://github.com/CMI-Community/Website/actions/runs/33832530123) | `VERIFIED` | foundation 全绿；依赖审计、公开边界、trace、类型、53 tests、D1、SSR、staging dry-run 与双视口浏览器通过 |
+| 2026-09-04 | #32 staging 首轮远端套件 | `OBSERVED / CORRECTING` | 核心活动桌面/手机均通过；完整套件 21 passed / 5 skipped / 2 failed。旧兰纳详情首次点击早于独立页面 chunk 接管，1056 张旧照片 HEAD 回读在 360 秒超时；增加兰纳交互式重试并定向复测，不把首轮作为通过证据 |
+| 2026-09-04 | #32 staging 最终远端验收 | `VERIFIED / RETRIED` | 兰纳详情修正后本地 3/3、staging 3/3；1056 张既有 Photo Museum 资产回读单项 1/1。新活动桌面/手机、真实 1024px 海报、共享推文两条独立记录、日期、状态和 Event Museum 通过；1440/390 均无整页溢出，干净会话 0 console warnings/errors、0 page errors |
 | 2026-08-08 | `v0.1.0-foundation` production smoke | `VERIFIED` | 10 passed，2 个共享生产写入探针按设计跳过 |
 | 2026-08-08 | R2 公共海报资产 | `VERIFIED` | 180/180 可访问，公共目录不含内部字段 |
 | 2026-08-08 | 身份初始化 | `VERIFIED` | 1 位管理员、1 份 profile、1 条身份初始化审计；bootstrap Secret 已删除 |
@@ -288,6 +291,8 @@ Last updated: 2026-09-04 10:34 Asia/Bangkok
 
 ## Recent Updates
 
+- 2026-09-04 11:18 Asia/Bangkok：staging 最终远端验收完成。兰纳详情用交互式重试替代“父级语言 effect 已运行即代表独立页面 chunk 已接管”的错误假设，本地与 staging 各连续 3/3 通过；首轮超时的 1056 张既有 Photo Museum 资产回读单项 1/1 通过。干净 Chromium 在 1440×900 与 390×844 均显示 09-06 分享会为唯一即将活动、09-02 AI+3D 为最近已完成且 08-26 第一期仍作为第五张保障显示；三张新海报自然宽度 1024，桌面 1440/1440、手机 390/390，0 console warnings/errors、0 page errors。目视确认分享会海报已显示“9月6日（周日）”。production 尚未改变。
+- 2026-09-04 11:02 Asia/Bangkok：[PR #33](https://github.com/CMI-Community/Website/pull/33) 提交 `095999a` 的 required CI 全绿后，发布 staging Worker `c3e289a3-dc68-4aa8-be9a-0630d5c7900d`，上一 staging Worker `243c1d81…` 为回滚点。首轮远端套件的两组活动用例均通过；完整结果 21 passed / 5 skipped / 2 failed，失败是旧兰纳详情独立 chunk 尚未接管时首击被吞，以及批量回读 1056 张旧照片达到 360 秒网络超时。已将兰纳用例改为在 15 秒内验证最终可交互，而非假定语言 provider 挂载就代表页面 chunk 已接管；准备重跑 required CI 与 staging 定向路径。production 尚未改变。
 - 2026-09-04 10:34 Asia/Bangkok：#32 本地门禁完成。`npm run check` 全绿（53 tests、16 表 D1 smoke、SSR 与 staging dry-run），Playwright 桌面/390px 为 17 passed / 3 skipped；固定 09-04 时钟下分享会为唯一即将活动，两场 AI+3D 保持独立并进入已完成与 Event Museum，双视口 `scrollWidth === clientWidth`。页面未改动 Poster Wall 控件；额外诊断看到的 range-input hydration style 提示来自该既有区块且不影响本轮页面、required E2E 或布局验收，将以干净 staging 会话再次确认。
 - 2026-09-04 10:10 Asia/Bangkok：创建 [#32](https://github.com/CMI-Community/Website/issues/32) 与 `codex/32-september-activity-batch`。第一篇公众号正文核实后采用内容负责人更正的 09-06；第二篇由公开 HTML 元数据核实标题、发布时间、09-02 13:30、蒙福学校高中年级和校内活动。三条活动已进入统一目录；两场 AI+3D 共享详情链接但保留独立 ID/海报/期次，并新增同 URL 不去重测试。三张 1024×1536 WebP 已上传 staging R2，回读 SHA-256 分别为 `ad1e21da…e199`、`7cabadf9…b390`、`47390616…db6`；分享会 QR 在原图、修正版 PNG、WebP 三次解码载荷一致。production 尚未改变。
 - 2026-08-28 12:10 Asia/Bangkok：v0.3.1 已正式上线。PR #30 合并为 `main@fd0c945e`，受保护 [production run 33143337095](https://github.com/CMI-Community/Website/actions/runs/33143337095) 发布 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f`；D1 无迁移、R2 无写入。production 健康与 `www` 308 正常；完整远端套件 21 passed / 5 skipped，2 条桌面冷加载超时随后各 3/3 通过。1440×900 与 390×844 目视确认三期位于左侧、NOW 和右侧空状态正确、无横向溢出，控制台 0 errors / 0 warnings。回滚点为上一 Worker `07a64070…`，进入 48 小时观察。
