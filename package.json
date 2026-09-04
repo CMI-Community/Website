@@ -1,6 +1,6 @@
 {
   "name": "cmi-community-website",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "CMI Community official website and community platform.",
   "type": "module",

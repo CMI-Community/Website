@@ -8,6 +8,15 @@ const WAYTOAGI_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg
 const ACTIVITY_TIMELINE_TEST_NOW = Date.parse("2026-08-28T20:30:00+07:00");
 const ACTIVITY_EXPECTATIONS = [
   {
+    startsAt: Date.parse("2026-08-26T00:00:00+07:00"),
+    endsAt: Date.parse("2026-08-27T00:00:00+07:00"),
+    title: "CMI AI+3D 工坊 · 第一期｜首次走进清迈蒙福学校",
+    detailUrl: "https://mp.weixin.qq.com/s/zkHrzX6XIyrE69EsNeI9dg",
+    dateLabel: "2026.08.26 · 周三",
+    timeLabel: "校内活动 · 具体时段未公开",
+    posterKey: "activity-cmi-ai-3d-school-workshop-01-montfort.webp",
+  },
+  {
     startsAt: Date.parse("2026-08-28T16:00:00+07:00"),
     endsAt: Date.parse("2026-08-28T20:00:00+07:00"),
     title: "CMI 吃饭俱乐部 #1 · 周五《牛来》观影",
@@ -33,6 +42,24 @@ const ACTIVITY_EXPECTATIONS = [
     dateLabel: "2026.08.30 · 周日",
     timeLabel: "12:30–17:30 · 清迈时间",
     posterKey: "activity-waytoagi-27-improv-ai-shortfilm.webp",
+  },
+  {
+    startsAt: Date.parse("2026-09-02T13:30:00+07:00"),
+    endsAt: Date.parse("2026-09-03T00:00:00+07:00"),
+    title: "CMI AI+3D 工坊 · 第二期｜清迈蒙福学校",
+    detailUrl: "https://mp.weixin.qq.com/s/zkHrzX6XIyrE69EsNeI9dg",
+    dateLabel: "2026.09.02 · 周三",
+    timeLabel: "13:30 开始 · 结束时间未公开",
+    posterKey: "activity-cmi-ai-3d-school-workshop-02-montfort.webp",
+  },
+  {
+    startsAt: Date.parse("2026-09-06T14:00:00+07:00"),
+    endsAt: Date.parse("2026-09-06T16:00:00+07:00"),
+    title: "从「他们应该」到「我们可以」",
+    detailUrl: "https://mp.weixin.qq.com/s/ih0j87_q_ygzUkqpFvz5bw",
+    dateLabel: "2026.09.06 · 周日",
+    timeLabel: "14:00–16:00 · 清迈时间",
+    posterKey: "activity-cmi-public-action-sharing-01-from-should-to-can.webp",
   },
 ] as const;
 

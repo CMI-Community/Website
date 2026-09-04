@@ -1,21 +1,24 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-08-28 12:10 Asia/Bangkok
+Last updated: 2026-09-04 10:34 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `Shipped`
-- Current task：[Issue #29：将近期活动改为双侧连续时间线](https://github.com/CMI-Community/Website/issues/29) 已随 v0.3.1 发布；[production evidence PR #31](https://github.com/CMI-Community/Website/pull/31) 正在合并归档 Release Record。
-- Current focus：观察 v0.3.1 production；活动将在各自 `endsAt` 后进入右侧“已完成”和 Event Museum。
-- Next step：完成 48 小时观察；若无生产异常，不再改动本版本。后续活动继续通过统一审核目录发布。
+- Status: `In Progress`
+- Current task：[Issue #32：发布 9 月 6 日分享会与两场 AI+3D 工坊](https://github.com/CMI-Community/Website/issues/32)。
+- Current focus：三条活动记录、staging R2 媒体与本地全量验收已完成，准备提交 PR 并执行 required CI / staging 远端验收。
+- Next step：PR required CI → staging Worker 与远端验收 → production 发布、Release Record 和 GitHub Release。
 - Latest production runtime release: [v0.3.1](https://github.com/CMI-Community/Website/releases/tag/v0.3.1)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
-- 等待决定：无；v0.3.1 已完成 production 发布与验收。
+- 等待决定：无；内容负责人已在任务中明确要求更新后直接发布，production 权限已获得。
+- `IN PROGRESS`：#32 新增 2026-08-26、09-02 两场 CMI AI+3D 蒙福学校工坊与 09-06《从「他们应该」到「我们可以」》分享会；两场工坊共用一篇推文但保留独立 ID、海报和期次。
+- `VERIFIED`：分享会公众号原文写 09-05，内容负责人明确更正为 09-06；发布版海报只替换日期面板，原图、修正版 PNG 与最终 WebP 的 QR 均解码为同一微信载荷。第二篇推文公开元数据确认 09-02 13:30、蒙福学校高中年级和校内活动。
+- `VERIFIED`：三张 1024×1536 WebP 已写入 staging R2 版本化路径，上传后逐对象回读 SHA-256 与本地一致；production 尚未写入，本轮无 D1 migration、公共 API 或权限变化。
 - `SHIPPED`：[PR #30](https://github.com/CMI-Community/Website/pull/30) 合并为 `main@fd0c945e`；受保护 [production run 33143337095](https://github.com/CMI-Community/Website/actions/runs/33143337095) 发布 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f`。健康接口为 production，`www` 308 保留 path/query；本轮无 D1 migration、R2 写入或公共 API 变化。
 - `VERIFIED`：production 完整单 worker 套件为 21 passed / 5 skipped / 2 冷加载超时；两条超时路径随后各连续复测 3 次，共 6/6 通过。1440×900 与 390×844 目视确认连续时间带、三期顺序、NOW、空的已完成分组和无页面横向溢出；控制台 0 errors / 0 warnings。
 - `VERIFIED`：[v0.3.1 Release Record](./releases/v0.3.1.md) 固定发布源、运行版本、验收证据和回滚点；上一 Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4` 保留为直接回滚版本。
@@ -185,6 +188,9 @@ Last updated: 2026-08-28 12:10 Asia/Bangkok
 | Time | 近期活动在结束时刻转入右侧时间线和 Event Museum | 错误时区会提前或延后状态切换 | 目录强制 ISO offset；开始、结束、结束后 24 小时固定测试时钟和实时 production 招募态均通过 | `VERIFIED` |
 | Media | 三张近期活动海报进入版本化 R2 | 原始抓取进 Git 或路径过宽会破坏内容与公开边界 | production 同域路由逐张回读大小与 SHA-256；只开放目录精确白名单 GET/HEAD | `VERIFIED` |
 | Time | 《牛来》活动于 2026-08-28 16:00 开始、20:00 结束 | 发布后状态验收窗口较短；需区分进行中与已完成 | production 发布时仍按 8 月 28 / 29 / 30 顺序展示；固定时钟覆盖开始、结束与 24 小时保障边界 | `VERIFIED` |
+| Source | #32 分享会推文/原海报写 09-05，内容负责人更正为 09-06 | 文字与图像日期冲突会误导参与者 | 官网目录使用 09-06；发布版海报只替换日期面板并验证 QR 载荷不变 | `VERIFIED` |
+| Time | #32 两场校内工坊未公开完整时段 | 伪造结束时间会把未知事实写成精确安排 | 展示文案显式标记未知；生命周期只使用覆盖当天的保守边界，且两场现均已完成 | `UNKNOWN / BOUNDED` |
+| Media | #32 两场 AI+3D 共用同一篇推文 | 以文章 URL 去重可能误删一个真实活动 | 独立活动 ID/海报/期次；单元测试固定同 URL 保留两条 Event Museum 记录 | `VERIFIED` |
 
 ## Implementation Notes
 
@@ -205,6 +211,8 @@ Last updated: 2026-08-28 12:10 Asia/Bangkok
 
 | Date | Check | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-09-04 | #32 本地完整检查 | `VERIFIED` | `npm run check` 全绿：公开边界、trace、类型、53 tests、16 表 D1 smoke、SSR build 与 staging dry-run 通过 |
+| 2026-09-04 | #32 本地 Playwright 与双视口 | `VERIFIED` | 17 passed / 3 skipped；固定 09-04 时钟下 09-06 分享会在即将举行，两场 AI+3D 分别进入已完成和 Event Museum；1440×900 与 390×844 均无页面横向溢出 |
 | 2026-08-08 | `v0.1.0-foundation` production smoke | `VERIFIED` | 10 passed，2 个共享生产写入探针按设计跳过 |
 | 2026-08-08 | R2 公共海报资产 | `VERIFIED` | 180/180 可访问，公共目录不含内部字段 |
 | 2026-08-08 | 身份初始化 | `VERIFIED` | 1 位管理员、1 份 profile、1 条身份初始化审计；bootstrap Secret 已删除 |
@@ -280,6 +288,8 @@ Last updated: 2026-08-28 12:10 Asia/Bangkok
 
 ## Recent Updates
 
+- 2026-09-04 10:34 Asia/Bangkok：#32 本地门禁完成。`npm run check` 全绿（53 tests、16 表 D1 smoke、SSR 与 staging dry-run），Playwright 桌面/390px 为 17 passed / 3 skipped；固定 09-04 时钟下分享会为唯一即将活动，两场 AI+3D 保持独立并进入已完成与 Event Museum，双视口 `scrollWidth === clientWidth`。页面未改动 Poster Wall 控件；额外诊断看到的 range-input hydration style 提示来自该既有区块且不影响本轮页面、required E2E 或布局验收，将以干净 staging 会话再次确认。
+- 2026-09-04 10:10 Asia/Bangkok：创建 [#32](https://github.com/CMI-Community/Website/issues/32) 与 `codex/32-september-activity-batch`。第一篇公众号正文核实后采用内容负责人更正的 09-06；第二篇由公开 HTML 元数据核实标题、发布时间、09-02 13:30、蒙福学校高中年级和校内活动。三条活动已进入统一目录；两场 AI+3D 共享详情链接但保留独立 ID/海报/期次，并新增同 URL 不去重测试。三张 1024×1536 WebP 已上传 staging R2，回读 SHA-256 分别为 `ad1e21da…e199`、`7cabadf9…b390`、`47390616…db6`；分享会 QR 在原图、修正版 PNG、WebP 三次解码载荷一致。production 尚未改变。
 - 2026-08-28 12:10 Asia/Bangkok：v0.3.1 已正式上线。PR #30 合并为 `main@fd0c945e`，受保护 [production run 33143337095](https://github.com/CMI-Community/Website/actions/runs/33143337095) 发布 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f`；D1 无迁移、R2 无写入。production 健康与 `www` 308 正常；完整远端套件 21 passed / 5 skipped，2 条桌面冷加载超时随后各 3/3 通过。1440×900 与 390×844 目视确认三期位于左侧、NOW 和右侧空状态正确、无横向溢出，控制台 0 errors / 0 warnings。回滚点为上一 Worker `07a64070…`，进入 48 小时观察。
 - 2026-08-28 11:48 Asia/Bangkok：内容负责人明确要求发布到正式环境。当前仓库只有一个 worktree；PR #30 头提交 `569439bf` 相对最新 `main@086178fe` 仅前进两条本轮提交，工作区干净、required CI 全绿、staging 远端 23 passed / 5 skipped。production 当前健康且 Worker 为 `07a64070-bf94-4d55-96c1-493a1c9aaec4`，锁定为直接回滚点；本轮不迁移 D1、不写 R2。package 版本升至 0.3.1，准备重新通过最终 CI / staging 后合并并走受保护 production 发布。
 - 2026-08-28 11:35 Asia/Bangkok：[Draft PR #30](https://github.com/CMI-Community/Website/pull/30) required CI 全绿；staging Worker `260d52a9-a7a9-494a-8cdb-288b0639f28a` 从 `314169bb` 发布，D1 无迁移、production 未运行。首轮三 worker 远端套件因并发回读 Photo Museum 发生跨页面网络超时；改用单 worker 顺序重跑后完整 23 passed / 5 skipped。staging 1440×900 与 390×844 目视确认三张即将活动、NOW、已完成空状态、无页面溢出和控制台 0 errors / 0 warnings。等待用户验收，production 尚未获批准。
