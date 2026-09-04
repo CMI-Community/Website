@@ -7,7 +7,7 @@ Last updated: 2026-09-04 12:10 Asia/Bangkok
 ## Snapshot
 
 - Status: `Shipped`
-- Current task：[Issue #32：发布 9 月 6 日分享会与两场 AI+3D 工坊](https://github.com/CMI-Community/Website/issues/32) 已随 v0.3.2 发布；正在归档 production evidence。
+- Current task：[Issue #32：发布 9 月 6 日分享会与两场 AI+3D 工坊](https://github.com/CMI-Community/Website/issues/32) 已随 v0.3.2 发布；[production evidence PR #34](https://github.com/CMI-Community/Website/pull/34) 正在归档 Release Record。
 - Current focus：观察 v0.3.2 production；三条新活动、版本化媒体、桌面与 390px 线上路径均已验收。
 - Next step：合并 Release Record 证据并发布 GitHub Release；随后进入 48 小时观察。
 - Latest production runtime release: [v0.3.2](https://github.com/CMI-Community/Website/releases/tag/v0.3.2)
