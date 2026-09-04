@@ -14,8 +14,11 @@ const ACTIVITY_POSTER_BYTES = Buffer.from(
     "base64",
   );
 const ACTIVITY_POSTERS = [
+  "activities/cmi-ai-3d-school-workshop/01-montfort/v1/poster.webp",
+  "activities/cmi-ai-3d-school-workshop/02-montfort/v1/poster.webp",
   "activities/cmi-community-sale/01-new-yunnan-market/v1/poster.webp",
   "activities/cmi-dinner-club/01-niulai-screening/v1/poster.webp",
+  "activities/cmi-public-action-sharing/01-from-should-to-can/v1/poster.webp",
   "activities/waytoagi/27-improv-ai-shortfilm/v1/poster.webp",
 ].map((objectKey) => ({
   objectKey,

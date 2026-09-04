@@ -23,6 +23,15 @@ const communitySaleActivity = ACTIVITY_CATALOG.find(
 const waytoagiActivity = ACTIVITY_CATALOG.find(
   (activity) => activity.id === "waytoagi-27-improv-ai-shortfilm",
 )!;
+const ai3dFirstActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-ai-3d-school-workshop-01-montfort",
+)!;
+const ai3dSecondActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-ai-3d-school-workshop-02-montfort",
+)!;
+const publicActionActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-public-action-sharing-01-from-should-to-can",
+)!;
 const approvedActivity = waytoagiActivity;
 
 function activityAt(
@@ -85,22 +94,32 @@ describe("activity catalog", () => {
       dinnerActivity.id,
       communitySaleActivity.id,
       waytoagiActivity.id,
+      ai3dSecondActivity.id,
+      publicActionActivity.id,
     ]);
     expect(before.ongoing).toHaveLength(0);
-    expect(before.completed).toHaveLength(0);
-    expect(before.museumReady).toHaveLength(0);
+    expect(before.completed.map((activity) => activity.id)).toEqual([ai3dFirstActivity.id]);
+    expect(before.museumReady.map((activity) => activity.id)).toEqual([ai3dFirstActivity.id]);
 
     const running = partitionActivities(ACTIVITY_CATALOG, atStart);
     expect(running.ongoing.map((activity) => activity.id)).toEqual([dinnerActivity.id]);
     expect(running.upcoming.map((activity) => activity.id)).toEqual([
       communitySaleActivity.id,
       waytoagiActivity.id,
+      ai3dSecondActivity.id,
+      publicActionActivity.id,
     ]);
-    expect(running.completed).toHaveLength(0);
+    expect(running.completed.map((activity) => activity.id)).toEqual([ai3dFirstActivity.id]);
 
     const completed = partitionActivities(ACTIVITY_CATALOG, atEnd);
-    expect(completed.completed.map((activity) => activity.id)).toEqual([dinnerActivity.id]);
-    expect(completed.museumReady.map((activity) => activity.id)).toEqual([dinnerActivity.id]);
+    expect(completed.completed.map((activity) => activity.id)).toEqual([
+      dinnerActivity.id,
+      ai3dFirstActivity.id,
+    ]);
+    expect(completed.museumReady.map((activity) => activity.id)).toEqual([
+      dinnerActivity.id,
+      ai3dFirstActivity.id,
+    ]);
   });
 
   it("orders ongoing first, then future activities, with five active slots total", () => {
@@ -200,5 +219,18 @@ describe("activity catalog", () => {
     expect(merged).toHaveLength(2);
     expect(merged[0]).toEqual(projected);
     expect(merged[1]).toEqual(otherPoster);
+  });
+
+  it("keeps separate activity records when two events share one article", () => {
+    const merged = mergeEventMuseumPosters([], [ai3dSecondActivity, ai3dFirstActivity]);
+
+    expect(merged).toHaveLength(2);
+    expect(merged.map((poster) => poster.id)).toEqual([
+      "activity-cmi-ai-3d-school-workshop-02-montfort.webp",
+      "activity-cmi-ai-3d-school-workshop-01-montfort.webp",
+    ]);
+    expect(new Set(merged.map((poster) => poster.articleUrl))).toEqual(
+      new Set(["https://mp.weixin.qq.com/s/zkHrzX6XIyrE69EsNeI9dg"]),
+    );
   });
 });

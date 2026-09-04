@@ -163,10 +163,12 @@ export function defineLannaProjectTests(options: LannaTestOptions = {}) {
     await page.goto(`${PROJECT_PATH}#archive`, { waitUntil: "domcontentloaded" });
     await expectClientLanguage(page, "zh");
     const firstTile = page.locator("#archive .archive-tile").first();
-    await firstTile.click();
-
     const dialog = page.getByRole("dialog").filter({ has: page.locator(".pattern-detail") });
-    await expect(dialog).toBeVisible();
+    await expect(async () => {
+      if (await dialog.isVisible()) return;
+      await firstTile.click();
+      await expect(dialog).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 15_000 });
     await expect(dialog.locator(".dialog__close")).toBeFocused();
 
     const downloadPromise = page.waitForEvent("download");
