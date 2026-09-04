@@ -1,24 +1,27 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-09-04 11:18 Asia/Bangkok
+Last updated: 2026-09-04 12:10 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
-- Current task：[Issue #32：发布 9 月 6 日分享会与两场 AI+3D 工坊](https://github.com/CMI-Community/Website/issues/32)。
-- Current focus：staging Worker `c3e289a3…` 的真实媒体、双视口、控制台和首轮失败路径均已验收；准备完成最终 CI 后合并。
-- Next step：最终 required CI → 合并 PR → production R2 / Worker 发布 → 远端验收、Release Record 和 GitHub Release。
-- Latest production runtime release: [v0.3.1](https://github.com/CMI-Community/Website/releases/tag/v0.3.1)
+- Status: `Shipped`
+- Current task：[Issue #32：发布 9 月 6 日分享会与两场 AI+3D 工坊](https://github.com/CMI-Community/Website/issues/32) 已随 v0.3.2 发布；[production evidence PR #34](https://github.com/CMI-Community/Website/pull/34) 正在归档 Release Record。
+- Current focus：观察 v0.3.2 production；三条新活动、版本化媒体、桌面与 390px 线上路径均已验收。
+- Next step：合并 Release Record 证据并发布 GitHub Release；随后进入 48 小时观察。
+- Latest production runtime release: [v0.3.2](https://github.com/CMI-Community/Website/releases/tag/v0.3.2)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
 - 等待决定：无；内容负责人已在任务中明确要求更新后直接发布，production 权限已获得。
-- `IN PROGRESS`：#32 新增 2026-08-26、09-02 两场 CMI AI+3D 蒙福学校工坊与 09-06《从「他们应该」到「我们可以」》分享会；两场工坊共用一篇推文但保留独立 ID、海报和期次。
+- `SHIPPED`：[PR #33](https://github.com/CMI-Community/Website/pull/33) 合并为 `main@591f167`；受保护 [production run 33838626209](https://github.com/CMI-Community/Website/actions/runs/33838626209) 发布 Worker `587d15b1-1d00-4990-88b7-c6be6ca459dd`。三条活动和三张新海报已在正式域名验收。
+- `VERIFIED`：production 单 worker 完整远端套件 23 passed / 5 skipped；1440×900 与 390×844 均无页面溢出，0 console warnings/errors、0 page errors。健康接口为 production，`www` 308 保留 path/query。
+- `VERIFIED`：[v0.3.2 Release Record](./releases/v0.3.2.md) 固定发布源、三张媒体哈希、运行版本、验收证据和回滚点；上一 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f` 保留为直接回滚版本。
+- `VERIFIED`：#32 新增 2026-08-26、09-02 两场 CMI AI+3D 蒙福学校工坊与 09-06《从「他们应该」到「我们可以」》分享会；两场工坊共用一篇推文但保留独立 ID、海报和期次。
 - `VERIFIED`：分享会公众号原文写 09-05，内容负责人明确更正为 09-06；发布版海报只替换日期面板，原图、修正版 PNG 与最终 WebP 的 QR 均解码为同一微信载荷。第二篇推文公开元数据确认 09-02 13:30、蒙福学校高中年级和校内活动。
-- `VERIFIED`：三张 1024×1536 WebP 已写入 staging R2 版本化路径，上传后逐对象回读 SHA-256 与本地一致；production 尚未写入，本轮无 D1 migration、公共 API 或权限变化。
+- `VERIFIED`：三张 1024×1536 WebP 已写入 staging / production R2 版本化路径，并分别逐对象回读 SHA-256 与本地一致；本轮无 D1 migration、公共 API 或权限变化。
 - `SHIPPED`：[PR #30](https://github.com/CMI-Community/Website/pull/30) 合并为 `main@fd0c945e`；受保护 [production run 33143337095](https://github.com/CMI-Community/Website/actions/runs/33143337095) 发布 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f`。健康接口为 production，`www` 308 保留 path/query；本轮无 D1 migration、R2 写入或公共 API 变化。
 - `VERIFIED`：production 完整单 worker 套件为 21 passed / 5 skipped / 2 冷加载超时；两条超时路径随后各连续复测 3 次，共 6/6 通过。1440×900 与 390×844 目视确认连续时间带、三期顺序、NOW、空的已完成分组和无页面横向溢出；控制台 0 errors / 0 warnings。
 - `VERIFIED`：[v0.3.1 Release Record](./releases/v0.3.1.md) 固定发布源、运行版本、验收证据和回滚点；上一 Worker `07a64070-bf94-4d55-96c1-493a1c9aaec4` 保留为直接回滚版本。
@@ -216,6 +219,8 @@ Last updated: 2026-09-04 11:18 Asia/Bangkok
 | 2026-09-04 | [#32 required CI](https://github.com/CMI-Community/Website/actions/runs/33832530123) | `VERIFIED` | foundation 全绿；依赖审计、公开边界、trace、类型、53 tests、D1、SSR、staging dry-run 与双视口浏览器通过 |
 | 2026-09-04 | #32 staging 首轮远端套件 | `OBSERVED / CORRECTING` | 核心活动桌面/手机均通过；完整套件 21 passed / 5 skipped / 2 failed。旧兰纳详情首次点击早于独立页面 chunk 接管，1056 张旧照片 HEAD 回读在 360 秒超时；增加兰纳交互式重试并定向复测，不把首轮作为通过证据 |
 | 2026-09-04 | #32 staging 最终远端验收 | `VERIFIED / RETRIED` | 兰纳详情修正后本地 3/3、staging 3/3；1056 张既有 Photo Museum 资产回读单项 1/1。新活动桌面/手机、真实 1024px 海报、共享推文两条独立记录、日期、状态和 Event Museum 通过；1440/390 均无整页溢出，干净会话 0 console warnings/errors、0 page errors |
+| 2026-09-04 | [v0.3.2 production deploy](https://github.com/CMI-Community/Website/actions/runs/33838626209) | `VERIFIED` | `main@591f167` 经受保护 Environment 发布 Worker `587d15b1…`；无 D1 migration，健康接口为 production，`www` 308 保留 path/query |
+| 2026-09-04 | v0.3.2 production R2 与浏览器 | `VERIFIED` | 三张版本化 WebP 的 R2/正式域名回读 SHA-256 一致；完整远端套件 23 passed / 5 skipped；1440/390 活动状态、真实海报、Event Museum、无溢出与零控制台告警通过 |
 | 2026-08-08 | `v0.1.0-foundation` production smoke | `VERIFIED` | 10 passed，2 个共享生产写入探针按设计跳过 |
 | 2026-08-08 | R2 公共海报资产 | `VERIFIED` | 180/180 可访问，公共目录不含内部字段 |
 | 2026-08-08 | 身份初始化 | `VERIFIED` | 1 位管理员、1 份 profile、1 条身份初始化审计；bootstrap Secret 已删除 |
@@ -291,6 +296,7 @@ Last updated: 2026-09-04 11:18 Asia/Bangkok
 
 ## Recent Updates
 
+- 2026-09-04 12:10 Asia/Bangkok：v0.3.2 已正式上线。PR #33 合并为 `main@591f167`；main CI 与 staging run 均成功，受保护 [production run 33838626209](https://github.com/CMI-Community/Website/actions/runs/33838626209) 发布 Worker `587d15b1-1d00-4990-88b7-c6be6ca459dd`。三张 production R2 新对象经直接回读和正式域名回读，SHA-256 均与上传前一致；健康接口为 production，`www` 308 保留 path/query。production 单 worker 完整套件 23 passed / 5 skipped；1440×900 与 390×844 显示 09-06 分享会为唯一即将活动、两场 AI+3D 各自进入已完成和 Event Museum，三张真实海报尺寸正确、页面无溢出，0 console warnings/errors、0 page errors。回滚点为 Worker `b072eaae…`，进入 Release Record / GitHub Release 归档。
 - 2026-09-04 11:18 Asia/Bangkok：staging 最终远端验收完成。兰纳详情用交互式重试替代“父级语言 effect 已运行即代表独立页面 chunk 已接管”的错误假设，本地与 staging 各连续 3/3 通过；首轮超时的 1056 张既有 Photo Museum 资产回读单项 1/1 通过。干净 Chromium 在 1440×900 与 390×844 均显示 09-06 分享会为唯一即将活动、09-02 AI+3D 为最近已完成且 08-26 第一期仍作为第五张保障显示；三张新海报自然宽度 1024，桌面 1440/1440、手机 390/390，0 console warnings/errors、0 page errors。目视确认分享会海报已显示“9月6日（周日）”。production 尚未改变。
 - 2026-09-04 11:02 Asia/Bangkok：[PR #33](https://github.com/CMI-Community/Website/pull/33) 提交 `095999a` 的 required CI 全绿后，发布 staging Worker `c3e289a3-dc68-4aa8-be9a-0630d5c7900d`，上一 staging Worker `243c1d81…` 为回滚点。首轮远端套件的两组活动用例均通过；完整结果 21 passed / 5 skipped / 2 failed，失败是旧兰纳详情独立 chunk 尚未接管时首击被吞，以及批量回读 1056 张旧照片达到 360 秒网络超时。已将兰纳用例改为在 15 秒内验证最终可交互，而非假定语言 provider 挂载就代表页面 chunk 已接管；准备重跑 required CI 与 staging 定向路径。production 尚未改变。
 - 2026-09-04 10:34 Asia/Bangkok：#32 本地门禁完成。`npm run check` 全绿（53 tests、16 表 D1 smoke、SSR 与 staging dry-run），Playwright 桌面/390px 为 17 passed / 3 skipped；固定 09-04 时钟下分享会为唯一即将活动，两场 AI+3D 保持独立并进入已完成与 Event Museum，双视口 `scrollWidth === clientWidth`。页面未改动 Poster Wall 控件；额外诊断看到的 range-input hydration style 提示来自该既有区块且不影响本轮页面、required E2E 或布局验收，将以干净 staging 会话再次确认。
