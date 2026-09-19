@@ -32,6 +32,15 @@ const ai3dSecondActivity = ACTIVITY_CATALOG.find(
 const publicActionActivity = ACTIVITY_CATALOG.find(
   (activity) => activity.id === "cmi-public-action-sharing-01-from-should-to-can",
 )!;
+const naturalFoodActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-natural-food-club-01-friday-kitchen",
+)!;
+const mooncakeActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-mid-autumn-gathering-01-snow-skin-mooncake",
+)!;
+const cmiTalkActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-talk-14-home-in-chiang-mai",
+)!;
 const approvedActivity = waytoagiActivity;
 
 function activityAt(
@@ -141,6 +150,38 @@ describe("activity catalog", () => {
       "future-3",
     ]);
     expect(result.ongoing.length + result.upcoming.length).toBe(MAX_ACTIVE_ACTIVITIES);
+  });
+
+  it("projects the September community batch across completed, ongoing and upcoming states", () => {
+    const beforeMooncake = partitionActivities(
+      [cmiTalkActivity, naturalFoodActivity, mooncakeActivity],
+      "2026-09-19T13:59:59+07:00",
+    );
+    expect(beforeMooncake.upcoming.map((activity) => activity.id)).toEqual([
+      mooncakeActivity.id,
+      cmiTalkActivity.id,
+    ]);
+    expect(beforeMooncake.completed.map((activity) => activity.id)).toEqual([
+      naturalFoodActivity.id,
+    ]);
+
+    const duringMooncake = partitionActivities(
+      [cmiTalkActivity, naturalFoodActivity, mooncakeActivity],
+      "2026-09-19T15:00:00+07:00",
+    );
+    expect(duringMooncake.ongoing.map((activity) => activity.id)).toEqual([
+      mooncakeActivity.id,
+    ]);
+    expect(duringMooncake.upcoming.map((activity) => activity.id)).toEqual([
+      cmiTalkActivity.id,
+    ]);
+    expect(duringMooncake.completed.map((activity) => activity.id)).toEqual([
+      naturalFoodActivity.id,
+    ]);
+
+    expect(getActivityStatus(mooncakeActivity, "2026-09-19T17:00:00+07:00")).toBe(
+      "completed",
+    );
   });
 
   it("keeps every completion younger than 24 hours even when the right side exceeds five", () => {
