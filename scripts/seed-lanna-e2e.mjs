@@ -18,7 +18,10 @@ const ACTIVITY_POSTERS = [
   "activities/cmi-ai-3d-school-workshop/02-montfort/v1/poster.webp",
   "activities/cmi-community-sale/01-new-yunnan-market/v1/poster.webp",
   "activities/cmi-dinner-club/01-niulai-screening/v1/poster.webp",
+  "activities/cmi-mid-autumn-gathering/01-snow-skin-mooncake/v1/poster.webp",
+  "activities/cmi-natural-food-club/01-friday-kitchen/v1/poster.webp",
   "activities/cmi-public-action-sharing/01-from-should-to-can/v1/poster.webp",
+  "activities/cmi-talk/14-home-in-chiang-mai/v1/poster.webp",
   "activities/waytoagi/27-improv-ai-shortfilm/v1/poster.webp",
 ].map((objectKey) => ({
   objectKey,
