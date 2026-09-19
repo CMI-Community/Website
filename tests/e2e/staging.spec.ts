@@ -61,6 +61,33 @@ const ACTIVITY_EXPECTATIONS = [
     posterWidth: 1024,
     posterKey: "activity-cmi-public-action-sharing-01-from-should-to-can.webp",
   },
+  {
+    startsAt: Date.parse("2026-09-18T15:00:00+07:00"),
+    endsAt: Date.parse("2026-09-18T19:00:00+07:00"),
+    title: "CMI 空想食堂｜周五·食天然俱乐部",
+    detailUrl: "https://mp.weixin.qq.com/s/GK9e1FQonKd-fOIpW5m8HA",
+    dateLabel: "2026.09.18 · 周五",
+    posterWidth: 1024,
+    posterKey: "activity-cmi-natural-food-club-01-friday-kitchen.webp",
+  },
+  {
+    startsAt: Date.parse("2026-09-19T14:00:00+07:00"),
+    endsAt: Date.parse("2026-09-19T17:00:00+07:00"),
+    title: "CMI × 清迈印象｜手工冰皮月饼中秋活动",
+    detailUrl: "https://mp.weixin.qq.com/s/Vf1ZGH1Fufo6JbY6LjI3BA",
+    dateLabel: "2026.09.19 · 周六",
+    posterWidth: 1024,
+    posterKey: "activity-cmi-mid-autumn-gathering-01-snow-skin-mooncake.webp",
+  },
+  {
+    startsAt: Date.parse("2026-09-26T18:00:00+07:00"),
+    endsAt: Date.parse("2026-09-26T20:00:00+07:00"),
+    title: "CMI TALK #14｜把清迈过成家",
+    detailUrl: "https://mp.weixin.qq.com/s/fC9WEKwpYb0y4hpTV_JzJg",
+    dateLabel: "2026.09.26 · 周六",
+    posterWidth: 1024,
+    posterKey: "activity-cmi-talk-14-home-in-chiang-mai.webp",
+  },
 ] as const;
 
 function expectedActivityTimeline(now: number) {
