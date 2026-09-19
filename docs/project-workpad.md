@@ -1,26 +1,28 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-09-19 12:59 Asia/Bangkok
+Last updated: 2026-09-19 13:20 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
-- Current task：[Issue #36：发布 9 月食天然、冰皮月饼与 CMI TALK #14 三场活动](https://github.com/CMI-Community/Website/issues/36)。
-- Current focus：PR #37 required CI 与 staging 远端完整套件已通过；正在提交远端活动期望补丁并等待最终 CI。
-- Next step：最终 required CI 通过后合并 PR #37，上传 production R2、走受保护 production 发布并完成正式域名验收。
-- Latest production runtime release: [v0.3.2](https://github.com/CMI-Community/Website/releases/tag/v0.3.2)
+- Status: `Shipped`
+- Current task：[Issue #36：发布 9 月食天然、冰皮月饼与 CMI TALK #14 三场活动](https://github.com/CMI-Community/Website/issues/36) 已在 production 验收，正在通过 evidence PR #38 归档发布证据并关闭任务。
+- Current focus：v0.3.3 已上线；固定运行提交、媒体哈希、验证结果和回滚点。
+- Next step：合并 evidence PR #38、创建指向实际运行提交的 GitHub Release，然后进入常规生产观察。
+- Latest production runtime release: [v0.3.3](https://github.com/CMI-Community/Website/releases/tag/v0.3.3)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
 
 - 等待决定：无；内容负责人已在 #36 对应任务中明确要求三场活动更新后直接发布，production 权限已获得。
 - `VERIFIED`：三篇公众号原文分别确认 09-18 15:00–19:00 周五食天然俱乐部（限 10 人）、09-19 14:00–17:00 冰皮月饼中秋活动（50 人以内、材料费 AA、报名以所在社群接龙为准）和 09-26 18:00–20:00 CMI TALK #14（招募 4 位分享嘉宾）。
-- `IN PROGRESS`：分支 `codex/36-september-community-activities` 将新增三条独立活动记录和三张独立版本化 R2 海报；本轮不修改 D1、公共 API、权限或报名系统，production 尚未改变。
+- `SHIPPED`：[PR #37](https://github.com/CMI-Community/Website/pull/37) 已合并为 `main@0be373b`；受保护 [production run 35425778758](https://github.com/CMI-Community/Website/actions/runs/35425778758) 发布 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb`，本轮不修改 D1、公共 API、权限或报名系统。
 - `CORRECTED`：[PR #37 首轮 CI](https://github.com/CMI-Community/Website/actions/runs/35424319438) 在功能检查前因 GHSA-82fw-gwwq-j7x9 失败；Vitest 已从 4.1.10 升至 4.1.11，Node 24 下 production audit 为 0 vulnerabilities，完整本地门禁和双视口 E2E 重新通过。
 - `VERIFIED / CORRECTED`：[PR #37 required CI](https://github.com/CMI-Community/Website/actions/runs/35424648359) 通过；branch staging Worker `53896bd4-6ed5-46e0-bf57-2227c64fb8f0` 已发布。首轮远端活动用例暴露 staging 期望表漏掉本轮三条记录，补齐后定向双视口 2/2、完整远端 23 passed / 5 skipped。
 - `VERIFIED`：staging 真实浏览器 1440×900 与 390×844 均为 2 条即将举行、5 条近期已完成；三张新海报自然宽度均为 1024，页面宽度分别为 1440/1440 与 390/390，两个视口均为 0 console warnings/errors。
+- `VERIFIED`：production 三张版本化 R2 海报直接回读和正式域名回读的尺寸、SHA-256 均与上传前一致；完整远端套件 23 passed / 5 skipped，双视口无横向溢出且 0 console warnings/errors。
+- `VERIFIED`：[v0.3.3 Release Record](./releases/v0.3.3.md) 固定发布源、三张媒体哈希、Worker、验收证据和回滚点；上一 Worker `587d15b1-1d00-4990-88b7-c6be6ca459dd` 保留为直接回滚版本。
 - `SHIPPED`：[PR #33](https://github.com/CMI-Community/Website/pull/33) 合并为 `main@591f167`；受保护 [production run 33838626209](https://github.com/CMI-Community/Website/actions/runs/33838626209) 发布 Worker `587d15b1-1d00-4990-88b7-c6be6ca459dd`。三条活动和三张新海报已在正式域名验收。
 - `VERIFIED`：production 单 worker 完整远端套件 23 passed / 5 skipped；1440×900 与 390×844 均无页面溢出，0 console warnings/errors、0 page errors。健康接口为 production，`www` 308 保留 path/query。
 - `VERIFIED`：[v0.3.2 Release Record](./releases/v0.3.2.md) 固定发布源、三张媒体哈希、运行版本、验收证据和回滚点；上一 Worker `b072eaae-fb4a-457e-ba63-5420f799ee7f` 保留为直接回滚版本。
@@ -146,12 +148,11 @@ Last updated: 2026-09-19 12:59 Asia/Bangkok
 
 ### Now
 
-- [x] [#29](https://github.com/CMI-Community/Website/issues/29) 完成三态活动投影与连续时间带组件。
-- [x] 完成 `npm run check`、桌面/390px Playwright 与真实浏览器目视验收。
-- [x] 创建 Draft PR、通过 required CI 并只部署 staging。
-- [x] 内容负责人验收 staging 并明确批准 production。
-- [ ] 将版本提升为 `0.3.1`，完成最终 CI / staging、合并与受保护 production 发布。
-- [ ] 完成 production 双视口验收、Release Record、GitHub Release 与 Issue #29 关闭。
+- [x] [#36](https://github.com/CMI-Community/Website/issues/36) 完成三场活动目录、媒体和回归覆盖。
+- [x] 完成本地门禁、required CI、staging 和 production R2 回读。
+- [x] 合并 [PR #37](https://github.com/CMI-Community/Website/pull/37) 并完成受保护 production 发布。
+- [x] 完成 production 完整远端套件与 1440/390 双视口验收。
+- [ ] 合并 evidence PR #38、创建 GitHub Release `v0.3.3` 并关闭 Issue #36。
 
 ### Next
 
@@ -167,6 +168,7 @@ Last updated: 2026-09-19 12:59 Asia/Bangkok
 
 ### Done
 
+- [x] [v0.3.3：食天然、冰皮月饼与 CMI TALK #14](https://github.com/CMI-Community/Website/releases/tag/v0.3.3)
 - [x] [v0.3.0：Projects、兰纳原生迁移与近期活动](https://github.com/CMI-Community/Website/releases/tag/v0.3.0)
 - [x] [#26 建立近期活动自动流转与 Projects 层级展示](https://github.com/CMI-Community/Website/issues/26)
 - [x] [#22 建立 Projects 原生发布框架并迁移兰纳第 26 期](https://github.com/CMI-Community/Website/issues/22)
@@ -219,6 +221,8 @@ Last updated: 2026-09-19 12:59 Asia/Bangkok
 
 | Date | Check | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-09-19 | [v0.3.3 production deploy](https://github.com/CMI-Community/Website/actions/runs/35425778758) | `VERIFIED` | `main@0be373b` 经受保护 Environment 发布 Worker `33f34d05…` / deployment `2fa9a6b2…`；无 D1 migration，健康接口为 production，`www` 308 保留 path/query |
+| 2026-09-19 | v0.3.3 production R2 与浏览器 | `VERIFIED` | 三张版本化 WebP 的 R2/正式域名回读 SHA-256 与尺寸一致；完整远端套件 23 passed / 5 skipped；1440/390 活动状态、真实海报、无溢出与零控制台告警通过 |
 | 2026-09-19 | #36 required CI 与 staging | `VERIFIED / CORRECTED` | CI run 35424648359 全绿；staging Worker `53896bd4…`。远端期望表漏三条活动的问题补齐后，活动定向 2/2、完整远端 23 passed / 5 skipped；Playwright CLI 在 1440/390 验证真实海报、状态、无横向溢出与 0 控制台告警 |
 | 2026-09-19 | #36 公众号、媒体与本地门禁 | `VERIFIED / CORRECTED` | 三篇公众号事实已核对；三张 WebP 已上传 staging R2 并逐对象回读，SHA-256 与本地一致；首轮 CI 暴露 Vitest 公告后升级至 4.1.11，Node 24 production audit 为 0；`npm run check` 全绿（54 tests、16 表 D1 smoke、SSR 与 staging dry-run），Playwright 桌面/390px 为 17 passed / 3 skipped |
 | 2026-09-04 | #32 本地完整检查 | `VERIFIED` | `npm run check` 全绿：公开边界、trace、类型、53 tests、16 表 D1 smoke、SSR build 与 staging dry-run 通过 |
@@ -303,6 +307,7 @@ Last updated: 2026-09-19 12:59 Asia/Bangkok
 
 ## Recent Updates
 
+- 2026-09-19 13:20 Asia/Bangkok：v0.3.3 已正式上线。[PR #37](https://github.com/CMI-Community/Website/pull/37) 合并为 `main@0be373b`；main Foundation CI 与 staging 均成功，受保护 [production run 35425778758](https://github.com/CMI-Community/Website/actions/runs/35425778758) 发布 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb`。三张 production R2 新对象经直接回读和正式域名回读，SHA-256 与尺寸均和上传前一致；production 单 worker 完整套件 23 passed / 5 skipped，1440×900 与 390×844 无横向溢出、0 console warnings/errors。健康接口为 production，`www` 308 保留 path/query；上一 Worker `587d15b1…` 为直接回滚点。
 - 2026-09-19 12:59 Asia/Bangkok：[PR #37 required CI](https://github.com/CMI-Community/Website/actions/runs/35424648359) 2m53s 全绿后，branch 候选部署为 staging Worker `53896bd4-6ed5-46e0-bf57-2227c64fb8f0`，上一 Worker `e4f9ef51…` 保留为回滚点，D1 无 migration。首轮远端活动用例正确看到 2 张活动卡，但测试期望仍只有 v0.3.2 的六条目录记录，因此以 expected 0 / actual 2 失败；停止随后 1056 图回读，不把中断计为产品失败。补齐 staging 期望表后活动双视口 2/2、完整单 worker 套件 23 passed / 5 skipped。独立 Playwright CLI 会话在 1440×900 与 390×844 确认冰皮月饼与 CMI TALK 即将举行、食天然已完成，三张新海报自然宽度 1024，页面无横向溢出，0 console warnings/errors。
 - 2026-09-19 12:40 Asia/Bangkok：[PR #37 首轮 CI](https://github.com/CMI-Community/Website/actions/runs/35424319438) 在 `npm audit --omit=dev` 发现 Vitest 4.1.10 / `@vitest/mocker` 的 GHSA-82fw-gwwq-j7x9 后停止，尚未进入功能测试。首次使用本机默认 Node 22/npm 10 更新依赖时触发 npm Arborist `edgesOut` 内部错误，没有产生文件变更；切换仓库指定 Node 24/npm 11 后精确升级 Vitest 4.1.11，production audit 为 0 vulnerabilities。完整 `npm run check` 与双视口 Playwright 重新通过，准备提交安全补丁并重跑 CI。
 - 2026-09-19 12:31 Asia/Bangkok：创建 [#36](https://github.com/CMI-Community/Website/issues/36) 与 `codex/36-september-community-activities`。三篇公众号原文已核实标题、发布时间、活动日期、时段和公开参与条件；三条独立记录进入审核目录并由固定 09-19 15:00 时钟验证食天然已完成、冰皮月饼进行中、CMI TALK 即将举行。三张仓库外 WebP 已写入 staging R2 的独立版本化路径，回读 SHA-256 分别为 `54feaf2c…b9e2a`、`376115b8…14b4`、`dcd38d09…fff8`；`npm run check` 全绿，本地双视口 Playwright 17 passed / 3 skipped。production 仍为 v0.3.2 / Worker `587d15b1…`，尚未改变。
