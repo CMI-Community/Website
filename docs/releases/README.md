@@ -14,5 +14,6 @@ Release Record 是 production 发布和治理版本的仓库内持久证据。Gi
 | `v0.3.1` | 近期活动双侧时间线、三态流转与完成后 24 小时保障 | [Recent Activity Timeline](./v0.3.1.md) |
 | `v0.3.2` | 9 月 6 日分享会与两场独立 AI+3D 校园工坊 | [September Activities](./v0.3.2.md) |
 | `v0.3.3` | 食天然、冰皮月饼与 CMI TALK #14 三场社区活动 | [September Community Activities](./v0.3.3.md) |
+| `v0.3.4` | 纠正 CMI TALK #13，新增《明月照他乡》大人/儿童双路线活动 | [CMI TALK #13 and Cultural Night](./v0.3.4.md) |
 
 production 发布前复制 [template.md](./template.md)。回滚时更新原记录并关联新的 Bug/Incident Issue，不删除失败发布历史。
