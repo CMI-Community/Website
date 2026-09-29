@@ -1,16 +1,16 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-09-29 12:52 Asia/Bangkok
+Last updated: 2026-09-29 13:45 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot
 
-- Status: `In Progress`
+- Status: `Shipped`
 - Current task：[Issue #39：更新 CMI TALK #13 与 10 月 4 日跨文化双路线活动](https://github.com/CMI-Community/Website/issues/39)。
-- Current focus：[PR #40](https://github.com/CMI-Community/Website/pull/40) required CI、staging Worker、R2 和双视口真实浏览器验收已完成；准备合并并发布 production。
-- Next step：合并 PR #40，同步 production R2，走受保护 production 发布并完成正式域名验收。
-- Latest production runtime release: [v0.3.3](https://github.com/CMI-Community/Website/releases/tag/v0.3.3)
+- Current focus：[PR #40](https://github.com/CMI-Community/Website/pull/40) 已合并，v0.3.4 已在 production 完成 R2、Worker、正式域名和双视口验收。
+- Next step：进入常规观察；若无回归，本任务无后续发布操作。
+- Latest production runtime release: [v0.3.4](https://github.com/CMI-Community/Website/releases/tag/v0.3.4)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
 ## Commander View
@@ -22,6 +22,9 @@ Last updated: 2026-09-29 12:52 Asia/Bangkok
 - `VERIFIED`：[PR #40 required CI](https://github.com/CMI-Community/Website/actions/runs/36524792000) 全绿；[staging run 36525212516](https://github.com/CMI-Community/Website/actions/runs/36525212516) 发布 Worker `1dc7a8bf-9bac-4bdb-b562-48df2ad02e41`，D1 无待迁移。
 - `VERIFIED / RETRIED`：staging 活动路径、真实海报和所有业务回归通过；完整远端跑次仅暴露旧 Photo Museum 横向固定导航的 DOM/滚动时序与媒体 `load` 超时，改为明确 DOM 就绪、原生链接激活和目标滚动后，关联桌面/390px 专项 6/6 通过。
 - `VERIFIED`：Playwright CLI 在 staging 1440×1200 与 390×844 真实浏览器确认新活动标题、公众号链接和两张 1024×1536 海报；页面宽度分别为 1440/1440 与 390/390，控制台 0 errors / 0 warnings。
+- `SHIPPED`：[PR #40](https://github.com/CMI-Community/Website/pull/40) 合并为 `main@2275689`；受保护 [production run 36531344069](https://github.com/CMI-Community/Website/actions/runs/36531344069) 发布 Worker `f4edae60-8657-43a1-9649-6cc893f7fcf1`，无 D1 migration。
+- `VERIFIED`：production R2 与正式域名两张海报回读 SHA-256、字节数和 1024×1536 尺寸均一致；远端完整套件 23 passed / 5 skipped，1440/390 无溢出、0 console errors/warnings，健康接口为 production，`www` 308 保留 path/query。
+- `VERIFIED`：[v0.3.4 Release Record](./releases/v0.3.4.md) 固定发布源、两张媒体哈希、Worker、验收证据和回滚点；上一 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb` 保留为直接回滚版本。
 - 等待决定：无；当前按用户“更新到官网”要求推进到正式发布。本轮不修改 D1、公共 API、权限或 Secret。
 - `CORRECTED`：v0.3.3 依据 09-15 招募推文将 09-26 活动登记为 CMI TALK #14；09-22 正式活动推文明确定稿为 CMI TALK #13，#39 以正式推文原位纠正标题、期次、详情链接和海报，不新增重复活动。
 - `SHIPPED`：[PR #37](https://github.com/CMI-Community/Website/pull/37) 已合并为 `main@0be373b`；受保护 [production run 35425778758](https://github.com/CMI-Community/Website/actions/runs/35425778758) 发布 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb`，本轮不修改 D1、公共 API、权限或报名系统。
@@ -159,7 +162,7 @@ Last updated: 2026-09-29 12:52 Asia/Bangkok
 - [x] 完成活动目录、版本化媒体、单元测试、完整门禁与双视口本地回归。
 - [x] 创建 PR、通过 required CI 并部署 staging。
 - [x] 完成 staging 远端套件与桌面/390px 真实浏览器验收。
-- [ ] 合并、受保护 production 发布、正式域名验收与 v0.3.4 发布归档。
+- [x] 合并、受保护 production 发布、正式域名验收与 v0.3.4 发布归档。
 
 ### Next
 
@@ -229,6 +232,7 @@ Last updated: 2026-09-29 12:52 Asia/Bangkok
 | Date | Check | Result | Notes |
 | --- | --- | --- | --- |
 | 2026-09-29 | #39 公众号、媒体、CI 与 staging | `VERIFIED / CORRECTED` | 两篇公众号原文已核对；两张 1024×1536 WebP 已上传 staging R2 并回读哈希一致；`npm run check`、PR #40 required CI 与 staging 部署均通过。远端完整跑次保留旧 Photo Museum 导航/媒体时序记录；收束为 DOM 就绪和明确滚动后相关双视口专项 6/6 通过。真实浏览器在 1440/390 无溢出且 0 console errors/warnings |
+| 2026-09-29 | [v0.3.4 production deploy](https://github.com/CMI-Community/Website/actions/runs/36531344069) | `VERIFIED` | `main@2275689` 经受保护 Environment 发布 Worker `f4edae60…`，无 D1 migration；两张 production R2/正式域名海报回读一致，远端完整套件 23 passed / 5 skipped，1440/390 无溢出且 0 console errors/warnings |
 | 2026-09-19 | [v0.3.3 production deploy](https://github.com/CMI-Community/Website/actions/runs/35425778758) | `VERIFIED` | `main@0be373b` 经受保护 Environment 发布 Worker `33f34d05…` / deployment `2fa9a6b2…`；无 D1 migration，健康接口为 production，`www` 308 保留 path/query |
 | 2026-09-19 | v0.3.3 production R2 与浏览器 | `VERIFIED` | 三张版本化 WebP 的 R2/正式域名回读 SHA-256 与尺寸一致；完整远端套件 23 passed / 5 skipped；1440/390 活动状态、真实海报、无溢出与零控制台告警通过 |
 | 2026-09-19 | #36 required CI 与 staging | `VERIFIED / CORRECTED` | CI run 35424648359 全绿；staging Worker `53896bd4…`。远端期望表漏三条活动的问题补齐后，活动定向 2/2、完整远端 23 passed / 5 skipped；Playwright CLI 在 1440/390 验证真实海报、状态、无横向溢出与 0 控制台告警 |
@@ -315,6 +319,7 @@ Last updated: 2026-09-29 12:52 Asia/Bangkok
 
 ## Recent Updates
 
+- 2026-09-29 13:45 Asia/Bangkok：v0.3.4 已正式上线。[PR #40](https://github.com/CMI-Community/Website/pull/40) 合并为 `main@2275689`；production R2 两张海报的直接回读与正式域名回读均与上传前 SHA-256、字节数和 1024×1536 尺寸一致。受保护 [production run 36531344069](https://github.com/CMI-Community/Website/actions/runs/36531344069) 发布 Worker `f4edae60-8657-43a1-9649-6cc893f7fcf1`，D1 无迁移。正式域名完整远端套件 23 passed / 5 skipped；1440×1200 与 390×844 真实浏览器确认标题、公众号链接、海报自然尺寸和无溢出，控制台 0 errors / 0 warnings。健康接口为 production，`www` 308 保留 path/query，直接回滚点为上一 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb`。
 - 2026-09-29 12:52 Asia/Bangkok：[PR #40](https://github.com/CMI-Community/Website/pull/40) required CI 全绿，[staging run 36525212516](https://github.com/CMI-Community/Website/actions/runs/36525212516) 发布 Worker `1dc7a8bf-9bac-4bdb-b562-48df2ad02e41`，D1 无迁移。远端新活动标题、时间、公众号链接和两张 1024×1536 海报通过。旧 Photo Museum 在媒体密集冷加载下暴露横向固定导航 DOM 重建、hash 滚动和整页 `load` 时序；收束为 `domcontentloaded`、原生链接激活和明确目标滚动后，关联桌面/390px 专项 6/6 通过。Playwright CLI 双视口确认页面无溢出、控制台 0 errors / 0 warnings。准备合并并发布 production。
 - 2026-09-29 12:01 Asia/Bangkok：创建 [#39](https://github.com/CMI-Community/Website/issues/39) 与 `codex/39-talk13-cultural-night`。公众号原文确认 09-26《把清迈过成家》实际为 CMI TALK #13，现有 #14 记录按同一活动原位纠错；10-04 17:30–19:30 的大人纪录片放映与 5–12 岁“小小文化家”为同场双路线，新增一条活动记录。两张总览海报优化为 1024×1536 WebP 并上传 staging R2，回读 SHA-256 与本地一致。`npm run check` 全绿；Playwright 首轮媒体密集首页等待全部图片 `load` 发生桌面冷加载超时，活动路径单 worker 2/2，改用 `domcontentloaded` 后完整双视口 17 passed / 3 skipped。production 尚未改变。
 - 2026-09-19 13:20 Asia/Bangkok：v0.3.3 已正式上线。[PR #37](https://github.com/CMI-Community/Website/pull/37) 合并为 `main@0be373b`；main Foundation CI 与 staging 均成功，受保护 [production run 35425778758](https://github.com/CMI-Community/Website/actions/runs/35425778758) 发布 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb`。三张 production R2 新对象经直接回读和正式域名回读，SHA-256 与尺寸均和上传前一致；production 单 worker 完整套件 23 passed / 5 skipped，1440×900 与 390×844 无横向溢出、0 console warnings/errors。健康接口为 production，`www` 308 保留 path/query；上一 Worker `587d15b1…` 为直接回滚点。
