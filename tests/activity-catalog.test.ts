@@ -39,7 +39,10 @@ const mooncakeActivity = ACTIVITY_CATALOG.find(
   (activity) => activity.id === "cmi-mid-autumn-gathering-01-snow-skin-mooncake",
 )!;
 const cmiTalkActivity = ACTIVITY_CATALOG.find(
-  (activity) => activity.id === "cmi-talk-14-home-in-chiang-mai",
+  (activity) => activity.id === "cmi-talk-13-home-in-chiang-mai",
+)!;
+const culturalNightActivity = ACTIVITY_CATALOG.find(
+  (activity) => activity.id === "cmi-cultural-night-01-moon-over-a-foreign-land",
 )!;
 const approvedActivity = waytoagiActivity;
 
@@ -180,6 +183,37 @@ describe("activity catalog", () => {
     ]);
 
     expect(getActivityStatus(mooncakeActivity, "2026-09-19T17:00:00+07:00")).toBe(
+      "completed",
+    );
+  });
+
+  it("corrects CMI TALK to issue 13 and projects the October cultural night", () => {
+    expect(cmiTalkActivity).toMatchObject({
+      title: "CMI TALK #13｜把清迈过成家",
+      detailUrl: "https://mp.weixin.qq.com/s/ujfaDoxYS2aRseRAGsz42g",
+      series: { issue: 13 },
+      poster: {
+        objectKey: "activities/cmi-talk/13-home-in-chiang-mai/v1/poster.webp",
+        width: 1024,
+        height: 1536,
+      },
+    });
+
+    const before = partitionActivities(
+      [cmiTalkActivity, culturalNightActivity],
+      "2026-09-29T12:00:00+07:00",
+    );
+    expect(before.upcoming.map((activity) => activity.id)).toEqual([
+      culturalNightActivity.id,
+    ]);
+    expect(before.completed.map((activity) => activity.id)).toEqual([
+      cmiTalkActivity.id,
+    ]);
+
+    expect(getActivityStatus(culturalNightActivity, "2026-10-04T18:00:00+07:00")).toBe(
+      "ongoing",
+    );
+    expect(getActivityStatus(culturalNightActivity, "2026-10-04T19:30:00+07:00")).toBe(
       "completed",
     );
   });
