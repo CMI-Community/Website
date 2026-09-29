@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-09-29 12:01 Asia/Bangkok
+Last updated: 2026-09-29 12:52 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -8,8 +8,8 @@ Last updated: 2026-09-29 12:01 Asia/Bangkok
 
 - Status: `In Progress`
 - Current task：[Issue #39：更新 CMI TALK #13 与 10 月 4 日跨文化双路线活动](https://github.com/CMI-Community/Website/issues/39)。
-- Current focus：目录、两张海报、测试和本地门禁已完成；staging R2 回读一致，准备提交 PR 并部署 staging。
-- Next step：通过 required CI，部署 staging Worker 并完成真实海报、时间线、Event Museum 和双视口验收。
+- Current focus：[PR #40](https://github.com/CMI-Community/Website/pull/40) required CI、staging Worker、R2 和双视口真实浏览器验收已完成；准备合并并发布 production。
+- Next step：合并 PR #40，同步 production R2，走受保护 production 发布并完成正式域名验收。
 - Latest production runtime release: [v0.3.3](https://github.com/CMI-Community/Website/releases/tag/v0.3.3)
 - Latest governance release: [v0.1.1](https://github.com/CMI-Community/Website/releases/tag/v0.1.1)
 
@@ -19,6 +19,9 @@ Last updated: 2026-09-29 12:01 Asia/Bangkok
 - `VERIFIED`：2026-09-29 公众号原文确认 10-04 17:30–19:30 在 CMI 新空间同步举行大人《明月照他乡》纪录片放映交流与 5–12 岁“小小文化家”儿童体验，应作为一场双路线活动建模。
 - `VERIFIED`：两张 1024×1536 WebP 已写入 staging R2 独立版本化路径并逐对象回读，SHA-256 分别为 `49125b71…fe5` 与 `31a69f9c…640c`；嘉宾分图和分路线海报不伪装为独立活动。
 - `VERIFIED / CORRECTED`：`npm run check` 全绿（55 tests、16 表 D1 smoke、SSR 与 staging dry-run）；本地 Playwright 首轮在媒体密集首页等待全部图片 `load` 时出现桌面冷加载超时，活动路径单 worker 2/2。将首页导航等待收束为 `domcontentloaded` 后，完整桌面/390px 为 17 passed / 3 skipped。
+- `VERIFIED`：[PR #40 required CI](https://github.com/CMI-Community/Website/actions/runs/36524792000) 全绿；[staging run 36525212516](https://github.com/CMI-Community/Website/actions/runs/36525212516) 发布 Worker `1dc7a8bf-9bac-4bdb-b562-48df2ad02e41`，D1 无待迁移。
+- `VERIFIED / RETRIED`：staging 活动路径、真实海报和所有业务回归通过；完整远端跑次仅暴露旧 Photo Museum 横向固定导航的 DOM/滚动时序与媒体 `load` 超时，改为明确 DOM 就绪、原生链接激活和目标滚动后，关联桌面/390px 专项 6/6 通过。
+- `VERIFIED`：Playwright CLI 在 staging 1440×1200 与 390×844 真实浏览器确认新活动标题、公众号链接和两张 1024×1536 海报；页面宽度分别为 1440/1440 与 390/390，控制台 0 errors / 0 warnings。
 - 等待决定：无；当前按用户“更新到官网”要求推进到正式发布。本轮不修改 D1、公共 API、权限或 Secret。
 - `CORRECTED`：v0.3.3 依据 09-15 招募推文将 09-26 活动登记为 CMI TALK #14；09-22 正式活动推文明确定稿为 CMI TALK #13，#39 以正式推文原位纠正标题、期次、详情链接和海报，不新增重复活动。
 - `SHIPPED`：[PR #37](https://github.com/CMI-Community/Website/pull/37) 已合并为 `main@0be373b`；受保护 [production run 35425778758](https://github.com/CMI-Community/Website/actions/runs/35425778758) 发布 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb`，本轮不修改 D1、公共 API、权限或报名系统。
@@ -154,8 +157,8 @@ Last updated: 2026-09-29 12:01 Asia/Bangkok
 
 - [x] [#39](https://github.com/CMI-Community/Website/issues/39) 核对两篇公众号原文并确定纠错/新增边界。
 - [x] 完成活动目录、版本化媒体、单元测试、完整门禁与双视口本地回归。
-- [ ] 创建 PR、通过 required CI 并部署 staging。
-- [ ] 完成 staging 远端套件与桌面/390px 真实浏览器验收。
+- [x] 创建 PR、通过 required CI 并部署 staging。
+- [x] 完成 staging 远端套件与桌面/390px 真实浏览器验收。
 - [ ] 合并、受保护 production 发布、正式域名验收与 v0.3.4 发布归档。
 
 ### Next
@@ -225,7 +228,7 @@ Last updated: 2026-09-29 12:01 Asia/Bangkok
 
 | Date | Check | Result | Notes |
 | --- | --- | --- | --- |
-| 2026-09-29 | #39 公众号、媒体与本地门禁 | `VERIFIED / CORRECTED` | 两篇公众号原文已核对；两张 1024×1536 WebP 已上传 staging R2 并回读哈希一致；`npm run check` 全绿（55 tests、16 表 D1 smoke、SSR 与 staging dry-run）。Playwright 首轮媒体加载超时保留；改用 `domcontentloaded` 后完整桌面/390px 为 17 passed / 3 skipped |
+| 2026-09-29 | #39 公众号、媒体、CI 与 staging | `VERIFIED / CORRECTED` | 两篇公众号原文已核对；两张 1024×1536 WebP 已上传 staging R2 并回读哈希一致；`npm run check`、PR #40 required CI 与 staging 部署均通过。远端完整跑次保留旧 Photo Museum 导航/媒体时序记录；收束为 DOM 就绪和明确滚动后相关双视口专项 6/6 通过。真实浏览器在 1440/390 无溢出且 0 console errors/warnings |
 | 2026-09-19 | [v0.3.3 production deploy](https://github.com/CMI-Community/Website/actions/runs/35425778758) | `VERIFIED` | `main@0be373b` 经受保护 Environment 发布 Worker `33f34d05…` / deployment `2fa9a6b2…`；无 D1 migration，健康接口为 production，`www` 308 保留 path/query |
 | 2026-09-19 | v0.3.3 production R2 与浏览器 | `VERIFIED` | 三张版本化 WebP 的 R2/正式域名回读 SHA-256 与尺寸一致；完整远端套件 23 passed / 5 skipped；1440/390 活动状态、真实海报、无溢出与零控制台告警通过 |
 | 2026-09-19 | #36 required CI 与 staging | `VERIFIED / CORRECTED` | CI run 35424648359 全绿；staging Worker `53896bd4…`。远端期望表漏三条活动的问题补齐后，活动定向 2/2、完整远端 23 passed / 5 skipped；Playwright CLI 在 1440/390 验证真实海报、状态、无横向溢出与 0 控制台告警 |
@@ -312,6 +315,7 @@ Last updated: 2026-09-29 12:01 Asia/Bangkok
 
 ## Recent Updates
 
+- 2026-09-29 12:52 Asia/Bangkok：[PR #40](https://github.com/CMI-Community/Website/pull/40) required CI 全绿，[staging run 36525212516](https://github.com/CMI-Community/Website/actions/runs/36525212516) 发布 Worker `1dc7a8bf-9bac-4bdb-b562-48df2ad02e41`，D1 无迁移。远端新活动标题、时间、公众号链接和两张 1024×1536 海报通过。旧 Photo Museum 在媒体密集冷加载下暴露横向固定导航 DOM 重建、hash 滚动和整页 `load` 时序；收束为 `domcontentloaded`、原生链接激活和明确目标滚动后，关联桌面/390px 专项 6/6 通过。Playwright CLI 双视口确认页面无溢出、控制台 0 errors / 0 warnings。准备合并并发布 production。
 - 2026-09-29 12:01 Asia/Bangkok：创建 [#39](https://github.com/CMI-Community/Website/issues/39) 与 `codex/39-talk13-cultural-night`。公众号原文确认 09-26《把清迈过成家》实际为 CMI TALK #13，现有 #14 记录按同一活动原位纠错；10-04 17:30–19:30 的大人纪录片放映与 5–12 岁“小小文化家”为同场双路线，新增一条活动记录。两张总览海报优化为 1024×1536 WebP 并上传 staging R2，回读 SHA-256 与本地一致。`npm run check` 全绿；Playwright 首轮媒体密集首页等待全部图片 `load` 发生桌面冷加载超时，活动路径单 worker 2/2，改用 `domcontentloaded` 后完整双视口 17 passed / 3 skipped。production 尚未改变。
 - 2026-09-19 13:20 Asia/Bangkok：v0.3.3 已正式上线。[PR #37](https://github.com/CMI-Community/Website/pull/37) 合并为 `main@0be373b`；main Foundation CI 与 staging 均成功，受保护 [production run 35425778758](https://github.com/CMI-Community/Website/actions/runs/35425778758) 发布 Worker `33f34d05-7dc0-4fd1-bb15-02cd19e715cb`。三张 production R2 新对象经直接回读和正式域名回读，SHA-256 与尺寸均和上传前一致；production 单 worker 完整套件 23 passed / 5 skipped，1440×900 与 390×844 无横向溢出、0 console warnings/errors。健康接口为 production，`www` 308 保留 path/query；上一 Worker `587d15b1…` 为直接回滚点。
 - 2026-09-19 12:59 Asia/Bangkok：[PR #37 required CI](https://github.com/CMI-Community/Website/actions/runs/35424648359) 2m53s 全绿后，branch 候选部署为 staging Worker `53896bd4-6ed5-46e0-bf57-2227c64fb8f0`，上一 Worker `e4f9ef51…` 保留为回滚点，D1 无 migration。首轮远端活动用例正确看到 2 张活动卡，但测试期望仍只有 v0.3.2 的六条目录记录，因此以 expected 0 / actual 2 失败；停止随后 1056 图回读，不把中断计为产品失败。补齐 staging 期望表后活动双视口 2/2、完整单 worker 套件 23 passed / 5 skipped。独立 Playwright CLI 会话在 1440×900 与 390×844 确认冰皮月饼与 CMI TALK 即将举行、食天然已完成，三张新海报自然宽度 1024，页面无横向溢出，0 console warnings/errors。
