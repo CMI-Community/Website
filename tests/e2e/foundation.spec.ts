@@ -82,11 +82,20 @@ const ACTIVITY_EXPECTATIONS = [
   {
     startsAt: Date.parse("2026-09-26T18:00:00+07:00"),
     endsAt: Date.parse("2026-09-26T20:00:00+07:00"),
-    title: "CMI TALK #14｜把清迈过成家",
-    detailUrl: "https://mp.weixin.qq.com/s/fC9WEKwpYb0y4hpTV_JzJg",
+    title: "CMI TALK #13｜把清迈过成家",
+    detailUrl: "https://mp.weixin.qq.com/s/ujfaDoxYS2aRseRAGsz42g",
     dateLabel: "2026.09.26 · 周六",
     timeLabel: "18:00–20:00 · 清迈时间",
-    posterKey: "activity-cmi-talk-14-home-in-chiang-mai.webp",
+    posterKey: "activity-cmi-talk-13-home-in-chiang-mai.webp",
+  },
+  {
+    startsAt: Date.parse("2026-10-04T17:30:00+07:00"),
+    endsAt: Date.parse("2026-10-04T19:30:00+07:00"),
+    title: "明月照他乡｜大人观影 × 小小文化家",
+    detailUrl: "https://mp.weixin.qq.com/s/0J8quLYYdAdpYBbB9UuLvw",
+    dateLabel: "2026.10.04 · 周日",
+    timeLabel: "17:30–19:30 · 清迈时间",
+    posterKey: "activity-cmi-cultural-night-01-moon-over-a-foreign-land.webp",
   },
 ] as const;
 
@@ -121,7 +130,7 @@ function d1(command: string): string {
 test("root renders the formal community homepage with independent museum fallbacks", async ({ page, request }) => {
   const response = await request.get("/", { maxRedirects: 0 });
   expect(response.status()).toBe(200);
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: "CMI Community", exact: true })).toBeVisible();
   await expect(page.getByText("一个在清迈的华人数字游民社区")).toBeVisible();
@@ -150,7 +159,7 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   test.setTimeout(60_000);
   const homepageRequests: string[] = [];
   page.on("request", (request) => homepageRequests.push(request.url()));
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
 
   const heroTrigger = page.locator(".home-hero__topline .project-menu__trigger");
   await expect(heroTrigger).toBeVisible();
@@ -228,7 +237,9 @@ test("Projects menu exposes series and issues from both navigation states", asyn
 });
 
 test("activity timeline keeps future and completed events around NOW", async ({ page }, testInfo) => {
-  await page.goto(`/?__activityNow=${encodeURIComponent(new Date(ACTIVITY_TIMELINE_TEST_NOW).toISOString())}`);
+  await page.goto(`/?__activityNow=${encodeURIComponent(new Date(ACTIVITY_TIMELINE_TEST_NOW).toISOString())}`, {
+    waitUntil: "domcontentloaded",
+  });
   const section = page.locator(".activity-timeline");
   const expected = expectedActivityTimeline(ACTIVITY_TIMELINE_TEST_NOW);
   const active = [...expected.ongoing, ...expected.upcoming];
@@ -328,7 +339,7 @@ test("foundation health and unauthenticated state are explicit", async ({ reques
 });
 
 test("page fits the active viewport", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth,
@@ -346,7 +357,9 @@ test("page fits the active viewport", async ({ page }) => {
 
 test("activity timeline removes its 3D motion when reduced motion is requested", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto(`/?__activityNow=${encodeURIComponent(new Date(ACTIVITY_TIMELINE_TEST_NOW).toISOString())}`);
+  await page.goto(`/?__activityNow=${encodeURIComponent(new Date(ACTIVITY_TIMELINE_TEST_NOW).toISOString())}`, {
+    waitUntil: "domcontentloaded",
+  });
   const posterButton = page.locator(".activity-timeline__activity").first().getByRole("button");
   await posterButton.hover({ position: { x: 18, y: 36 } });
   await expect.poll(() => posterButton.locator(".activity-timeline__poster").evaluate(

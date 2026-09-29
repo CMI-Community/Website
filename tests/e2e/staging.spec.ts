@@ -82,11 +82,20 @@ const ACTIVITY_EXPECTATIONS = [
   {
     startsAt: Date.parse("2026-09-26T18:00:00+07:00"),
     endsAt: Date.parse("2026-09-26T20:00:00+07:00"),
-    title: "CMI TALK #14｜把清迈过成家",
-    detailUrl: "https://mp.weixin.qq.com/s/fC9WEKwpYb0y4hpTV_JzJg",
+    title: "CMI TALK #13｜把清迈过成家",
+    detailUrl: "https://mp.weixin.qq.com/s/ujfaDoxYS2aRseRAGsz42g",
     dateLabel: "2026.09.26 · 周六",
     posterWidth: 1024,
-    posterKey: "activity-cmi-talk-14-home-in-chiang-mai.webp",
+    posterKey: "activity-cmi-talk-13-home-in-chiang-mai.webp",
+  },
+  {
+    startsAt: Date.parse("2026-10-04T17:30:00+07:00"),
+    endsAt: Date.parse("2026-10-04T19:30:00+07:00"),
+    title: "明月照他乡｜大人观影 × 小小文化家",
+    detailUrl: "https://mp.weixin.qq.com/s/0J8quLYYdAdpYBbB9UuLvw",
+    dateLabel: "2026.10.04 · 周日",
+    posterWidth: 1024,
+    posterKey: "activity-cmi-cultural-night-01-moon-over-a-foreign-land.webp",
   },
 ] as const;
 
@@ -114,7 +123,7 @@ test("staging serves the formal three-screen homepage", async ({ page, request }
   const root = await request.get("/", { maxRedirects: 0 });
   expect(root.status()).toBe(200);
 
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: "CMI Community", exact: true })).toBeVisible();
   await expect(page.getByText("一个在清迈的华人数字游民社区")).toBeVisible();
@@ -131,7 +140,7 @@ test("staging serves the formal three-screen homepage", async ({ page, request }
 test("Projects menu is available before and after the hero", async ({ page }) => {
   const homepageRequests: string[] = [];
   page.on("request", (request) => homepageRequests.push(request.url()));
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
 
   const heroTrigger = page.locator(".home-hero__topline .project-menu__trigger");
   await expect(heroTrigger).toBeVisible();
@@ -183,7 +192,7 @@ test("Projects menu is available before and after the hero", async ({ page }) =>
 });
 
 test("staging presents future and completed activities around NOW", async ({ page }, testInfo) => {
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   const section = page.locator(".activity-timeline");
   const expected = expectedActivityTimeline(Date.now());
   const active = [...expected.ongoing, ...expected.upcoming];
@@ -272,7 +281,7 @@ test("staging presents future and completed activities around NOW", async ({ pag
 
 test("Photo Museum preserves every image and supports navigation and full-screen viewing", async ({ page }) => {
   test.setTimeout(60_000);
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.locator('.home-museum-entries a[href="#photo-museum"]').click();
   await expect(page.locator("#photo-museum")).toBeInViewport();
   await expect(page.locator('.home-sticky-nav[data-visible="true"]')).toBeVisible();
