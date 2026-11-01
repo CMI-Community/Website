@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-01 16:30 Asia/Bangkok
+Last updated: 2026-11-01 16:44 Asia/Bangkok
 
 > 上一轮工作台记录时间：2026-09-29 13:45 Asia/Bangkok。
 
@@ -8,11 +8,11 @@ Last updated: 2026-11-01 16:30 Asia/Bangkok
 
 ## Snapshot — 2026-11-01 活动后台本地实施
 
-- Status: `Local implementation / verification`，线上未部署。
+- Status: `Local verification complete / awaiting launch approval`，线上未部署。
 - Current task：负责人确认活动后台第一版；分支 `feat/events-admin-2026-11-01`，基线 `e6a5707`。
 - Scope：10 场迁入 D1、唯一管理员 OTP 手填后台、有限期/权限/范围的 Agent 密钥、私有海报、下架独立记录与备份；180 张历史海报只读。
 - Decision：[ADR 0010](./adr/0010-managed-events-and-scoped-integrations.md)。[接口合同](./api-events-admin-v1.md)、[上线与恢复操作单](./operations/events-admin-launch-runbook.md)。
-- Verification：本地检查和浏览器验收正在汇总；最终结果以本次实施报告为准，不沿用下面旧版测试数字。
+- Verification：lint、typecheck、86 项测试、本地 D1 迁移与 build 通过；完整 e2e 23 passed / 3 skipped；338 个备份文件、14 张海报、4 条独立下架记录隔离恢复核验通过。[实施报告](./活动后台第一版_实施报告_2026-11-01.md) 与 [本地验收记录](./releases/2026-11-01-events-admin-local.md) 保存范围及证据；不沿用下面旧版测试数字。
 - Release boundary：未 push、未合并、未 deploy，未线上 D1/R2 写入。真实邮箱投递、云端绑定/套餐、私有桶与旧公开地址撤除、定时备份仍待上线前执行。
 
 以下保留此前已发布版本的历史工作台内容，不代表本次候选已上线。
