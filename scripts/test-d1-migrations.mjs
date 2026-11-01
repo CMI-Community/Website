@@ -47,9 +47,23 @@ try {
     "audit_logs",
     "cmi_feedback_ideas",
     "cmi_feedback_votes",
+    "event_details",
+    "event_media",
+    "event_external_links",
+    "integration_requests",
+    "event_unpublish_records",
+    "event_migration_records",
+    "event_write_assertions",
+    "integration_api_keys",
+    "event_admin_otp_sessions",
+    "event_otp_send_limits",
   ];
   const missing = required.filter((name) => !names.has(name));
   if (missing.length) throw new Error(`Missing D1 tables: ${missing.join(", ")}`);
+  if (result[1]?.results?.length) throw new Error("D1 foreign key violations");
+  const seed = JSON.parse(wrangler(["d1", "execute", "DB", "--local", "--persist-to", persistTo,
+    "--command", "SELECT COUNT(*) total FROM event_details; SELECT COUNT(*) total FROM event_details WHERE time_precision='backfill_placeholder' AND event_date='2026-07-10' AND starts_at IS NULL AND ends_at IS NULL; SELECT COUNT(*) total FROM event_migration_records; SELECT COUNT(*) total FROM media_assets ma JOIN event_media em ON em.media_id=ma.id WHERE ma.status='pending' AND em.verified_at IS NULL; SELECT COUNT(*) total FROM user_roles WHERE user_id='event-migration-system';", "--json"]));
+  if (seed.map(item => item.results[0].total).join(",") !== "10,2,10,10,0") throw new Error("Event migration seed or safe default mismatch");
   const columnsRaw = wrangler([
     "d1",
     "execute",

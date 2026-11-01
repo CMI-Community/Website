@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { Route } from "./+types/home";
 import {
-  ACTIVITY_CATALOG,
-  mergeEventMuseumPosters,
   partitionActivities,
 } from "../modules/activities/activity-catalog";
+import { listPublicActivities, loadPublicPosterCatalog } from "../modules/activities/event-public";
 import { ActivityTimeline } from "../modules/activities/components/ActivityTimeline";
 import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.jsx";
 import { PhotoMuseum } from "../modules/photo-museum/components/PhotoMuseum";
@@ -17,26 +16,6 @@ import { cloudflareContext } from "../shared/cloudflare-context";
 import { COMMUNITY_LINKS, COMMUNITY_SOCIALS, type CommunitySocial } from "../shared/community-socials";
 import "../modules/poster-wall/components/cmi-poster-wall.css";
 import "./home.css";
-
-interface PublicPoster {
-  id: string;
-  imagePath: string;
-  width: number;
-  height: number;
-  title: string;
-  publishedAt: string;
-  publishedDate: string;
-  eventTime: string;
-  initiator: string;
-  summary: string;
-  articleUrl: string;
-  series: { name: string; issue: number | null };
-  category: string;
-}
-
-interface PosterCatalog {
-  posters: PublicPoster[];
-}
 
 type SectionId = "home" | "photo-museum" | "event-museum";
 
@@ -71,14 +50,7 @@ async function loadPhotoCatalog(env: CloudflareEnv): Promise<PhotoCatalog> {
   return catalog;
 }
 
-async function loadPosterCatalog(env: CloudflareEnv): Promise<PosterCatalog> {
-  const object = await env.MEDIA.get("poster-wall/v1/catalog.json");
-  if (!object) throw new Error("poster catalog missing");
-  const parsed = (await object.json()) as PosterCatalog | PublicPoster[];
-  const posters = Array.isArray(parsed) ? parsed : parsed.posters;
-  if (!Array.isArray(posters) || !posters.length) throw new Error("poster catalog empty");
-  return { posters };
-}
+export const headers = () => ({ "Cache-Control": "no-store, max-age=0" });
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
@@ -88,20 +60,17 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     && Number.isFinite(Date.parse(requestedActivityTime))
     ? new Date(requestedActivityTime)
     : new Date();
-  const activityLifecycle = partitionActivities(ACTIVITY_CATALOG, activityReferenceTime);
+  const activities = await listPublicActivities(env.DB);
+  const activityLifecycle = partitionActivities(activities, activityReferenceTime);
   const [photoResult, posterResult] = await Promise.allSettled([
     loadPhotoCatalog(env),
-    loadPosterCatalog(env),
+    loadPublicPosterCatalog(env, activityReferenceTime),
   ]);
   // Event Museum assets are already public, versioned, and shared across
   // environments. Keeping this projection stable also makes local homepage
   // review useful without copying the complete poster archive into local R2.
   const posterAssetBase = "https://assets.cmi.community";
-  const completedActivityPosters = activityLifecycle.museumReady;
-  const mergedEventPosters = mergeEventMuseumPosters(
-    posterResult.status === "fulfilled" ? posterResult.value.posters : [],
-    completedActivityPosters,
-  );
+  const mergedEventPosters = posterResult.status === "fulfilled" ? posterResult.value.posters : [];
 
   return {
     activityTimeline: {
@@ -118,7 +87,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
           }
         : { available: false as const, photos: [], assetBase: "" },
     eventMuseum:
-      posterResult.status === "fulfilled" || mergedEventPosters.length
+      mergedEventPosters.length > 0
         ? {
             available: true as const,
             posters: mergedEventPosters,

@@ -4,9 +4,10 @@ const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL;
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  testMatch: externalBaseURL ? "staging.spec.ts" : "foundation.spec.ts",
-  fullyParallel: true,
-  workers: 3,
+  testMatch: externalBaseURL ? "staging.spec.ts" : ["foundation.spec.ts", "events-admin.spec.ts"],
+  // Local admin journeys mutate one shared emulator; keep those suites ordered.
+  fullyParallel: Boolean(externalBaseURL),
+  workers: externalBaseURL ? 3 : 1,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "line",
@@ -31,7 +32,7 @@ export default defineConfig({
   webServer: externalBaseURL
     ? undefined
     : {
-        command: "npm run db:migrate:local && npm run test:seed:lanna && npm run dev -- --host 127.0.0.1",
+        command: "npm run db:migrate:local && npm run test:seed:lanna && npm run test:seed:events && npm run dev -- --host 127.0.0.1",
         url: "http://127.0.0.1:5173/api/v1/health",
         timeout: 120_000,
         reuseExistingServer: !process.env.CI,

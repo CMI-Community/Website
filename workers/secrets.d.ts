@@ -9,4 +9,8 @@ interface CloudflareEnv {
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
   BOOTSTRAP_ADMIN_EMAIL?: string;
+  /** Sole activity administrator, configured as a secret rather than public source. */
+  EVENT_ADMIN_EMAIL?: string;
+  /** Rotate after database restoration; kept outside the restored database. */
+  INTEGRATION_KEY_EPOCH?: string;
 }

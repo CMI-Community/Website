@@ -31,7 +31,11 @@
     "db:migrate:production": "wrangler d1 migrations apply DB --remote --env production",
     "deploy:dry-run": "npm run build:staging && wrangler deploy --dry-run --env staging",
     "deploy:staging": "npm run build:staging && wrangler deploy --env staging",
-    "deploy:production": "npm run build:production && wrangler deploy --env production"
+    "deploy:production": "npm run build:production && wrangler deploy --env production",
+    "check:local": "npm run lint && npm run check:trace && npm run typecheck && npm run test && npm run build",
+    "backup:events:local": "node scripts/backup-events-local.mjs",
+    "test:seed:events": "node scripts/seed-events-e2e.mjs",
+    "pretest:e2e": "node scripts/prepare-events-e2e.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",

@@ -38,3 +38,7 @@
 | 固定架构和运行边界 | [docs/architecture.md](./docs/architecture.md) |
 
 遇到矛盾时，以最新用户指令和可验证的外部事实为先，并在同一项工作中修正文档。
+
+## 2026-11-01 活动后台本地实施约束
+
+本次依内容负责人明确指令，使用 `feat/events-admin-2026-11-01` 分支，只在本地实现和提交。不上线、不发布、不推送，不执行 `wrangler deploy`（包括 dry-run）或任何 remote D1/R2 写入；`npm run check:local` 拆开完成本地检查。GitHub Issue 搜索仅发现历史活动任务，本次实施授权及验收范围以负责人确认的方案为准，在线 Issue/PR 留待发布授权阶段。旧原稿和历史记录保留，AGENTS.md 只追加。

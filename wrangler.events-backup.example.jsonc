@@ -1,0 +1,31 @@
+// Review template only: not referenced by the application build or any npm script.
+// Confirm resources, provision secrets, and obtain launch approval before use.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "cmi-community-events-backup",
+  "main": "./workers/event-backup-workflow.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "observability": { "enabled": true },
+  "vars": {
+    "ACCOUNT_ID": "REPLACE_AFTER_READONLY_VERIFICATION",
+    "DATABASE_ID": "5f8d6201-07b8-4291-8282-d470bcd49fb2",
+    "WORKER_VERSION": "REPLACE_WITH_ACTUAL_APPLICATION_WORKER_VERSION"
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "cmi-community-platform",
+    "database_id": "5f8d6201-07b8-4291-8282-d470bcd49fb2"
+  }],
+  "r2_buckets": [
+    { "binding": "EVENT_MEDIA", "bucket_name": "cmi-community-events-private" },
+    { "binding": "EVENT_BACKUPS", "bucket_name": "cmi-community-events-backups" }
+  ],
+  "workflows": [{
+    "name": "cmi-events-daily-backup",
+    "binding": "BACKUP_WORKFLOW",
+    "class_name": "EventBackupWorkflow"
+  }],
+  "triggers": { "crons": ["0 21 * * *"] }
+}
