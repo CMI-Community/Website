@@ -124,6 +124,12 @@ writeFileSync(
   JSON.stringify(media, null, 2),
   { mode: 0o600, flag: "wx" },
 );
+// Finish every emulator query before hashing its SQLite/WAL/SHM files.
+const schemaMigrations = tables.includes("d1_migrations")
+  ? query("SELECT name FROM d1_migrations ORDER BY id;")[0].results.map(
+      (row) => row.name,
+    )
+  : [];
 scan(backup);
 const manifest = {
   formatVersion: 1,
@@ -136,11 +142,7 @@ const manifest = {
   workingTreeDirty: Boolean(
     execFileSync("git", ["status", "--porcelain"], { encoding: "utf8" }).trim(),
   ),
-  schemaMigrations: tables.includes("d1_migrations")
-    ? query("SELECT name FROM d1_migrations ORDER BY id;")[0].results.map(
-        (row) => row.name,
-      )
-    : [],
+  schemaMigrations,
   availableMigrationFiles: readdirSync("migrations").filter((name) =>
     name.endsWith(".sql"),
   ),
