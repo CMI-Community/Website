@@ -359,7 +359,7 @@
     width: 100%;
   }
   .event-admin__actions > button {
-    flex: 1;
+    flex: 1 1 135px;
   }
   .event-admin--login {
     padding-top: 48px;
