@@ -1,8 +1,18 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-03 22:55 Asia/Bangkok
+Last updated: 2026-11-03 23:34 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-03 顶部导航合作入口
+
+- Status：`Implementation / verification`，尚未发布本次入口更新。
+- Current task：延续 [Issue #45](https://github.com/CMI-Community/Website/issues/45)，T1；用户补充要求首页顶部导航增加合作须知入口，分支 `codex/45-cooperation-nav`。
+- Scope：首屏顶部导航与滚动后固定导航均提供“活动合作须知”；窄屏收起坐标信息并收束间距，链接直达 `/cooperation`。
+- `VERIFIED`：main `41104ec` 与 production v0.3.5 `49480ab` 运行文件一致；变更前完整 baseline 123/123 已封存并目视核对，合成资料、阻断生产网络。
+- `VERIFIED`：本地完整 check 通过，55 tests、16 表 D1、SSR 与 staging dry-run 全绿。
+- `VERIFIED`：完整本地 E2E 17 passed / 3 skipped；320/390/1280 首屏和固定导航均完整可见、无溢出，键盘激活及关闭 JavaScript 后首屏链接通过，0 page errors。
+- Next：候选截图、required CI、staging 与受保护 production 发布，补 v0.3.6 Release Record。无数据、权限或依赖变化。
 
 ## Snapshot — 2026-11-03 合作须知页面
 
