@@ -1,4 +1,4 @@
-import { APIError } from "better-auth/api";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { Resend } from "resend";
 import type { Role } from "../app/shared/auth/roles";
@@ -36,6 +36,19 @@ async function activeInvitation(env: CloudflareEnv, email: string) {
   )
     .bind(normalizeEmail(email))
     .first<{ id: string; role: Role }>();
+}
+
+async function requireInvitation(env: CloudflareEnv, value: string): Promise<string> {
+  const email = normalizeEmail(value);
+  const isBootstrap = Boolean(
+    env.BOOTSTRAP_ADMIN_EMAIL && email === normalizeEmail(env.BOOTSTRAP_ADMIN_EMAIL),
+  );
+  if (!isBootstrap && !(await activeInvitation(env, email))) {
+    throw new APIError("FORBIDDEN", {
+      message: "CMI Community 当前仅接受受邀邮箱注册。",
+    });
+  }
+  return email;
 }
 
 async function provisionVerifiedIdentity(env: CloudflareEnv, userId: string): Promise<void> {
@@ -175,19 +188,20 @@ export function createAuth(env: CloudflareEnv, ctx: ExecutionContext) {
       "https://staging.cmi.community",
       "https://cmi.community",
     ],
+    hooks: {
+      // Keep the existing invite-only 403 contract before Better Auth 1.7
+      // converts a database-hook rejection into a generic signup response.
+      before: createAuthMiddleware(async (context) => {
+        if (context.path === "/sign-up/email" && typeof context.body?.email === "string") {
+          await requireInvitation(env, context.body.email);
+        }
+      }),
+    },
     databaseHooks: {
       user: {
         create: {
           before: async (user) => {
-            const email = normalizeEmail(user.email);
-            const isBootstrap = Boolean(
-              env.BOOTSTRAP_ADMIN_EMAIL && email === normalizeEmail(env.BOOTSTRAP_ADMIN_EMAIL),
-            );
-            if (!isBootstrap && !(await activeInvitation(env, email))) {
-              throw new APIError("FORBIDDEN", {
-                message: "CMI Community 当前仅接受受邀邮箱注册。",
-              });
-            }
+            const email = await requireInvitation(env, user.email);
             return { data: { ...user, email } };
           },
           after: async (user) => {

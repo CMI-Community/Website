@@ -311,6 +311,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
         <ActivityTimeline {...loaderData.activityTimeline} />
 
+        <p className="home-cooperation-entry">
+          <span>希望在 CMI 发起一场交流？</span>
+          <a href="/cooperation">活动合作须知 <span aria-hidden="true">↗</span></a>
+        </p>
+
         <nav className="home-museum-entries" aria-label="进入 CMI Museums">
           <a href="#photo-museum">
             <span className="home-museum-entry__index">01 / COMMUNITY MEMORY</span>

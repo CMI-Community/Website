@@ -23,6 +23,29 @@ body:has(.cmi-home-page) {
   -webkit-tap-highlight-color: transparent;
 }
 
+.home-cooperation-entry {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px 18px;
+  margin: 0;
+  padding: 10px clamp(20px, 3.2vw, 52px) 28px;
+  color: var(--home-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.home-cooperation-entry a {
+  display: inline-block;
+  padding-block: 8px;
+  color: var(--home-ink);
+  text-underline-offset: 5px;
+}
+
+.home-cooperation-entry a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
 .home-hero,
 .home-photo-section,
 .home-event-section {

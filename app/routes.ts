@@ -8,4 +8,5 @@ export default [
   route("th/project/*", "routes/project-th.tsx"),
   route("en/*", "routes/english-placeholder.tsx"),
   route("privacy", "routes/privacy.tsx"),
+  route("cooperation", "routes/cooperation.tsx"),
 ] satisfies RouteConfig;
