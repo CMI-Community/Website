@@ -1,21 +1,20 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-03 22:32 Asia/Bangkok
+Last updated: 2026-11-03 22:55 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot — 2026-11-03 合作须知页面
 
-- Status：`Local implementation / browser regression in progress`；未部署。
-- Current task：[Issue #45](https://github.com/CMI-Community/Website/issues/45)，T1，分支 `codex/45-cooperation-page`。
-- Scope：新增 `/cooperation` 固定原则讨论稿与首页入口，六节目录、键盘阅读和打印样式；不涉及数据、权限或活动后台。
-- `VERIFIED`：远端 main `e6a5707` 与 production v0.3.4 `2275689` 的运行代码一致，差异为三份发布文档。本次从 main 独立实施。
-- `VERIFIED`：修改前本地生产构建的 33 状态 × 3 视口已归档为 99 组截图；使用合成资料并阻断生产网络。首轮部分延迟样式过早拍摄，已保留旧包并在新包完整重拍。
-- `VERIFIED`：项目 check 全绿（55 tests、16 表 D1、SSR 与 staging dry-run）；新增页面在 320/390/1280 下 URL 200、六节正文、无溢出、锚点刷新、键盘跳过导航、首页入口、无 JavaScript 和打印检查通过。
-- `VERIFIED`：首轮候选已完成 123/123 组界面截图。PR #46 首轮 CI 因旧依赖安全审计失败，已按审计建议更新 Better Auth 1.7.15、Zod 4.6.7、Vite 8.3.5、Vitest 4.1.12 及兼容的传递依赖；生产范围 audit 为 0。
-- `VERIFIED`：临时目录干净安装后完整 check 通过，55 tests、16 表 D1 smoke、SSR 与 staging dry-run 全绿；完整 E2E 16 passed / 1 flaky（旧兰纳页重试通过）/ 3 skipped。
-- `CORRECTED`：Better Auth 1.7 将数据库钩子的注册拒绝包装为通用响应。端点 before hook 保留原有邀请制 403 契约，数据库钩子继续保护其他身份创建路径；E2E 同时确认未受邀请求不创建账号。菜单键盘测试等待实际展开状态，避免 SSR 挂载前按键失效。
-- Next：新 SHA 候选归档、required CI，再走 staging 与 production 受保护发布链。既有活动后台本地分支不纳入本次发布。
+- Status：`Shipped`。[活动合作须知](https://cmi.community/cooperation) 与首页入口已上线；正文继续标为讨论稿。
+- Current task：[Issue #45](https://github.com/CMI-Community/Website/issues/45)；[PR #46](https://github.com/CMI-Community/Website/pull/46) 已合并，T1。
+- Runtime：`main@49480abcc393d01310a036c13052fc48081ef3c7`；Worker `add96e4a-d05c-4002-992e-812802a04b79`。[production run](https://github.com/CMI-Community/Website/actions/runs/41667981628) 经受保护 Environment 发布成功，无 D1 migration。
+- Scope：六条已确认正文、平等对话、六节目录、键盘与打印阅读。无 R2 业务资料、权限或 Secret 变更；本地活动后台工作没有纳入本次运行提交。
+- `VERIFIED`：最终候选与合并文件树一致；[PR CI](https://github.com/CMI-Community/Website/actions/runs/41665026894)、[main CI](https://github.com/CMI-Community/Website/actions/runs/41667834001)、staging 与 production 均成功。
+- `VERIFIED`：干净环境 check 通过，55 tests / 16 表 D1 / SSR / dry-run；完整本地 E2E 16 passed / 1 flaky（旧兰纳页重试通过）/ 3 skipped。staging、production 三视口六节正文、无溢出、深链、键盘、首页入口、无脚本与打印检查通过，0 page errors。
+- `VERIFIED`：baseline 99/99、最终 candidate 123/123 为本地隔离合成状态；production 24/24 为本次变更的真实公开只读补拍。归档已封存并目视核对，路径与边界见 [v0.3.5 Release Record](./releases/v0.3.5.md)。
+- `CORRECTED`：首轮旧依赖安全门禁失败后做同主版本兼容修复，生产审计为 0；Better Auth 1.7 的拒绝包装通过 endpoint before hook 保留 403，数据库钩子继续限制身份创建，E2E 确认拒绝无账号写入。原始失败与较早快照保留。
+- Next：进入常规观察；若出现回归，按 Release Record 回滚。v0.3.5 tag 固定实际运行提交，发布记录的文档提交不代表新运行版本。
 
 以下保留已发布版本的历史工作台。
 
