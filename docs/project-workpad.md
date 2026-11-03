@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-03 21:51 Asia/Bangkok
+Last updated: 2026-11-03 22:16 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -12,7 +12,8 @@ Last updated: 2026-11-03 21:51 Asia/Bangkok
 - `VERIFIED`：远端 main `e6a5707` 与 production v0.3.4 `2275689` 的运行代码一致，差异为三份发布文档。本次从 main 独立实施。
 - `VERIFIED`：修改前本地生产构建的 33 状态 × 3 视口已归档为 99 组截图；使用合成资料并阻断生产网络。首轮部分延迟样式过早拍摄，已保留旧包并在新包完整重拍。
 - `VERIFIED`：项目 check 全绿（55 tests、16 表 D1、SSR 与 staging dry-run）；新增页面在 320/390/1280 下 URL 200、六节正文、无溢出、锚点刷新、键盘跳过导航、首页入口、无 JavaScript 和打印检查通过。
-- Next：完成现有 E2E、候选图集，再走 PR、CI、staging 与 production 受保护发布链。既有活动后台本地分支不纳入本次发布。
+- `VERIFIED`：首轮候选已完成 123/123 组界面截图。PR #46 首轮 CI 因旧依赖安全审计失败，已按审计建议更新 Better Auth 1.7.15、Zod 4.6.7、Vite 8.3.5、Vitest 4.1.12 及兼容的传递依赖；生产范围 audit 为 0。
+- Next：依赖修复后的 check、E2E 与新 SHA 候选归档，再走 CI、staging 与 production 受保护发布链。既有活动后台本地分支不纳入本次发布。
 
 以下保留已发布版本的历史工作台。
 
