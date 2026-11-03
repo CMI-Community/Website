@@ -1,18 +1,19 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-03 23:34 Asia/Bangkok
+Last updated: 2026-11-03 23:49 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
 ## Snapshot — 2026-11-03 顶部导航合作入口
 
-- Status：`Implementation / verification`，尚未发布本次入口更新。
-- Current task：延续 [Issue #45](https://github.com/CMI-Community/Website/issues/45)，T1；用户补充要求首页顶部导航增加合作须知入口，分支 `codex/45-cooperation-nav`。
-- Scope：首屏顶部导航与滚动后固定导航均提供“活动合作须知”；窄屏收起坐标信息并收束间距，链接直达 `/cooperation`。
-- `VERIFIED`：main `41104ec` 与 production v0.3.5 `49480ab` 运行文件一致；变更前完整 baseline 123/123 已封存并目视核对，合成资料、阻断生产网络。
-- `VERIFIED`：本地完整 check 通过，55 tests、16 表 D1、SSR 与 staging dry-run 全绿。
-- `VERIFIED`：完整本地 E2E 17 passed / 3 skipped；320/390/1280 首屏和固定导航均完整可见、无溢出，键盘激活及关闭 JavaScript 后首屏链接通过，0 page errors。
-- Next：候选截图、required CI、staging 与受保护 production 发布，补 v0.3.6 Release Record。无数据、权限或依赖变化。
+- Status：`Shipped`。[首页](https://cmi.community/) 首屏顶部与滚动后固定导航均可进入“活动合作须知”。
+- Current task：延续 [Issue #45](https://github.com/CMI-Community/Website/issues/45)，T1；[PR #48](https://github.com/CMI-Community/Website/pull/48) 已合并。
+- Runtime：`main@0e78cfa08fe85cd22045e5aa619af30ce112e666`；Worker `725d9cce-f3fc-4dbf-b726-2a9b89d32e7b`。[production run](https://github.com/CMI-Community/Website/actions/runs/41677507280) 经受保护 Environment 成功，无 D1 migration。
+- Scope：首屏及固定导航增加入口，手机收束排布。无正文、依赖、业务资料、权限或 Secret 变化；未纳入本地活动后台工作。
+- `VERIFIED`：[required CI](https://github.com/CMI-Community/Website/actions/runs/41676063564) 全绿；本地 check 55 tests / 16 表 D1 / SSR / dry-run，完整 E2E 17 passed / 3 skipped。合并文件树与候选一致。
+- `VERIFIED`：[staging run](https://github.com/CMI-Community/Website/actions/runs/41676894157) 与 production 成功，三视口两处链接完整可见、无溢出，键盘激活与无脚本首屏链接通过，0 page errors。
+- `VERIFIED`：baseline 123/123、candidate 135/135 为隔离合成完整状态；production 12/12 为本次导航及焦点的真实公开只读补拍，全部封存并目视核对。详见 [v0.3.6 Release Record](./releases/v0.3.6.md)。
+- Next：进入常规观察。v0.3.6 tag 固定运行提交，后续文档提交不代表新运行版本；回滚点为 v0.3.5 Worker。
 
 ## Snapshot — 2026-11-03 合作须知页面
 
