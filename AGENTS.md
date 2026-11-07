@@ -54,3 +54,7 @@
 ## 2026-11-07 OpenAI 本地密钥授权
 
 负责人明确允许将项目密钥保存为 `.dev.vars` 的 `OPENAI_API_KEY`，用于本地自动填写。此授权限定在该本地配置与功能验证。生产配置和部署另行确认。
+
+## 2026-11-07 活动后台上线授权
+
+负责人已确认上线，使用 [Issue #50](https://github.com/CMI-Community/Website/issues/50) 与受保护的 production Environment 推进。保留现网新变更和本地验收资料。先核对生产资源及备份、在 staging 演练、回读已迁入的海报，再切换正式站。

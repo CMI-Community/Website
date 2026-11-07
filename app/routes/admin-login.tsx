@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { adminApi, errorMessage } from "../modules/activities/admin-client";
+import type { Route } from "./+types/admin-login";
+import { cloudflareContext } from "../shared/cloudflare-context";
+import { adminApi, adminEnvironmentLabel, errorMessage } from "../modules/activities/admin-client";
 import "../modules/activities/admin.css";
 export const headers = () => ({
   "Cache-Control": "no-store",
@@ -8,7 +10,10 @@ export const headers = () => ({
 export function meta() {
   return [{ title: "管理员登录｜CMI Community" }];
 }
-export default function AdminLogin() {
+export function loader({ context }: Route.LoaderArgs) {
+  return { environment: context.get(cloudflareContext).env.APP_ENV };
+}
+export default function AdminLogin({ loaderData }: Route.ComponentProps) {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [sent, setSent] = useState(false);
@@ -59,7 +64,7 @@ export default function AdminLogin() {
         CMI <span>Community</span>
       </a>
       <section className="event-admin__panel">
-        <p className="event-admin__eyebrow">活动管理</p>
+        <p className="event-admin__eyebrow">{adminEnvironmentLabel[loaderData.environment]} · 活动管理</p>
         <h1>管理员登录</h1>
         <p>使用已授权的邮箱接收验证码。</p>
         <form onSubmit={submit}>

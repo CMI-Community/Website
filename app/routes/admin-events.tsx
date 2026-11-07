@@ -14,7 +14,7 @@ export function meta() {
 export async function loader({ request, context }: Route.LoaderArgs) {
   const { env, ctx } = context.get(cloudflareContext);
   await requireAdminPage(request, env, ctx);
-  return { events: await listEvents(env.DB) };
+  return { events: await listEvents(env.DB), environment: env.APP_ENV };
 }
 const labels = { draft: "草稿", published: "已发布", unpublished: "已下架" };
 export default function AdminEvents({ loaderData }: Route.ComponentProps) {
@@ -26,9 +26,9 @@ export default function AdminEvents({ loaderData }: Route.ComponentProps) {
       event.title.includes(query),
   );
   return (
-    <AdminShell title="活动管理">
+    <AdminShell title="活动管理" environment={loaderData.environment}>
       <div className="event-admin__toolbar">
-        <p>手动填写活动信息，保存后由官网直接读取。</p>
+        <p>可手动或自动填写，发布后在当前站点的活动页面查看。</p>
         <a className="event-admin__primary" href="/admin/events/new">
           新增活动 ＋
         </a>

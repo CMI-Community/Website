@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
-import { adminApi } from "./admin-client";
+import { adminApi, adminEnvironmentLabel } from "./admin-client";
 import "./admin.css";
 export function AdminShell({
   title,
+  environment,
   children,
 }: {
   title: string;
+  environment: CloudflareEnv["APP_ENV"];
   children: ReactNode;
 }) {
   return (
@@ -18,7 +20,7 @@ export function AdminShell({
           <a href="/admin/events">活动</a>
           <a href="/admin/api-keys">API 授权</a>
           <a href="/" target="_blank" rel="noreferrer">
-            查看官网 ↗
+            查看{adminEnvironmentLabel[environment]} ↗
           </a>
           <button
             type="button"
@@ -34,6 +36,7 @@ export function AdminShell({
           </button>
         </nav>
       </header>
+      <p className="event-admin__eyebrow">{adminEnvironmentLabel[environment]}</p>
       <h1>{title}</h1>
       {children}
     </main>

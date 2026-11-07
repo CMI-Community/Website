@@ -1,10 +1,15 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-07 19:49 Asia/Bangkok
-
-> 上一轮工作台记录时间：2026-09-29 13:45 Asia/Bangkok。
+Last updated: 2026-11-07 20:25 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-07 活动后台生产发布准备
+
+- [Issue #50](https://github.com/CMI-Community/Website/issues/50) 已确认上线范围，按 T3 执行。[ADR 0010](./adr/0010-managed-events-and-scoped-integrations.md)、[ADR 0011](./adr/0011-optional-event-autofill.md) 与 [上线操作单](./operations/events-admin-launch-runbook.md)。
+- `VERIFIED` 生产首页 200，活动后台与活动 API 404。负责人已在本地验证实际海报和正文可以填写，已发布记录可匿名从本机详情、API 和媒体接口读取。
+- `VERIFIED` 10 张真实旧海报已在隔离本地 D1/R2 演练迁移，逐张回读哈希一致；海报未校验时发布门禁拒绝切换。生产 180 张历史海报仍使用原入口。候选继承 v0.3.6 首页导航、合作须知和邀请注册限制。
+- `VERIFIED` 候选显示环境，保存后匿名核验活动版本与海报再给出公开链接。lint、typecheck、99 项测试、本地 D1 迁移及 build 通过。生产备份、staging 线上演练和发布待恢复 Cloudflare 登录。
 
 ## Snapshot — 2026-11-07 活动自动填写
 
@@ -21,7 +26,30 @@ Last updated: 2026-11-07 19:49 Asia/Bangkok
 - Verification：lint、typecheck、86 项测试、本地 D1 迁移与 build 通过；完整 e2e 23 passed / 3 skipped；338 个备份文件、14 张海报、4 条独立下架记录隔离恢复核验通过。[实施报告](./活动后台第一版_实施报告_2026-11-01.md) 与 [本地验收记录](./releases/2026-11-01-events-admin-local.md) 保存范围及证据；不沿用下面旧版测试数字。
 - Release boundary：未 push、未合并、未 deploy，未线上 D1/R2 写入。真实邮箱投递、云端绑定/套餐、私有桶与旧公开地址撤除、定时备份仍待上线前执行。
 
-以下保留此前已发布版本的历史工作台内容，不代表本次候选已上线。
+## Snapshot — 2026-11-03 顶部导航合作入口
+
+- Status：`Shipped`。[首页](https://cmi.community/) 首屏顶部与滚动后固定导航均可进入“活动合作须知”。
+- Current task：延续 [Issue #45](https://github.com/CMI-Community/Website/issues/45)，T1；[PR #48](https://github.com/CMI-Community/Website/pull/48) 已合并。
+- Runtime：`main@0e78cfa08fe85cd22045e5aa619af30ce112e666`；Worker `725d9cce-f3fc-4dbf-b726-2a9b89d32e7b`。[production run](https://github.com/CMI-Community/Website/actions/runs/41677507280) 经受保护 Environment 成功，无 D1 migration。
+- Scope：首屏及固定导航增加入口，手机收束排布。无正文、依赖、业务资料、权限或 Secret 变化；未纳入本地活动后台工作。
+- `VERIFIED`：[required CI](https://github.com/CMI-Community/Website/actions/runs/41676063564) 全绿；本地 check 55 tests / 16 表 D1 / SSR / dry-run，完整 E2E 17 passed / 3 skipped。合并文件树与候选一致。
+- `VERIFIED`：[staging run](https://github.com/CMI-Community/Website/actions/runs/41676894157) 与 production 成功，三视口两处链接完整可见、无溢出，键盘激活与无脚本首屏链接通过，0 page errors。
+- `VERIFIED`：baseline 123/123、candidate 135/135 为隔离合成完整状态；production 12/12 为本次导航及焦点的真实公开只读补拍，全部封存并目视核对。详见 [v0.3.6 Release Record](./releases/v0.3.6.md)。
+- Next：进入常规观察。v0.3.6 tag 固定运行提交，后续文档提交不代表新运行版本；回滚点为 v0.3.5 Worker。
+
+## Snapshot — 2026-11-03 合作须知页面
+
+- Status：`Shipped`。[活动合作须知](https://cmi.community/cooperation) 与首页入口已上线；正文继续标为讨论稿。
+- Current task：[Issue #45](https://github.com/CMI-Community/Website/issues/45)；[PR #46](https://github.com/CMI-Community/Website/pull/46) 已合并，T1。
+- Runtime：`main@49480abcc393d01310a036c13052fc48081ef3c7`；Worker `add96e4a-d05c-4002-992e-812802a04b79`。[production run](https://github.com/CMI-Community/Website/actions/runs/41667981628) 经受保护 Environment 发布成功，无 D1 migration。
+- Scope：六条已确认正文、平等对话、六节目录、键盘与打印阅读。无 R2 业务资料、权限或 Secret 变更；本地活动后台工作没有纳入本次运行提交。
+- `VERIFIED`：最终候选与合并文件树一致；[PR CI](https://github.com/CMI-Community/Website/actions/runs/41665026894)、[main CI](https://github.com/CMI-Community/Website/actions/runs/41667834001)、staging 与 production 均成功。
+- `VERIFIED`：干净环境 check 通过，55 tests / 16 表 D1 / SSR / dry-run；完整本地 E2E 16 passed / 1 flaky（旧兰纳页重试通过）/ 3 skipped。staging、production 三视口六节正文、无溢出、深链、键盘、首页入口、无脚本与打印检查通过，0 page errors。
+- `VERIFIED`：baseline 99/99、最终 candidate 123/123 为本地隔离合成状态；production 24/24 为本次变更的真实公开只读补拍。归档已封存并目视核对，路径与边界见 [v0.3.5 Release Record](./releases/v0.3.5.md)。
+- `CORRECTED`：首轮旧依赖安全门禁失败后做同主版本兼容修复，生产审计为 0；Better Auth 1.7 的拒绝包装通过 endpoint before hook 保留 403，数据库钩子继续限制身份创建，E2E 确认拒绝无账号写入。原始失败与较早快照保留。
+- Next：进入常规观察；若出现回归，按 Release Record 回滚。v0.3.5 tag 固定实际运行提交，发布记录的文档提交不代表新运行版本。
+
+以下保留已发布版本的历史工作台。
 
 ## Snapshot
 

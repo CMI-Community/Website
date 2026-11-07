@@ -1,3 +1,9 @@
+export const adminEnvironmentLabel: Record<CloudflareEnv["APP_ENV"], string> = {
+  development: "本地预览",
+  staging: "测试站",
+  production: "正式官网",
+};
+
 export class AdminApiError extends Error {
   constructor(
     message: string,

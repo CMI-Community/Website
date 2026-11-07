@@ -64,6 +64,19 @@ async function activeInvitation(env: CloudflareEnv, email: string) {
     .first<{ id: string; role: Role }>();
 }
 
+async function requireInvitation(env: CloudflareEnv, value: string): Promise<string> {
+  const email = normalizeEmail(value);
+  const isBootstrap = Boolean(
+    env.BOOTSTRAP_ADMIN_EMAIL && email === normalizeEmail(env.BOOTSTRAP_ADMIN_EMAIL),
+  );
+  if (!isBootstrap && !(await activeInvitation(env, email))) {
+    throw new APIError("FORBIDDEN", {
+      message: "CMI Community 当前仅接受受邀邮箱注册。",
+    });
+  }
+  return email;
+}
+
 async function provisionVerifiedIdentity(env: CloudflareEnv, userId: string): Promise<void> {
   const user = await env.DB.prepare(
     "SELECT id, name, email, emailVerified FROM auth_users WHERE id = ?1",
@@ -166,6 +179,10 @@ export function createAuth(env: CloudflareEnv, ctx: ExecutionContext) {
     })],
     hooks: {
       before: createAuthMiddleware(async (context) => {
+        // Better Auth 1.7 wraps database-hook rejections on public signup.
+        if (context.path === "/sign-up/email" && typeof context.body?.email === "string") {
+          await requireInvitation(env, context.body.email);
+        }
         if (!context.path.includes("email-otp")) return;
         const allowed = ["/email-otp/send-verification-otp", "/sign-in/email-otp"];
         if (!allowed.includes(context.path) || !isEventAdminEmail(env, String(context.body?.email ?? ""))) {
@@ -266,15 +283,10 @@ export function createAuth(env: CloudflareEnv, ctx: ExecutionContext) {
     databaseHooks: {
       user: {
         create: {
-          before: async (user) => {
+          before: async (user, context) => {
             const email = normalizeEmail(user.email);
-            const isBootstrap = Boolean(
-              env.BOOTSTRAP_ADMIN_EMAIL && email === normalizeEmail(env.BOOTSTRAP_ADMIN_EMAIL),
-            );
-            if (!isBootstrap && !isEventAdminEmail(env, email) && !(await activeInvitation(env, email))) {
-              throw new APIError("FORBIDDEN", {
-                message: "CMI Community 当前仅接受受邀邮箱注册。",
-              });
+            if (context?.path !== "/sign-in/email-otp" || !isEventAdminEmail(env, email)) {
+              await requireInvitation(env, email);
             }
             return { data: { ...user, email } };
           },

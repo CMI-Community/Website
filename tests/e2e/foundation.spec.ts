@@ -166,10 +166,14 @@ test("Projects menu exposes series and issues from both navigation states", asyn
   await expect(heroTrigger).toHaveAccessibleName("Projects 项目系列");
   await expect(page.locator(".home-sticky-nav .project-menu__trigger")).toHaveCount(0);
 
-  await heroTrigger.focus();
-  await page.keyboard.press("Enter");
   const heroPanel = page.locator(".home-hero__topline .project-menu__panel");
-  await expect(heroPanel).toBeVisible();
+  await expect(async () => {
+    if (!(await heroPanel.isVisible())) {
+      await heroTrigger.focus();
+      await page.keyboard.press("Enter");
+    }
+    await expect(heroPanel).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await expect(heroPanel.getByText("01 / 一级目录 · SERIES")).toBeVisible();
   await expect(heroPanel.getByText("02 / 二级目录 · ISSUES")).toBeVisible();
   await expect(heroPanel.getByText("WaytoAGI 切磋大会 · 清迈场")).toBeVisible();
@@ -387,6 +391,10 @@ test("invite, verification and server-side publishing roles work end to end", as
       data: { email: uninvitedEmail, password: "Correct-Horse-123!", name: "No Invitation" },
     });
     expect(blocked.status()).toBe(403);
+    const rejectedSignup = JSON.parse(d1(
+      `SELECT COUNT(*) AS users FROM auth_users WHERE email = '${uninvitedEmail}';`,
+    ));
+    expect(rejectedSignup[0].results[0].users).toBe(0);
 
     d1(
       `INSERT INTO invitations (id, email, role, expires_at) VALUES ('${invitationId}', '${invitedEmail}', 'member', datetime('now', '+1 day'));`,

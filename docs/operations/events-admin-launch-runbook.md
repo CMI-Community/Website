@@ -1,6 +1,8 @@
 # 活动后台第一版上线与恢复操作单
 
-状态：待负责人确认上线；本文件内 remote 命令仅供审核，未执行。当前实现仅在 `feat/events-admin-2026-11-01` 本地分支。
+2026-11-07，负责人已确认推进正式上线。发布候选见 [Issue #50](https://github.com/CMI-Community/Website/issues/50)。生产操作从恢复 Cloudflare 登录并验证资源身份开始，仍由受保护的 GitHub production Environment 审批部署。以下 remote 命令尚未执行。
+
+本地预览的已发布活动保留于本机。只迁移负责人要求公开的目标记录及对应海报，生产原样保留待验证的内容，在正式站通过发布接口和匿名请求验收。测试数据和本地登录会话与生产隔离。
 
 ## 先核对身份与备份
 
@@ -25,7 +27,7 @@ npx wrangler d1 export DB --remote --env production --output "$EVENT_BACKUP_DIR/
 
 - 创建独立私有活动桶 `cmi-community-events-private`、独立私有备份桶 `cmi-community-events-backups`；staging 使用各自的 `-staging` 桶。根配置的 `-local` 名称仅供本地模拟器使用。
 - 所有私有桶均关闭自定义公开域名和 `r2.dev`；核查没有公开 Worker 或其他绑定绕过。不要关闭承载 180 张历史海报和其他网站资产的共享域名。
-- 配置 `EVENT_ADMIN_EMAIL` 为负责人已经确认的唯一邮箱；源码、示例和 Git 不保存该邮箱。保持 `BETTER_AUTH_SECRET` 安全并核对 `BETTER_AUTH_URL`、Resend 发件域名。配置非空随机 `INTEGRATION_KEY_EPOCH` Secret，完整恢复时必须轮换。
+- 配置 `EVENT_ADMIN_EMAIL` 为负责人已经确认的唯一邮箱；源码、示例和 Git 不保存该邮箱。保持 `BETTER_AUTH_SECRET` 安全并核对 `BETTER_AUTH_URL`、Resend 发件域名。配置非空随机 `INTEGRATION_KEY_EPOCH` Secret，完整恢复时必须轮换。线上自动填写使用独立配置的 `OPENAI_API_KEY`，启动前分别验证 staging 和 production 的模型权限。
 - 实际发送并核验 6 位验证码、5 分钟有效期、3 次错误上限和 60 秒重发间隔；验证只有唯一管理员获得活动管理能力，普通账号/OAuth 会话不能签发密钥。
 - 首次 OTP 登录完成后，按运行代码的归属迁移流程将存量活动归入管理员。迁移系统身份无登录账户、无角色、未验证邮箱，不作为真人管理员使用。
 
@@ -44,9 +46,9 @@ npx wrangler d1 migrations apply DB --remote --env production
 
 1. 导出 `event_migration_records` 的原始与私有对象路径，扩展清单覆盖旧原图、缩略图、历史版本、已知公开别名。Cloudflare 域名、缓存、历史部署和所有存储入口均需人工核对。
 2. 将真实图复制至私有桶，逐对象回读验证 SHA-256、字节数、真实类型与尺寸，与源文件一致后再更新 `media_assets` 的校验字段、`status='ready'` 及 `event_media.verified_at`。这一步不能使用 `test:seed:events`；该脚本仅产生本地合成图片。
-3. 把旧公开副本先归档到私有备份，保持可恢复；按独立批准的清单撤除旧公开副本或其路由，并清除已有一年缓存。只处理受管活动资源，不影响 180 张历史海报。此操作涉及线上资源，当前未执行。
+3. 把旧公开副本先归档到私有备份，保持可恢复；按独立批准的清单撤除旧公开副本或其路由，并清除已有一年缓存。优先使用精确路由限制保留原对象，逐个验证旧地址拒绝访问。只处理受管活动资源，不影响 180 张历史海报。此操作涉及线上资源，当前未执行。
 4. 验证旧 `assets.cmi.community`、`r2.dev`、旧 Worker `/media/activities/...`、历史公开别名均不可取得受管海报。新地址只为 `/media/events/{eventId}/{mediaId}`。
-5. 再切换候选 Worker，验证首页、两个海报档案入口、`/api/v1/events`、`/api/v1/posters`、活动详情与图片一致；发布后新请求即生效，下架后以上入口和图片均不可访问，响应禁用缓存。
+5. 完成对象回读后执行 `node scripts/check-event-cutover.mjs staging` 或 `node scripts/check-event-cutover.mjs production`。部署工作流在 D1 迁移后复查 10 张原海报的私有校验元数据；对象与旧公开别名仍须单独回读。再切换候选 Worker，验证首页、两个海报档案入口、`/api/v1/events`、`/api/v1/posters`、活动详情与图片一致；发布后新请求即生效，下架后以上入口和图片均不可访问，响应禁用缓存。
 6. 记录资源和 Worker 版本、权限验收与失败处理结果；上线批准前不 push、不合并、不部署。
 
 已经下载的图片不可能远程撤回。保证范围是下架完成后的新请求。旧公开资源或缓存未撤除时，不能报告“下架海报完全不可访问”。

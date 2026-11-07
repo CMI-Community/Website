@@ -8,6 +8,8 @@ export default defineConfig([
     "node_modules/**",
     "build/**",
     "dist/**",
+    "output/**",
+    "outputs/**",
     ".react-router/**",
     ".wrangler/**",
     "playwright-report/**",

@@ -18,7 +18,7 @@ export function meta() {
 export async function loader({ request, context }: Route.LoaderArgs) {
   const { env, ctx } = context.get(cloudflareContext);
   await requireAdminPage(request, env, ctx);
-  return {};
+  return { environment: env.APP_ENV };
 }
 interface ApiKey {
   id: string;
@@ -37,7 +37,7 @@ const permissions = [
   ["events:unpublish", "下架活动"],
   ["media:write", "上传海报"],
 ] as const;
-export default function AdminApiKeys() {
+export default function AdminApiKeys({ loaderData }: Route.ComponentProps) {
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -139,7 +139,7 @@ export default function AdminApiKeys() {
     }
   }
   return (
-    <AdminShell title="API 授权">
+    <AdminShell title="API 授权" environment={loaderData.environment}>
       <p>给活动中心或 Agent 签发独立密钥，并限定它能操作的活动。</p>
       <form className="event-admin__form" onSubmit={issue}>
         <fieldset disabled={busy}>

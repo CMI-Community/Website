@@ -151,7 +151,8 @@ test("admin creates, previews, publishes, edits and unpublishes a real local eve
     createdId = id;
     expect((await request.get(`/events/${id}`)).status()).toBe(404);
     await page.getByRole("button", { name: "发布活动", exact: true }).click();
-    await expect(page.getByRole("status")).toContainText("活动已发布");
+    await expect(page.getByRole("status")).toContainText("活动已发布，本地预览");
+    await expect(page.getByRole("link", { name: "打开公开活动详情 ↗" })).toHaveAttribute("href", `/events/${id}`);
     const detail = await request.get(`/api/v1/events/${id}`);
     expect(detail.ok()).toBe(true);
     const publicPage = await context.newPage();
@@ -181,8 +182,12 @@ test("admin creates, previews, publishes, edits and unpublishes a real local eve
     await page
       .getByLabel("活动标题 *", { exact: true })
       .fill(title + " · 已修改");
+    await page.route(`**/api/v1/events/${id}`, (route) => route.fulfill({ status: 503 }), { times: 1 });
     await page.getByRole("button", { name: "保存并公开", exact: true }).click();
-    await expect(page.getByRole("status")).toContainText("活动已发布");
+    await expect(page.getByRole("alert")).toContainText("活动已保存，暂时无法核验本地预览");
+    expect((await (await request.get(`/api/v1/events/${id}`)).json()).event.title).toBe(title + " · 已修改");
+    await page.getByRole("button", { name: "保存并公开", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("活动已发布，本地预览");
     await page.getByRole("button", { name: "下架活动", exact: true }).click();
     await page.getByRole("button", { name: "确认下架", exact: true }).click();
     await expect(page.getByRole("status")).toContainText("活动已下架");

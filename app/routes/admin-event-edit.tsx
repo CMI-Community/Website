@@ -12,6 +12,7 @@ import { EventAutofill } from "../modules/activities/EventAutofill";
 import { mergeAutofill } from "../modules/activities/event-autofill";
 import {
   adminApi,
+  adminEnvironmentLabel,
   AdminApiError,
   bangkokInput,
   errorMessage,
@@ -27,10 +28,11 @@ export function meta() {
 export async function loader({ request, context, params }: Route.LoaderArgs) {
   const { env, ctx } = context.get(cloudflareContext);
   await requireAdminPage(request, env, ctx);
-  if (!params.id || params.id === "new") return { event: null };
+  const environment = env.APP_ENV;
+  if (!params.id || params.id === "new") return { event: null, environment };
   const event = await getEvent(env.DB, params.id);
   if (!event) throw data("活动不存在", { status: 404 });
-  return { event };
+  return { event, environment };
 }
 const empty: EventInput = {
   title: "",
@@ -68,6 +70,8 @@ function inputOf(e: EventRecord | null): EventInput {
   };
 }
 export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
+  const siteLabel = adminEnvironmentLabel[loaderData.environment];
+  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [event, setEvent] = useState<EventRecord | null>(loaderData.event);
   const [form, setForm] = useState<EventInput>(() => inputOf(loaderData.event));
   const [busy, setBusy] = useState(false);
@@ -184,6 +188,7 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
     setError("");
     setFields({});
     setMessage("");
+    setPublishedUrl(null);
     try {
       const result = await adminApi<{ event: EventRecord }>(
         event
@@ -197,17 +202,33 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
       );
       setEvent(result.event);
       setForm(inputOf(result.event));
-      setMessage(
-        status === "published"
-          ? "活动已发布，官网新请求可见。"
-          : "活动已保存。",
-      );
-      if (!event)
-        window.history.replaceState(
-          null,
-          "",
-          `/admin/events/${result.event.id}`,
-        );
+      const saved = result.event;
+      const eventPath = `/events/${encodeURIComponent(saved.id)}`;
+      if (!event) window.history.replaceState(null, "", `/admin${eventPath}`);
+      if (saved.status !== "published") {
+        setMessage("活动已保存。");
+        return;
+      }
+      try {
+        const options: RequestInit = {
+          credentials: "omit",
+          cache: "no-store",
+          signal: AbortSignal.timeout(8_000),
+        };
+        const [detail, poster] = await Promise.all([
+          fetch(`/api/v1${eventPath}`, options),
+          fetch(saved.poster.url, { ...options, method: "HEAD" }),
+        ]);
+        if (!detail.ok || !poster.ok || !poster.headers.get("content-type")?.startsWith("image/"))
+          throw new Error("Public activity or poster unavailable");
+        const { event: publicEvent } = (await detail.json()) as { event: EventRecord };
+        if (publicEvent.id !== saved.id || publicEvent.version !== saved.version || publicEvent.poster.url !== saved.poster.url)
+          throw new Error("Public revision does not match saved revision");
+        setPublishedUrl(eventPath);
+        setMessage(`活动已发布，${siteLabel}的公开详情和海报已核验。`);
+      } catch {
+        setError(`活动已保存，暂时无法核验${siteLabel}的公开详情或海报。请稍后打开活动详情确认。`);
+      }
     } catch (e) {
       setError(errorMessage(e));
       if (e instanceof AdminApiError) setFields(e.fields);
@@ -236,6 +257,8 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
     if (!event) return;
     setBusy(true);
     setError("");
+    setMessage("");
+    setPublishedUrl(null);
     try {
       const result = await adminApi<{ event: EventRecord }>(
         `/api/v1/admin/events/${encodeURIComponent(event.id)}${retry ? "/retry-unpublish" : ""}`,
@@ -267,7 +290,7 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
     }
   }
   return (
-    <AdminShell title={event ? "编辑活动" : "新增活动"}>
+    <AdminShell title={event ? "编辑活动" : "新增活动"} environment={loaderData.environment}>
       <a href="/admin/events">← 返回活动列表</a>
       <p className="event-admin__note">
         时间统一按清迈时间（UTC+7）填写。带 * 的项目必填。
@@ -518,7 +541,12 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
         )}
         {message && (
           <p className="event-admin__success" role="status">
-            {message}
+            {message}{" "}
+            {publishedUrl && event?.status === "published" && (
+              <a href={publishedUrl} target="_blank" rel="noreferrer">
+                打开公开活动详情 ↗
+              </a>
+            )}
           </p>
         )}
         {(pendingBackup || event?.status === "unpublished") && (
