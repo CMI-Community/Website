@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { handleEventAutofill } from "./event-autofill";
 import {
   getEvent,
   getEventRevisions,
@@ -416,6 +417,8 @@ export async function handleActivityApi(
         Boolean(integration[3]),
       );
     else if (keys) response = await handleApiKeys(request, env, ctx, keys[1]);
+    else if (path === "/api/v1/admin/events/autofill")
+      response = await handleEventAutofill(request, env, ctx);
     else if (events)
       response = await adminEvents(request, env, ctx, events[1], events[2]);
     else if (path === "/api/v1/admin/media") {

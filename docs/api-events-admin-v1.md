@@ -79,3 +79,17 @@ If-None-Match: *
 - `/media/events/{eventId}/{mediaId}` 每次核对发布状态与绑定关系，禁止缓存；原 Worker `/media/activities/...` 关闭。旧存储域名与历史缓存撤除仍是部署前必须完成的独立操作。
 
 错误响应包含 `error.code`、中文 `error.message`、`requestId`；表单校验可带 `fields`。不要自动读取新 ETag 后强行覆盖人工修改，409/412 应交由调用方核对内容。
+
+## 可选自动填写（2026-11-01 追加）
+
+本轮新增授权见 [ADR 0011](./adr/0011-optional-event-autofill.md)。`GET /api/v1/admin/events/autofill` 返回 `configured`、`provider`、`model`，要求唯一管理员会话；该路径为保留路径。
+
+`POST /api/v1/admin/events/autofill` 接收 `{ "body": "已编辑的活动正文", "posterMediaId": "已上传媒体ID或null" }`，要求管理员 OTP 会话及同源 Origin。响应为 `{ fields, warnings, missingFields }`；fields仅包含标题、时间、地点、分类、简介、海报文字说明、链接、发起方、系列和来源发布时间，缺失为null。没有活动ID、媒体ID、状态或权限写入。
+
+该接口不保存或发布活动。独立校验模型输出；倒置时间清空结束时间并提示，缺失信息不猜测。客户端默认保留人工已填值，覆盖需显式选择。缺配置为503；无效／不完整结果为502、超时504，每位管理员每分钟超过5次为429，未校验或过大媒体为422。失败保留页面素材与原表单。
+
+模型密钥不同于 Agent 密钥；当前仅实现 Claude 服务，未配置密钥时不会调用外部模型。限制与选型见 [调研与实施说明](./活动后台自动填写_模型调研与实施说明_2026-11-01.md)。
+
+### 2026-11-06 模型服务更新
+
+自动填写现在使用 OpenAI Responses API，默认 `gpt-5.4-mini`，服务端变量为 `OPENAI_API_KEY`。前述 Claude 是早期原型的历史描述；请求字段和管理员权限合同不变。`AUTOFILL_CREDENTIALS` 表示模型凭据／访问权限问题，`AUTOFILL_QUOTA` 表示项目API额度不足，`AUTOFILL_REFUSED` 表示模型拒绝处理素材。没有真实密钥时仍返回未配置，不以模拟结果宣称真实识别成功。当前接法和待办见 [OpenAI接入记录](./活动后台自动填写_OpenAI接入记录_2026-11-06.md)。

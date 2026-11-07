@@ -130,16 +130,14 @@ test("admin creates, previews, publishes, edits and unpublishes a real local eve
     await page
       .getByLabel("简介 *")
       .fill("这是一条用于本地端到端验证的合成活动。");
-    await page
-      .getByLabel("上传海报 *")
-      .setInputFiles({
-        name: "synthetic.png",
-        mimeType: "image/png",
-        buffer: Buffer.from(
-          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+yD0sAAAAASUVORK5CYII=",
-          "base64",
-        ),
-      });
+    await page.getByLabel("上传海报 *").setInputFiles({
+      name: "synthetic.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+yD0sAAAAASUVORK5CYII=",
+        "base64",
+      ),
+    });
     await expect(page.getByRole("status")).toContainText("海报上传完成");
     await page.getByRole("button", { name: "预览", exact: true }).click();
     await expect(page.getByRole("dialog", { name: "活动预览" })).toContainText(
@@ -249,4 +247,183 @@ test("API authorization defaults to seven-day drafts and supports revocation", a
   await item.getByRole("button", { name: "撤销", exact: true }).click();
   await page.getByRole("button", { name: "确认撤销", exact: true }).click();
   await expect(item).toContainText("已撤销");
+});
+
+const autofillSuggestion = {
+  fields: {
+    title: "合成素材中的活动标题",
+    startsAt: "2026-11-20T14:00:00+07:00",
+    endsAt: null,
+    location: "合成测试空间",
+    category: "分享交流",
+    summary: "整理后的合成活动简介。",
+    posterAlt: "合成活动海报",
+    detailUrl: null,
+    registrationUrl: null,
+    initiator: "合成组织",
+    series: null,
+    sourcePublishedAt: null,
+  },
+  warnings: ["正文和海报的地点不同，已优先使用正文地点。"],
+  missingFields: ["endsAt"],
+};
+test("poster clipboard and edited text autofill keep manual changes and never autosave", async ({
+  page,
+  context,
+}) => {
+  await signIn(context);
+  await page.route("**/api/v1/admin/events/autofill", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(
+        route.request().method() === "GET"
+          ? { configured: true, provider: "OpenAI" }
+          : autofillSuggestion,
+      ),
+    }),
+  );
+  let writes = 0;
+  await page.route("**/api/v1/admin/events", (route) => {
+    if (route.request().method() === "POST") writes++;
+    return route.continue();
+  });
+  await page.goto("/admin/events/new");
+  await expect(
+    page.locator(".event-autofill .event-admin__note"),
+  ).toBeVisible();
+  await page
+    .getByLabel("活动标题 *", { exact: true })
+    .fill("本地合成自动填表 · 人工标题");
+  // A real browser ClipboardEvent exercises the same handler as an image paste.
+  await page.getByRole("group", { name: "海报粘贴区" }).evaluate((element) => {
+    const bytes = Uint8Array.from(
+      atob(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+yD0sAAAAASUVORK5CYII=",
+      ),
+      (char) => char.charCodeAt(0),
+    );
+    const data = new DataTransfer();
+    data.items.add(new File([bytes], "clipboard.png", { type: "image/png" }));
+    element.dispatchEvent(
+      new ClipboardEvent("paste", { bubbles: true, clipboardData: data }),
+    );
+  });
+  await expect(
+    page.getByRole("status").filter({ hasText: "海报已添加" }),
+  ).toBeVisible();
+  await page
+    .getByLabel("已编辑好的活动正文")
+    .fill(
+      "这是一段已经人工编辑好的活动正文。2026年11月20日14点，在合成测试空间举行。没有公开结束时间。",
+    );
+  await page.getByRole("button", { name: "自动填写下面的表单" }).click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "已填入" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("活动标题 *", { exact: true })).toHaveValue(
+    "本地合成自动填表 · 人工标题",
+  );
+  await expect(page.getByLabel("开始时间 *", { exact: true })).toHaveValue(
+    "2026-11-20T14:00",
+  );
+  await expect(page.getByLabel("结束时间 *", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("活动地点 *", { exact: true })).toHaveValue(
+    "合成测试空间",
+  );
+  await expect(
+    page.getByText("正文和海报的地点不同，已优先使用正文地点。", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(writes).toBe(0);
+  await page.getByLabel("简介 *").fill("自动填入后，我继续手动修改。");
+  await expect(page.getByLabel("简介 *")).toHaveValue(
+    "自动填入后，我继续手动修改。",
+  );
+  await page.getByLabel("结束时间 *", { exact: true }).fill("2026-11-20T16:00");
+  await page.getByRole("button", { name: "保存草稿", exact: true }).click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "活动已保存" }),
+  ).toBeVisible();
+  expect(writes).toBe(1);
+});
+
+test("autofill locks editing during extraction and explicit overwrite updates known fields", async ({
+  page,
+  context,
+}) => {
+  await signIn(context);
+  let release: (() => void) | undefined;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/api/v1/admin/events/autofill", async (route) => {
+    if (route.request().method() === "POST") await pending;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify(
+        route.request().method() === "GET"
+          ? { configured: true, provider: "OpenAI" }
+          : autofillSuggestion,
+      ),
+    });
+  });
+  await page.goto("/admin/events/new");
+  await expect(
+    page.locator(".event-autofill .event-admin__note"),
+  ).toBeVisible();
+  await page.getByLabel("活动标题 *", { exact: true }).fill("需要被更新的标题");
+  await page
+    .getByLabel("已编辑好的活动正文")
+    .fill("我重新编辑好的活动正文，需要更新已有字段。");
+  await page.getByLabel("也更新已经填写的字段").check();
+  await page.getByRole("button", { name: "自动填写下面的表单" }).click();
+  await expect(
+    page.getByRole("button", { name: "正在梳理海报和正文…" }),
+  ).toBeDisabled();
+  await expect(page.getByLabel("活动标题 *", { exact: true })).toBeDisabled();
+  release!();
+  await expect(page.getByLabel("活动标题 *", { exact: true })).toHaveValue(
+    autofillSuggestion.fields.title,
+  );
+  await expect(page.getByLabel("活动标题 *", { exact: true })).toBeEnabled();
+});
+
+test("autofill unavailable keeps source text and manual mode usable", async ({
+  page,
+  context,
+}) => {
+  await signIn(context);
+  await page.route("**/api/v1/admin/events/autofill", (route) =>
+    route.fulfill({
+      status: route.request().method() === "GET" ? 200 : 503,
+      contentType: "application/json",
+      body: JSON.stringify(
+        route.request().method() === "GET"
+          ? { configured: false, provider: "OpenAI" }
+          : {
+              error: {
+                code: "AUTOFILL_NOT_CONFIGURED",
+                message: "自动填写服务尚未连接模型，你仍可手动填写。",
+              },
+            },
+      ),
+    }),
+  );
+  await page.goto("/admin/events/new");
+  await expect(
+    page.locator(".event-autofill .event-admin__note"),
+  ).toBeVisible();
+  const source = "已编辑好的正文，即便识别失败也不能丢失。";
+  await page.getByLabel("已编辑好的活动正文").fill(source);
+  await page.getByRole("button", { name: "自动填写下面的表单" }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: "尚未连接" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("已编辑好的活动正文")).toHaveValue(source);
+  await page.getByRole("link", { name: "直接手动填写 ↓" }).click();
+  await page.getByLabel("活动标题 *", { exact: true }).fill("手动填写依然可用");
+  await expect(page.getByLabel("活动标题 *", { exact: true })).toHaveValue(
+    "手动填写依然可用",
+  );
 });

@@ -19,3 +19,5 @@ ADR 保存跨任务仍然有效、影响长期边界或难以回滚的决定。�
 新增 ADR 时复制 [template.md](./template.md)，使用下一个四位编号。状态只能是 Proposed、Accepted、Rejected 或 Superseded；已接受 ADR 不直接重写结论。
 
 - [ADR 0010：D1 活动后台与限定范围的机器授权](./0010-managed-events-and-scoped-integrations.md) — Accepted，2026-11-01，本地实施；线上未发布。
+
+- [ADR 0011：可选海报与正文自动填表](./0011-optional-event-autofill.md)

@@ -13,4 +13,7 @@ interface CloudflareEnv {
   EVENT_ADMIN_EMAIL?: string;
   /** Rotate after database restoration; kept outside the restored database. */
   INTEGRATION_KEY_EPOCH?: string;
+  /** Server-side only, used when the administrator explicitly requests autofill. */
+  OPENAI_API_KEY?: string;
+  EVENT_AUTOFILL_MODEL?: string;
 }

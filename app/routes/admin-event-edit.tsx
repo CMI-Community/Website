@@ -8,6 +8,8 @@ import {
   privateHeaders,
 } from "../modules/activities/admin.server";
 import { AdminShell } from "../modules/activities/AdminShell";
+import { EventAutofill } from "../modules/activities/EventAutofill";
+import { mergeAutofill } from "../modules/activities/event-autofill";
 import {
   adminApi,
   AdminApiError,
@@ -157,7 +159,7 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
       <small className="event-admin__error">{fields[key]}</small>
     ) : null;
   async function upload(file: File | undefined) {
-    if (!file) return;
+    if (!file) return null;
     setBusy(true);
     setError("");
     try {
@@ -169,8 +171,10 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
       );
       set("posterMediaId", result.media.id);
       setMessage("海报上传完成。");
+      return result.media.id;
     } catch (e) {
       setError(errorMessage(e));
+      return null;
     } finally {
       setBusy(false);
     }
@@ -279,7 +283,30 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
           · 版本 {event.version}
         </p>
       )}
-      <form className="event-admin__form" onSubmit={submit}>
+      <EventAutofill
+        busy={busy}
+        onWorking={setBusy}
+        posterMediaId={form.posterMediaId}
+        upload={upload}
+        apply={(result, overwrite) => {
+          const merged = mergeAutofill(
+            form,
+            result.fields,
+            overwrite,
+            event?.timePrecision === "backfill_placeholder",
+          );
+          setForm(merged.form);
+          setFields({});
+          setError("");
+          setMessage("");
+          return merged;
+        }}
+      />
+      <form
+        id="event-manual-fields"
+        className="event-admin__form"
+        onSubmit={submit}
+      >
         <fieldset disabled={busy}>
           <legend>活动信息</legend>
           <label>
