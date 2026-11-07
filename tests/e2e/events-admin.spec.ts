@@ -115,7 +115,12 @@ test("admin creates, previews, publishes, edits and unpublishes a real local eve
   await signIn(context);
   let createdId = "";
   try {
+    const editorReady = page.waitForResponse((response) =>
+      new URL(response.url()).pathname === "/api/v1/admin/events/autofill" &&
+      response.request().method() === "GET" && response.ok(),
+    );
     await page.goto("/admin/events/new");
+    await editorReady;
     await expect(page.getByRole("heading", { name: "新增活动" })).toBeVisible();
     const title = `本地合成活动 ${randomUUID().slice(0, 8)}`;
     await page.getByLabel("活动标题 *", { exact: true }).fill(title);
@@ -130,6 +135,10 @@ test("admin creates, previews, publishes, edits and unpublishes a real local eve
     await page
       .getByLabel("简介 *")
       .fill("这是一条用于本地端到端验证的合成活动。");
+    const uploaded = page.waitForResponse((response) =>
+      new URL(response.url()).pathname === "/api/v1/admin/media" &&
+      response.request().method() === "POST",
+    );
     await page.getByLabel("上传海报 *").setInputFiles({
       name: "synthetic.png",
       mimeType: "image/png",
@@ -138,6 +147,7 @@ test("admin creates, previews, publishes, edits and unpublishes a real local eve
         "base64",
       ),
     });
+    expect((await uploaded).status()).toBe(201);
     await expect(page.getByRole("status")).toContainText("海报上传完成");
     await page.getByRole("button", { name: "预览", exact: true }).click();
     await expect(page.getByRole("dialog", { name: "活动预览" })).toContainText(
