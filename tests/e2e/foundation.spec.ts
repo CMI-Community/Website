@@ -8,12 +8,12 @@ const WAYTOAGI_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg
 const ACTIVITY_TIMELINE_TEST_NOW = Date.parse("2026-09-19T15:00:00+07:00");
 const ACTIVITY_EXPECTATIONS = [
   {
-    startsAt: Date.parse("2026-08-26T00:00:00+07:00"),
-    endsAt: Date.parse("2026-08-27T00:00:00+07:00"),
+    startsAt: Date.parse("2026-07-10T00:00:00+07:00"),
+    endsAt: Date.parse("2026-07-11T00:00:00+07:00"),
     title: "CMI AI+3D 工坊 · 第一期｜首次走进清迈蒙福学校",
     detailUrl: "https://mp.weixin.qq.com/s/zkHrzX6XIyrE69EsNeI9dg",
-    dateLabel: "2026.08.26 · 周三",
-    timeLabel: "校内活动 · 具体时段未公开",
+    dateLabel: "2026.07.10（补录日期）",
+    timeLabel: "",
     posterKey: "activity-cmi-ai-3d-school-workshop-01-montfort.webp",
   },
   {
@@ -44,12 +44,12 @@ const ACTIVITY_EXPECTATIONS = [
     posterKey: "activity-waytoagi-27-improv-ai-shortfilm.webp",
   },
   {
-    startsAt: Date.parse("2026-09-02T13:30:00+07:00"),
-    endsAt: Date.parse("2026-09-03T00:00:00+07:00"),
+    startsAt: Date.parse("2026-07-10T00:00:00+07:00"),
+    endsAt: Date.parse("2026-07-11T00:00:00+07:00"),
     title: "CMI AI+3D 工坊 · 第二期｜清迈蒙福学校",
     detailUrl: "https://mp.weixin.qq.com/s/zkHrzX6XIyrE69EsNeI9dg",
-    dateLabel: "2026.09.02 · 周三",
-    timeLabel: "13:30 开始 · 结束时间未公开",
+    dateLabel: "2026.07.10（补录日期）",
+    timeLabel: "",
     posterKey: "activity-cmi-ai-3d-school-workshop-02-montfort.webp",
   },
   {
@@ -277,7 +277,7 @@ test("activity timeline keeps future and completed events around NOW", async ({ 
     await expect(activeCards.nth(index).locator(".activity-timeline__status")).toHaveText(expectedStatus);
     await expect(activeCards.nth(index).getByRole("link", { name: /查看活动详情/ })).toHaveAttribute(
       "href",
-      activity.detailUrl,
+      `/events/${activity.posterKey.slice(9,-5)}`,
     );
   }
   if (await page.locator("#event-museum .cmi-poster-wall").count()) {
@@ -302,7 +302,7 @@ test("activity timeline keeps future and completed events around NOW", async ({ 
   await expect(poster).toBeVisible();
   await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
   const detail = selectedCard.getByRole("link", { name: /查看活动详情/ });
-  await expect(detail).toHaveAttribute("href", selected.detailUrl);
+  await expect(detail).toHaveAttribute("href", `/events/${selected.posterKey.slice(9,-5)}`);
   await expect(detail).toHaveAttribute("target", "_blank");
 
   if (testInfo.project.name === "desktop-chromium") {

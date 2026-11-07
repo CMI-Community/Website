@@ -16,18 +16,23 @@ export interface ActivityLifecycle {
 export interface ActivityDefinition {
   id: string;
   title: string;
-  startsAt: string;
-  endsAt: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  eventDate?: string;
+  timePrecision?: "exact" | "backfill_placeholder";
+  location?: string;
+  registrationUrl?: string | null;
   dateLabel: string;
   timeLabel: string;
   publishedAt: string;
   publishedDate: string;
-  detailUrl: `https://${string}`;
+  detailUrl: string;
   summary: string;
   initiator: string;
   category: string;
   poster: {
     objectKey: string;
+    publicPath?: string;
     width: number;
     height: number;
     alt: string;
@@ -35,7 +40,7 @@ export interface ActivityDefinition {
   series: {
     id: string;
     name: string;
-    issue: number;
+    issue: number | null;
   };
 }
 
@@ -315,7 +320,14 @@ function asTimestamp(value: string | Date): number {
 }
 
 export function getActivityPosterSrc(activity: ActivityDefinition): string {
-  return `/media/${activity.poster.objectKey}`;
+  return activity.poster.publicPath ?? `/media/${activity.poster.objectKey}`;
+}
+
+function activityBoundary(activity: ActivityDefinition, end = false): number {
+  const value = end ? activity.endsAt : activity.startsAt;
+  if (value) return asTimestamp(value);
+  if (activity.timePrecision !== "backfill_placeholder" || !activity.eventDate) throw new Error("Activity time is missing");
+  return asTimestamp(`${activity.eventDate}T00:00:00+07:00`) + (end ? 86400000 : 0);
 }
 
 export function getActivityStatus(
@@ -323,8 +335,8 @@ export function getActivityStatus(
   referenceTime: string | Date = new Date(),
 ): ActivityStatus {
   const reference = asTimestamp(referenceTime);
-  if (reference < asTimestamp(activity.startsAt)) return "upcoming";
-  if (reference < asTimestamp(activity.endsAt)) return "ongoing";
+  if (reference < activityBoundary(activity)) return "upcoming";
+  if (reference < activityBoundary(activity,true)) return "ongoing";
   return "completed";
 }
 
@@ -336,17 +348,17 @@ export function partitionActivities(
   const upcoming = [...activities]
     .filter((activity) => getActivityStatus(activity, referenceTime) === "upcoming")
     .sort(
-    (left, right) => asTimestamp(left.startsAt) - asTimestamp(right.startsAt),
+    (left, right) => activityBoundary(left) - activityBoundary(right),
   );
   const ongoing = [...activities]
     .filter((activity) => getActivityStatus(activity, referenceTime) === "ongoing")
-    .sort((left, right) => asTimestamp(left.endsAt) - asTimestamp(right.endsAt));
+    .sort((left, right) => activityBoundary(left,true) - activityBoundary(right,true));
   const activeSlots = Math.max(0, MAX_ACTIVE_ACTIVITIES - ongoing.length);
   const museumReady = [...activities]
     .filter((activity) => getActivityStatus(activity, referenceTime) === "completed")
-    .sort((left, right) => asTimestamp(right.endsAt) - asTimestamp(left.endsAt));
+    .sort((left, right) => activityBoundary(right,true) - activityBoundary(left,true));
   const guaranteed = museumReady.filter(
-    (activity) => reference - asTimestamp(activity.endsAt) < COMPLETED_ACTIVITY_GRACE_MS,
+    (activity) => reference - activityBoundary(activity,true) < COMPLETED_ACTIVITY_GRACE_MS,
   );
   const guaranteedIds = new Set(guaranteed.map((activity) => activity.id));
   const completed = [
@@ -373,7 +385,7 @@ export function toEventMuseumPoster(activity: ActivityDefinition): EventMuseumPo
     title: activity.title,
     publishedAt: activity.publishedAt,
     publishedDate: activity.publishedDate,
-    eventTime: `${activity.dateLabel} · ${activity.timeLabel}`,
+    eventTime: [activity.dateLabel, activity.timeLabel].filter(Boolean).join(" · "),
     initiator: activity.initiator,
     summary: activity.summary,
     articleUrl: activity.detailUrl,

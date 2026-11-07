@@ -3,8 +3,12 @@
   "name": "cmi-community-platform-staging",
   "main": "./workers/app.ts",
   "compatibility_date": "2026-08-01",
-  "compatibility_flags": ["nodejs_compat"],
-  "observability": { "enabled": true },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "observability": {
+    "enabled": true
+  },
   "upload_source_maps": true,
   "vars": {
     "APP_ENV": "development",
@@ -21,7 +25,18 @@
     }
   ],
   "r2_buckets": [
-    { "binding": "MEDIA", "bucket_name": "cmi-community-public-assets" }
+    {
+      "binding": "MEDIA",
+      "bucket_name": "cmi-community-public-assets"
+    },
+    {
+      "binding": "EVENT_MEDIA",
+      "bucket_name": "cmi-community-events-private-local"
+    },
+    {
+      "binding": "EVENT_BACKUPS",
+      "bucket_name": "cmi-community-events-backups-local"
+    }
   ],
   "env": {
     "staging": {
@@ -33,7 +48,10 @@
         "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
       },
       "routes": [
-        { "pattern": "staging.cmi.community", "custom_domain": true }
+        {
+          "pattern": "staging.cmi.community",
+          "custom_domain": true
+        }
       ],
       "d1_databases": [
         {
@@ -44,7 +62,18 @@
         }
       ],
       "r2_buckets": [
-        { "binding": "MEDIA", "bucket_name": "cmi-community-public-assets-staging" }
+        {
+          "binding": "MEDIA",
+          "bucket_name": "cmi-community-public-assets-staging"
+        },
+        {
+          "binding": "EVENT_MEDIA",
+          "bucket_name": "cmi-community-events-private-staging"
+        },
+        {
+          "binding": "EVENT_BACKUPS",
+          "bucket_name": "cmi-community-events-backups-staging"
+        }
       ]
     },
     "production": {
@@ -56,8 +85,14 @@
         "AUTH_EMAIL_FROM": "CMI Community <community@auth.cmiswap.com>"
       },
       "routes": [
-        { "pattern": "cmi.community", "custom_domain": true },
-        { "pattern": "www.cmi.community", "custom_domain": true }
+        {
+          "pattern": "cmi.community",
+          "custom_domain": true
+        },
+        {
+          "pattern": "www.cmi.community",
+          "custom_domain": true
+        }
       ],
       "d1_databases": [
         {
@@ -68,7 +103,18 @@
         }
       ],
       "r2_buckets": [
-        { "binding": "MEDIA", "bucket_name": "cmi-community-public-assets" }
+        {
+          "binding": "MEDIA",
+          "bucket_name": "cmi-community-public-assets"
+        },
+        {
+          "binding": "EVENT_MEDIA",
+          "bucket_name": "cmi-community-events-private"
+        },
+        {
+          "binding": "EVENT_BACKUPS",
+          "bucket_name": "cmi-community-events-backups"
+        }
       ]
     }
   }

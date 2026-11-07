@@ -7,3 +7,12 @@ GOOGLE_CLIENT_SECRET=
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 BOOTSTRAP_ADMIN_EMAIL=
+
+# Activity admin must be explicitly configured; unset disables admin access.
+EVENT_ADMIN_EMAIL=
+# Rotate after any full database restore; production must have a separate secret.
+INTEGRATION_KEY_EPOCH=
+
+# Optional poster + text autofill. Secret stays in the server environment.
+OPENAI_API_KEY=
+EVENT_AUTOFILL_MODEL=gpt-5.4-mini

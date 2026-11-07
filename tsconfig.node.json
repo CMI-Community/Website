@@ -6,6 +6,14 @@
     "react-router.config.ts",
     "playwright.config.ts",
     "tests/**/*.ts",
+    "workers/activity-api.ts",
+    "workers/auth.ts",
+    "workers/event-media.ts",
+    "workers/integration-auth.ts",
+    "workers/lib/http.ts",
+    "workers/secrets.d.ts",
+    "worker-configuration.d.ts",
+    "app/modules/activities/event-*.ts",
     "scripts/**/*.mjs",
     "app/shared/auth/roles.ts",
     "app/shared/community-socials.ts",
@@ -17,12 +25,23 @@
     "app/modules/projects/project-meta.ts",
     "app/modules/projects/lanna-museum/pattern-archive/public-pattern-adapter.ts",
     "app/modules/projects/lanna-museum/content/messages/**/*.ts",
-    "app/modules/publishing/public-content.ts"
+    "app/modules/publishing/public-content.ts",
+    "workers/event-backup-policy.ts",
+    "workers/**/*.ts",
+    "app/shared/cloudflare-context.ts",
+    ".react-router/types/+server-build.d.ts"
   ],
   "compilerOptions": {
     "composite": true,
-    "types": ["node"],
-    "lib": ["ES2024", "DOM"],
+    "types": [
+      "node",
+      "@cloudflare/workers-types",
+      "vite/client"
+    ],
+    "lib": [
+      "ES2024",
+      "DOM"
+    ],
     "target": "ES2024",
     "module": "ESNext",
     "moduleResolution": "bundler",

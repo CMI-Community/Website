@@ -1,23 +1,10 @@
 import type { Route } from "./+types/poster-archive";
+import { loadPublicPosterCatalog } from "../modules/activities/event-public";
 import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.jsx";
 import { cloudflareContext } from "../shared/cloudflare-context";
 import "../modules/poster-wall/components/cmi-poster-wall.css";
 
-interface PublicPoster {
-  id: string;
-  imagePath: string;
-  width: number;
-  height: number;
-  title: string;
-  publishedAt: string;
-  publishedDate: string;
-  eventTime: string;
-  initiator: string;
-  summary: string;
-  articleUrl: string;
-  series: { name: string; issue: number | null };
-  category: string;
-}
+export const headers = () => ({ "Cache-Control": "no-store, max-age=0" });
 
 export function meta() {
   return [
@@ -31,20 +18,11 @@ export function meta() {
 
 export async function loader({ context }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  try {
-    const object = await env.MEDIA.get("poster-wall/v1/catalog.json");
-    if (!object) throw new Error("catalog missing");
-    const parsed = (await object.json()) as { version?: string; posters?: PublicPoster[] } | PublicPoster[];
-    const posters = Array.isArray(parsed) ? parsed : parsed.posters;
-    if (!Array.isArray(posters) || !posters.length) throw new Error("catalog empty");
-    return {
-      posters,
-      assetBase: `${env.ASSET_BASE_URL.replace(/\/$/, "")}/poster-wall/v1/posters/`,
-      unavailable: false,
-    };
-  } catch {
-    return { posters: [] as PublicPoster[], assetBase: "", unavailable: true };
-  }
+  const catalog = await loadPublicPosterCatalog(env);
+  return {
+    ...catalog,
+    assetBase: `${env.ASSET_BASE_URL.replace(/\/$/, "")}/poster-wall/v1/posters/`,
+  };
 }
 
 export default function PosterArchive({ loaderData }: Route.ComponentProps) {

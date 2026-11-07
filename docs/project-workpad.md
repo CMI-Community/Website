@@ -1,8 +1,30 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-03 23:49 Asia/Bangkok
+Last updated: 2026-11-07 20:25 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-07 活动后台生产发布准备
+
+- [Issue #50](https://github.com/CMI-Community/Website/issues/50) 已确认上线范围，按 T3 执行。[ADR 0010](./adr/0010-managed-events-and-scoped-integrations.md)、[ADR 0011](./adr/0011-optional-event-autofill.md) 与 [上线操作单](./operations/events-admin-launch-runbook.md)。
+- `VERIFIED` 生产首页 200，活动后台与活动 API 404。负责人已在本地验证实际海报和正文可以填写，已发布记录可匿名从本机详情、API 和媒体接口读取。
+- `VERIFIED` 10 张真实旧海报已在隔离本地 D1/R2 演练迁移，逐张回读哈希一致；海报未校验时发布门禁拒绝切换。生产 180 张历史海报仍使用原入口。候选继承 v0.3.6 首页导航、合作须知和邀请注册限制。
+- `VERIFIED` 候选显示环境，保存后匿名核验活动版本与海报再给出公开链接。lint、typecheck、99 项测试、本地 D1 迁移及 build 通过。生产备份、staging 线上演练和发布待恢复 Cloudflare 登录。
+
+## Snapshot — 2026-11-07 活动自动填写
+
+- 本地分支 `feat/events-admin-2026-11-01` 已接通 GPT-5.4 Mini。新增活动时可用海报和正文填表，再人工核对、编辑和保存。详情见 [OpenAI 接入记录](./活动后台自动填写_OpenAI接入记录_2026-11-06.md) 和 [ADR 0011](./adr/0011-optional-event-autofill.md)。
+- 已验证真实模型调用，标题来自合成正文，时间和地点来自合成海报。本地检查通过，99 项测试通过，隔离浏览器回归 29 项通过、3 项跳过。
+- 待负责人用实际活动素材验收，并另行确认上线。生产 Worker 未配置本次密钥，D1/R2 生产资源未改动。
+
+## Snapshot — 2026-11-01 活动后台本地实施
+
+- Status: `Local verification complete / awaiting launch approval`，线上未部署。
+- Current task：负责人确认活动后台第一版；分支 `feat/events-admin-2026-11-01`，基线 `e6a5707`。
+- Scope：10 场迁入 D1、唯一管理员 OTP 手填后台、有限期/权限/范围的 Agent 密钥、私有海报、下架独立记录与备份；180 张历史海报只读。
+- Decision：[ADR 0010](./adr/0010-managed-events-and-scoped-integrations.md)。[接口合同](./api-events-admin-v1.md)、[上线与恢复操作单](./operations/events-admin-launch-runbook.md)。
+- Verification：lint、typecheck、86 项测试、本地 D1 迁移与 build 通过；完整 e2e 23 passed / 3 skipped；338 个备份文件、14 张海报、4 条独立下架记录隔离恢复核验通过。[实施报告](./活动后台第一版_实施报告_2026-11-01.md) 与 [本地验收记录](./releases/2026-11-01-events-admin-local.md) 保存范围及证据；不沿用下面旧版测试数字。
+- Release boundary：未 push、未合并、未 deploy，未线上 D1/R2 写入。真实邮箱投递、云端绑定/套餐、私有桶与旧公开地址撤除、定时备份仍待上线前执行。
 
 ## Snapshot — 2026-11-03 顶部导航合作入口
 

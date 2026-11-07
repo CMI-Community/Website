@@ -19,3 +19,9 @@ Release Record 是 production 发布和治理版本的仓库内持久证据。Gi
 | `v0.3.6` | 首页顶部及滚动固定导航增加合作须知入口 | [顶部合作入口](./v0.3.6.md) |
 
 production 发布前复制 [template.md](./template.md)。回滚时更新原记录并关联新的 Bug/Incident Issue，不删除失败发布历史。
+
+## Local candidates（未发布）
+
+| 日期 | 范围 | 本地验收记录 |
+| --- | --- | --- |
+| 2026-11-01 | 活动后台第一版，仅本地分支与提交 | [Events admin local](./2026-11-01-events-admin-local.md) |

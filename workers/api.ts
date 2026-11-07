@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { loadPublicPosterCatalog } from "../app/modules/activities/event-public";
 import { editorContent, publicContent, type ContentRow } from "../app/modules/publishing/public-content";
 import { hasMinimumRole, isRole, type Role } from "../app/shared/auth/roles";
 import { createAuth } from "./auth";
@@ -203,9 +204,9 @@ async function handleContentCollection(
     const includeDrafts = url.searchParams.get("status") === "draft";
     if (includeDrafts) await requireRole(request, env, ctx, "editor");
     const query = includeDrafts
-      ? `SELECT * FROM content_entries WHERE locale = ?1 ORDER BY updated_at DESC LIMIT 100`
+      ? `SELECT * FROM content_entries WHERE locale = ?1 AND type <> 'event' ORDER BY updated_at DESC LIMIT 100`
       : `SELECT * FROM content_entries
-          WHERE locale = ?1 AND status = 'published'
+          WHERE locale = ?1 AND status = 'published' AND type <> 'event'
           ORDER BY published_at DESC LIMIT 100`;
     const rows = await env.DB.prepare(query).bind(locale).all<ContentRow>();
     return json({
@@ -218,6 +219,7 @@ async function handleContentCollection(
   if (!parsed.success) return validationError(parsed.error);
   const id = crypto.randomUUID();
   const data = parsed.data;
+  if (data.type === "event") throw new HttpError(403, "EVENT_ENDPOINT_REQUIRED", "请使用活动后台或授权活动接口。");
   await env.DB.batch([
     env.DB.prepare(
       `INSERT INTO content_entries
@@ -250,6 +252,7 @@ async function handleContentItem(
       .bind(id)
       .first<ContentRow>();
     if (!row) throw new HttpError(404, "CONTENT_NOT_FOUND", "内容不存在。");
+    if (row.type === "event") throw new HttpError(404, "CONTENT_NOT_FOUND", "请从活动详情入口查看。");
     if (row.status !== "published") await requireRole(request, env, ctx, "editor");
     return json({ content: row.status === "published" ? publicContent(row) : editorContent(row) });
   }
@@ -262,6 +265,7 @@ async function handleContentItem(
     .first<ContentRow>();
   if (!current) throw new HttpError(404, "CONTENT_NOT_FOUND", "内容不存在。");
   const data = parsed.data;
+  if (current.type === "event" || data.type === "event") throw new HttpError(403, "EVENT_ENDPOINT_REQUIRED", "活动及类型转换必须使用专用活动接口。");
   const next = {
     type: data.type ?? current.type,
     locale: data.locale ?? current.locale,
@@ -301,6 +305,7 @@ async function handlePublish(request: Request, id: string, env: CloudflareEnv, c
     .bind(id)
     .first<ContentRow>();
   if (!current) throw new HttpError(404, "CONTENT_NOT_FOUND", "内容不存在。");
+  if (current.type === "event") throw new HttpError(403, "EVENT_ENDPOINT_REQUIRED", "活动发布必须使用专用活动接口。");
   const revision = await env.DB.prepare(
     `SELECT COALESCE(MAX(revision_number), 0) + 1 AS next
        FROM content_revisions WHERE content_id = ?1`,
@@ -365,6 +370,8 @@ async function handleMedia(
   }
 
   if (pathId && request.method === "PUT") {
+    const managed = await env.DB.prepare("SELECT 1 FROM event_media WHERE media_id = ?").bind(pathId).first();
+    if (managed) throw new HttpError(403, "EVENT_ENDPOINT_REQUIRED", "活动海报必须使用私有上传接口。");
     const row = await env.DB.prepare(
       `SELECT id, object_key AS objectKey, mime_type AS mimeType, byte_size AS byteSize
          FROM media_assets WHERE id = ?1 AND status = 'pending'`,
@@ -395,16 +402,8 @@ async function handleMedia(
 }
 
 async function handlePosterCatalog(env: CloudflareEnv) {
-  const object = await env.MEDIA.get("poster-wall/v1/catalog.json");
-  if (!object) {
-    throw new HttpError(503, "POSTER_CATALOG_UNAVAILABLE", "海报目录暂时不可用，请稍后刷新。");
-  }
-  const headers = new Headers();
-  object.writeHttpMetadata(headers);
-  headers.set("Content-Type", "application/json; charset=utf-8");
-  headers.set("Cache-Control", "public, max-age=300, stale-while-revalidate=86400");
-  headers.set("X-Content-Type-Options", "nosniff");
-  return new Response(object.body, { headers });
+  const catalog = await loadPublicPosterCatalog(env);
+  return json(catalog, { status: catalog.unavailable && !catalog.posters.length ? 503 : 200 });
 }
 
 export async function handleV1Api(

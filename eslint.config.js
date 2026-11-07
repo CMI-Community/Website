@@ -14,6 +14,8 @@ export default defineConfig([
     ".wrangler/**",
     "playwright-report/**",
     "test-results/**",
+    "output/**",
+    "outputs/**",
     "worker-configuration.d.ts",
   ]),
   {

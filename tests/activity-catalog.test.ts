@@ -75,8 +75,8 @@ describe("activity catalog", () => {
     for (const activity of ACTIVITY_CATALOG) {
       expect(activity.title.trim()).not.toBe("");
       expect(Number.isFinite(Date.parse(activity.startsAt))).toBe(true);
-      expect(Number.isFinite(Date.parse(activity.endsAt))).toBe(true);
-      expect(Date.parse(activity.endsAt)).toBeGreaterThan(Date.parse(activity.startsAt));
+      expect(Number.isFinite(Date.parse(activity.endsAt!))).toBe(true);
+      expect(Date.parse(activity.endsAt!)).toBeGreaterThan(Date.parse(activity.startsAt));
       expect(new URL(activity.detailUrl).protocol).toBe("https:");
       expect(activity.poster.objectKey).toMatch(
         /^activities\/[a-z0-9-]+\/[a-z0-9-]+\/v[1-9][0-9]*\/[a-z0-9._-]+\.webp$/,
@@ -264,7 +264,7 @@ describe("activity catalog", () => {
       "older-27",
     ]);
     expect(result.completed).toHaveLength(MAX_COMPLETED_ACTIVITIES);
-    expect(referenceMs - Date.parse(result.completed[1].endsAt)).toBeLessThan(
+    expect(referenceMs - Date.parse(result.completed[1].endsAt!)).toBeLessThan(
       COMPLETED_ACTIVITY_GRACE_MS,
     );
   });

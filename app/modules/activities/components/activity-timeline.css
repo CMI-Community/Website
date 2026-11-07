@@ -616,3 +616,6 @@
     display: none;
   }
 }
+
+.activity-timeline__copy .activity-timeline__summary { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.65; font-size: 12px; margin: 8px 0; }
+.activity-timeline__copy .activity-timeline__location { font-size: 12px; margin: 7px 0; }

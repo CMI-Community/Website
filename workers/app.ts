@@ -1,6 +1,7 @@
 import { createRequestHandler, RouterContextProvider } from "react-router";
 import { cloudflareContext } from "../app/shared/cloudflare-context";
-import { isPublicActivityObjectKey } from "../app/modules/activities/activity-catalog";
+import { handleActivityApi } from "./activity-api";
+import { handleEventMedia } from "./event-media";
 import { handleV1Api } from "./api";
 import { createAuth } from "./auth";
 import { handleFeedback } from "./feedback";
@@ -134,27 +135,6 @@ async function publicProjectAsset(request: Request, env: CloudflareEnv): Promise
   return new Response(request.method === "HEAD" ? null : object.body, { headers });
 }
 
-async function publicActivityAsset(request: Request, env: CloudflareEnv): Promise<Response | null> {
-  const url = new URL(request.url);
-  const match = url.pathname.match(
-    /^\/media\/(activities\/[a-z0-9][a-z0-9-]{1,63}\/[a-z0-9][a-z0-9-]{1,95}\/v[1-9][0-9]*\/[a-z0-9][a-z0-9._-]{1,127})$/,
-  );
-  if (!match) return null;
-  if (!isPublicActivityObjectKey(match[1])) return new Response("Not found", { status: 404 });
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
-  }
-
-  const object = await env.MEDIA.get(match[1]);
-  if (!object) return new Response("Not found", { status: 404 });
-  const headers = new Headers();
-  object.writeHttpMetadata(headers);
-  headers.set("content-type", "image/webp");
-  headers.set("cache-control", "public, max-age=31536000, immutable");
-  headers.set("etag", object.httpEtag);
-  headers.set("x-content-type-options", "nosniff");
-  return new Response(request.method === "HEAD" ? null : object.body, { headers });
-}
 
 export default {
   async fetch(request, env, ctx) {
@@ -166,8 +146,15 @@ export default {
     if (photoAsset) return photoAsset;
     const projectAsset = await publicProjectAsset(request, env);
     if (projectAsset) return projectAsset;
-    const activityAsset = await publicActivityAsset(request, env);
-    if (activityAsset) return activityAsset;
+    // Former public activity paths are permanently closed in this Worker.
+    // Existing R2 public-domain copies must be withdrawn during the approved cutover.
+    if (url.pathname.startsWith("/media/activities/")) {
+      return new Response("Not found", { status: 404, headers: { "cache-control": "no-store" } });
+    }
+    const eventMedia = await handleEventMedia(request, env);
+    if (eventMedia) return eventMedia;
+    const activityApi = await handleActivityApi(request, env, ctx);
+    if (activityApi) return withApiHeaders(activityApi);
     const socialLogin = url.pathname.match(/^\/login\/(google|github)$/);
     if (socialLogin) {
       return socialLoginRedirect(request, env, ctx, socialLogin[1] as SocialProvider);
@@ -184,6 +171,12 @@ export default {
 
     const routerContext = new RouterContextProvider();
     routerContext.set(cloudflareContext, { env, ctx });
-    return requestHandler(request, routerContext);
+    const response = await requestHandler(request, routerContext);
+    if (url.pathname === "/" || url.pathname === "/archive/posters" || url.pathname.startsWith("/events/") || url.pathname.startsWith("/admin")) {
+      const headers = new Headers(response.headers);
+      headers.set("cache-control", "no-store");
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+    }
+    return response;
   },
 } satisfies ExportedHandler<CloudflareEnv>;

@@ -30,7 +30,7 @@ function markdownFiles(root, directory = root) {
   if (!existsSync(directory)) return [];
   const files = [];
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    if ([".git", "node_modules", "build", "dist", ".wrangler", ".react-router"].includes(entry.name)) continue;
+    if ([".git", "node_modules", "build", "dist", ".wrangler", ".react-router", "output", "outputs", "test-results", "playwright-report"].includes(entry.name)) continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...markdownFiles(root, absolute));
     if (entry.isFile() && entry.name.endsWith(".md")) files.push(path.relative(root, absolute));

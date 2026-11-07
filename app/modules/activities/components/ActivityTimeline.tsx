@@ -189,9 +189,12 @@ export function ActivityTimeline({ upcoming, ongoing, completed }: ActivityTimel
           </span>
           <p>{activity.dateLabel}<span>{activity.timeLabel}</span></p>
           <h4>{activity.title}</h4>
+          {activity.location && <p className="activity-timeline__location">{activity.location}</p>}
+          <p className="activity-timeline__summary">{activity.summary}</p>
           <a href={activity.detailUrl} target="_blank" rel="noreferrer">
             查看活动详情 <span aria-hidden="true">↗</span>
           </a>
+          {activity.registrationUrl && <a href={activity.registrationUrl} target="_blank" rel="noreferrer">报名活动 ↗</a>}
         </div>
       </article>
     );
@@ -316,6 +319,9 @@ export function ActivityTimeline({ upcoming, ongoing, completed }: ActivityTimel
                 </span>
                 <p>{selected.activity.dateLabel}<span>{selected.activity.timeLabel}</span></p>
                 <h2 id={dialogTitleId}>{selected.activity.title}</h2>
+                {selected.activity.location && <p>{selected.activity.location}</p>}
+                <p>{selected.activity.summary}</p>
+                {selected.activity.registrationUrl && <a href={selected.activity.registrationUrl} target="_blank" rel="noreferrer">报名活动 ↗</a>}
                 <a href={selected.activity.detailUrl} target="_blank" rel="noreferrer">
                   打开活动详情 <span aria-hidden="true">↗</span>
                 </a>
