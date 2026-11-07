@@ -32,7 +32,8 @@ export default defineConfig({
   webServer: externalBaseURL
     ? undefined
     : {
-        command: "npm run db:migrate:local && npm run test:seed:lanna && npm run test:seed:events && npm run dev -- --host 127.0.0.1",
+        // Exercise the built Worker and avoid Vite re-optimizing modules during hydration.
+        command: "npm run db:migrate:local && npm run test:seed:lanna && npm run test:seed:events && npm run preview -- --host 127.0.0.1 --port 5173 --strictPort",
         url: "http://127.0.0.1:5173/api/v1/health",
         timeout: 120_000,
         reuseExistingServer: !process.env.CI,
