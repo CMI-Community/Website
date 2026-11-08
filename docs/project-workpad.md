@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-07 23:46 Asia/Bangkok
+Last updated: 2026-11-08 09:46 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -8,7 +8,7 @@ Last updated: 2026-11-07 23:46 Asia/Bangkok
 
 - `SHIPPED` 生产 Worker `fc9cf3f6-ed2e-475d-a73f-2a98058f3b20`，运行代码 `e5783ee0342533f815cb5d1ecacf3d6a88b01e0d`。[正式发布记录](./releases/v0.4.0.md)
 - `VERIFIED` 后台登录入口可用，10 场旧活动与 180 张历史海报保留。负责人指定的活动已公开，正式详情和原海报通过匿名验收。
-- 生产模型密钥和每日备份 Workflow 待配置。迁移前正式备份已回读并隔离恢复。发布记录仅本地提交，GitHub Release 标签待授权。
+- 生产模型密钥已配置，完整图文实测待管理员登录。每日备份 Workflow 待配置。迁移前正式备份已回读并隔离恢复。发布代码与证据见 [GitHub Release](https://github.com/CMI-Community/Website/releases/tag/v0.4.0)。
 
 ## Snapshot — 2026-11-07 活动后台生产发布准备
 
