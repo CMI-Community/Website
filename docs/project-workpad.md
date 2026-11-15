@@ -10,7 +10,7 @@ Last updated: 2026-11-08 09:46 Asia/Bangkok
 - VERIFIED：从 `v0.4.0` 发布记录分支建立候选；未修改构建的 19 个 Worker 模块与生产逐字节一致，保留活动后台与合作页。
 - VERIFIED：工具入口已恢复目录和 `/shaodian/` 分流；捎点代理保持 `3387c76a-a6fe-4713-bc16-50d53065bba1`。
 - VERIFIED：首页首屏与吸顶导航已增加「工具」候选，320px 窄屏保留独立 Logo 空间；完整检查、99 项单元及 29 项端到端回归通过，最终复核进行中。
-- Release：[v0.4.1 记录](./releases/v0.4.1.md)；本次不迁移数据库、不修改成员权限或捎点鉴权。
+- Release：[v0.4.1 记录](./operations/tools-path-navigation-candidate.md)；本次不迁移数据库、不修改成员权限或捎点鉴权。
 
 ## Snapshot — 2026-11-07 活动后台正式上线
 
