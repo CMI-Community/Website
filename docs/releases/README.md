@@ -27,3 +27,4 @@ production 发布前复制 [template.md](./template.md)。回滚时更新原记�
 | 日期 | 范围 | 本地验收记录 |
 | --- | --- | --- |
 | 2026-11-01 | 活动后台第一版，仅本地分支与提交 | [Events admin local](./2026-11-01-events-admin-local.md) |
+| 2026-11-15 | 图片浏览修复、照片与活动管理、系列栏目，仅本地候选 | [Community content local](./2026-11-15-community-content-local.md) |

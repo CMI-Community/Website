@@ -9,7 +9,7 @@ Last updated: 2026-11-08 09:46 Asia/Bangkok
 - Issue：[图片浏览与社区内容管理 #54](https://github.com/CMI-Community/Website/issues/54)，T3；[ADR 0012](./adr/0012-community-series-and-photo-management.md)。
 - OBSERVED：超高竖图在原照片浏览器伸出手机屏幕，底部切换栏覆盖图像。修改前基线已封存：316 张实际截图、9 项不适用、无待完成项，涵盖桌面、窄屏、横屏及原生校验。
 - 本地候选：照片浏览器改用 viewport 尺寸与页面外弹层；后台新增照片与系列栏目管理、活动缩略图总览、历史海报覆盖编辑及栏目归属；公开系列页索引活动和照片。
-- VERIFIED：后端隔离 D1/R2 19 项通过，新增内容管理的权限、并发版本、照片导入及下架读取已验证。整合回归和候选界面验收进行中。
+- VERIFIED：整合 `npm run check`、108 项单元、32 表迁移、完整 E2E 33 passed / 3 skipped，生产依赖审计 0 漏洞；35 组图片比例与视口边界检查通过。候选界面图集封存进行中。[本地验收记录](./releases/2026-11-15-community-content-local.md)。
 - 发布边界：未推送、未部署、未执行生产迁移或资料导入。旧公共素材域名及既有外部缓存不因官网下架而撤回；新增照片预览沿用原图，未生成独立压缩缩略图。
 
 ## Snapshot — 2026-11-15 工具目录与导航
