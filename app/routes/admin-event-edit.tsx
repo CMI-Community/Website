@@ -441,7 +441,13 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
           <small id="event-summary-count">{form.summary.length} / 500</small>
           <label>
             所属系列栏目
-            <select value={seriesId ?? ""} onChange={event => { setSeriesId(event.target.value || null); setMessage(""); }}>
+            <select aria-label="所属系列栏目" value={seriesId ?? ""} onChange={event => {
+              const nextId = event.target.value || null;
+              const next = loaderData.series.find(item => item.id === nextId);
+              setSeriesId(nextId);
+              setForm(current => ({ ...current, series: next ? { name: next.name, issue: current.series?.name === next.name ? current.series.issue : null } : null }));
+              setMessage("");
+            }}>
               <option value="">未归属栏目</option>
               {loaderData.series.map(item => <option key={item.id} value={item.id}>{item.name}{item.status === "published" ? "" : "（栏目未公开）"}</option>)}
             </select>
@@ -532,12 +538,12 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
                   type="number"
                   min={1}
                   step={1}
-                  disabled={!form.series}
+                  disabled={!form.series && !seriesId}
                   value={form.series?.issue ?? ""}
                   onChange={(e) =>
-                    form.series &&
+                    (form.series || seriesId) &&
                     set("series", {
-                      ...form.series,
+                      name: loaderData.series.find(item => item.id === seriesId)?.name ?? form.series!.name,
                       issue: e.target.value ? Number(e.target.value) : null,
                     })
                   }

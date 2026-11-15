@@ -153,7 +153,16 @@ test("administrator publishes a series and related photos, browses the gallery a
       await visitor.locator("#photo-museum").scrollIntoViewIfNeeded();
       const pause = visitor.getByRole("button", { name: "暂停流动", exact: true });
       if (await pause.count()) await pause.click();
-      const photoButton = visitor.locator(`.photo-museum__set:not([aria-hidden="true"]) [data-photo-id="${photo!.id}"]`);
+      // The reverse-flow lane starts on the duplicate set. Click the real
+      // visible tile, just as a pointer user does, rather than an offscreen copy.
+      const copies = visitor.locator(`.photo-museum__card[data-photo-id="${photo!.id}"]`);
+      const visibleCopy = await copies.evaluateAll(elements => elements.findIndex(element => {
+        const bounds = element.getBoundingClientRect();
+        const x = bounds.x + bounds.width / 2, y = bounds.y + bounds.height / 2;
+        return x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight;
+      }));
+      expect(visibleCopy).toBeGreaterThanOrEqual(0);
+      const photoButton = copies.nth(visibleCopy);
       await expect(photoButton).toBeVisible();
       await photoButton.focus();
       const oldScroll = await visitor.evaluate(() => window.scrollY);

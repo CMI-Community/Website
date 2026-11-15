@@ -47,7 +47,7 @@ export async function listPublicEvents(db: D1Database): Promise<PublicEvent[]> {
   return events.map(event => {
     const series = seriesByEvent.get(event.id);
     return {
-      ...displayEvent(series ? { ...event, series: { name: series.name, issue: event.series?.issue ?? null } } : event),
+      ...displayEvent(series ? { ...event, series: { name: series.name, issue: event.series?.name === series.name ? event.series.issue : null } } : event),
       seriesUrl: series?.status === "published" ? `/series/${encodeURIComponent(series.slug)}` : null,
     };
   });
