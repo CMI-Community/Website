@@ -40,7 +40,7 @@ export default function AdminEvents({ loaderData }: Route.ComponentProps) {
     })),
     ...loaderData.archive.events.map(event => ({
       id: event.id, source: "archive", title: event.title, status: event.status,
-      date: event.eventTime || event.publishedAt, category: event.category,
+      date: event.eventTime || (event.publishedAt ? `原文发布于 ${event.publishedAt}` : "活动时间待补"), category: event.category,
       location: "", summary: event.summary, seriesId: event.seriesId,
       originalSeries: event.series.name, image: archivePosterImage(event.imagePath), width: event.width, height: event.height,
       href: `/admin/archive-events/${encodeURIComponent(event.id)}`,
