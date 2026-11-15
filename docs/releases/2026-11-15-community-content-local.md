@@ -3,6 +3,7 @@
 - 状态：Local candidate，未发布
 - 日期：2026-11-15
 - Issue：[图片浏览与社区内容管理 #54](https://github.com/CMI-Community/Website/issues/54)
+- 草稿 PR：[#55](https://github.com/CMI-Community/Website/pull/55)，叠加于 #53 的运行记录分支，未合并。
 - Decision：[ADR 0012](../adr/0012-community-series-and-photo-management.md)
 - 基线：`d2a5943355eae277ec9bf1191e7575c69aa07e5b`，继承已上线的 v0.4.1 界面及后台。
 - 候选运行源码：`8a2d5efe2794c0846735ff181a4262af6766744a`，package `0.5.0`；后续文档提交不代表新的运行构建。
@@ -29,7 +30,7 @@
 
 生成证据只保存在本机，不提交公开仓库。基线已封存，316 captured / 9 not_applicable / 0 pending / 0 blocked。图集位置：`output/playwright/releases/20261115T223423409330+0700-v0-4-1-d2a5943355ea-baseline-5ae527f3/index.html`。
 
-候选图集封存信息在完成后补录。本轮没有 production 图集，也没有生产部署证据。
+VERIFIED：最终候选已封存，440 captured / 440 expected，0 pending / 0 blocked / 0 not_applicable，包括 432 个普通状态和 8 张原生校验。图集位置：`output/playwright/releases/20261115T225223000367+0700-v0-5-0-8a2d5efe2794-candidate-c071919f/index.html`。全部使用隔离本机数据库和合成素材；原生截图保留原件，仅进行保持像素尺寸的格式转换。本轮没有 production 图集，也没有生产部署证据。
 
 ## 迁移、发布与回滚
 
