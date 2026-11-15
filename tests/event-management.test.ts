@@ -89,6 +89,8 @@ beforeEach(() => {
     "0002_fix_auth_rate_limit_id.sql",
     "0003_add_project_archive.sql",
     "0004_add_activity_management.sql",
+    "0005_add_event_integration_auth.sql",
+    "0006_add_community_content.sql",
   ])
     sqlite.exec(readFileSync(`migrations/${name}`, "utf8"));
   sqlite.exec(`INSERT INTO auth_users(id,name,email,emailVerified,createdAt,updatedAt) VALUES('test-admin','Synthetic admin','admin@example.com',1,0,0);

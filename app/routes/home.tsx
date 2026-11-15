@@ -8,10 +8,7 @@ import { ActivityTimeline } from "../modules/activities/components/ActivityTimel
 import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.jsx";
 import { PhotoMuseum } from "../modules/photo-museum/components/PhotoMuseum";
 import { ProjectMenu } from "../modules/projects/components/ProjectMenu";
-import {
-  sanitizePhotoCatalog,
-  type PhotoCatalog,
-} from "../modules/photo-museum/photo-catalog";
+import { loadMuseumPhotoCatalog } from "../modules/community-content/content-repository.server";
 import { cloudflareContext } from "../shared/cloudflare-context";
 import { COMMUNITY_LINKS, COMMUNITY_SOCIALS, type CommunitySocial } from "../shared/community-socials";
 import "../modules/poster-wall/components/cmi-poster-wall.css";
@@ -20,7 +17,6 @@ import "./home.css";
 type SectionId = "home" | "photo-museum" | "event-museum";
 
 const SECTION_IDS: SectionId[] = ["home", "photo-museum", "event-museum"];
-const PHOTO_MUSEUM_VERSION = "photo-museum/v2";
 
 export function meta() {
   const title = "CMI Community｜清迈华人数字游民社区";
@@ -42,14 +38,6 @@ export function meta() {
   ];
 }
 
-async function loadPhotoCatalog(env: CloudflareEnv): Promise<PhotoCatalog> {
-  const object = await env.MEDIA.get(`${PHOTO_MUSEUM_VERSION}/catalog.json`);
-  if (!object) throw new Error("photo catalog missing");
-  const catalog = sanitizePhotoCatalog(await object.json());
-  if (catalog.version !== PHOTO_MUSEUM_VERSION) throw new Error("photo catalog version mismatch");
-  return catalog;
-}
-
 export const headers = () => ({ "Cache-Control": "no-store, max-age=0" });
 
 export async function loader({ context, request }: Route.LoaderArgs) {
@@ -63,7 +51,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const activities = await listPublicActivities(env.DB);
   const activityLifecycle = partitionActivities(activities, activityReferenceTime);
   const [photoResult, posterResult] = await Promise.allSettled([
-    loadPhotoCatalog(env),
+    loadMuseumPhotoCatalog(env),
     loadPublicPosterCatalog(env, activityReferenceTime),
   ]);
   // Event Museum assets are already public, versioned, and shared across
@@ -79,11 +67,11 @@ export async function loader({ context, request }: Route.LoaderArgs) {
       completed: activityLifecycle.completed,
     },
     photoMuseum:
-      photoResult.status === "fulfilled"
+      photoResult.status === "fulfilled" && photoResult.value.length > 0
         ? {
             available: true as const,
-            photos: photoResult.value.photos,
-            assetBase: `/media/${PHOTO_MUSEUM_VERSION}`,
+            photos: photoResult.value,
+            assetBase: "",
           }
         : { available: false as const, photos: [], assetBase: "" },
     eventMuseum:
@@ -285,6 +273,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <ActivityTimeline {...loaderData.activityTimeline} />
 
         <p className="home-cooperation-entry">
+          <a href="/series">按系列浏览活动 <span aria-hidden="true">→</span></a>
           <span>希望在 CMI 发起一场交流？</span>
           <a href="/cooperation">活动合作须知 <span aria-hidden="true">↗</span></a>
         </p>

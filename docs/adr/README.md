@@ -21,3 +21,5 @@ ADR 保存跨任务仍然有效、影响长期边界或难以回滚的决定。�
 - [ADR 0010：D1 活动后台与限定范围的机器授权](./0010-managed-events-and-scoped-integrations.md) — Accepted，2026-11-01，本地实施；线上未发布。
 
 - [ADR 0011：可选海报与正文自动填表](./0011-optional-event-autofill.md)
+
+- [ADR 0012：社区系列、照片与历史活动管理](./0012-community-series-and-photo-management.md) — Proposed，本地实施候选。

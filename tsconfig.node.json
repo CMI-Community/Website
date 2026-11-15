@@ -14,6 +14,8 @@
     "workers/secrets.d.ts",
     "worker-configuration.d.ts",
     "app/modules/activities/event-*.ts",
+    "app/modules/community-content/content-schema.ts",
+    "app/modules/community-content/*.server.ts",
     "scripts/**/*.mjs",
     "app/shared/auth/roles.ts",
     "app/shared/community-socials.ts",

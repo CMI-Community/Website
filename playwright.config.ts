@@ -4,7 +4,7 @@ const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL;
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  testMatch: externalBaseURL ? "staging.spec.ts" : ["foundation.spec.ts", "events-admin.spec.ts"],
+  testMatch: externalBaseURL ? "staging.spec.ts" : ["foundation.spec.ts", "events-admin.spec.ts", "community-content.spec.ts"],
   // Local admin journeys mutate one shared emulator; keep those suites ordered.
   fullyParallel: Boolean(externalBaseURL),
   workers: externalBaseURL ? 3 : 1,
@@ -33,9 +33,10 @@ export default defineConfig({
     ? undefined
     : {
         // Exercise the built Worker and avoid Vite re-optimizing modules during hydration.
-        command: "npm run db:migrate:local && npm run test:seed:lanna && npm run test:seed:events && npm run preview -- --host 127.0.0.1 --port 5173 --strictPort",
+        command: "npm run db:migrate:local && npm run test:seed:lanna && npm run test:seed:events && node scripts/seed-community-content-e2e.mjs && npm run preview -- --host 127.0.0.1 --port 5173 --strictPort",
         url: "http://127.0.0.1:5173/api/v1/health",
-        timeout: 120_000,
+        // A cold local Worker build includes migration and R2 fixture setup.
+        timeout: 240_000,
         reuseExistingServer: !process.env.CI,
       },
 });
