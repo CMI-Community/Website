@@ -4,6 +4,15 @@ Last updated: 2026-11-08 09:46 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
+## Snapshot — 2026-11-15 工具目录与导航
+
+- Issue：[工具目录与捎点路径恢复 #52](https://github.com/CMI-Community/Website/issues/52)。T1：恢复已有路径约定并增加首页入口。
+- VERIFIED：从 `v0.4.0` 发布记录分支建立候选；未修改构建的 19 个 Worker 模块与生产逐字节一致，保留活动后台与合作页。
+- VERIFIED：工具入口已恢复目录和 `/shaodian/` 分流；捎点代理保持 `3387c76a-a6fe-4713-bc16-50d53065bba1`。
+- VERIFIED：首页首屏与吸顶导航已增加「工具」候选，320px 窄屏保留独立 Logo 空间；完整检查、99 项单元及 29 项端到端回归通过，仓库 CI 全绿；生产 320/390/1280px 完整导航链路和原菜单实际点击通过，0 页面脚本错误。
+- SHIPPED：官网 Worker `36b3e05f-e04b-4b6e-b093-87f10df859fa`，工具入口 `f356ef2b-4cc5-42b9-8fc2-dd02fd1a942a`；17 个既有官网绑定保持，未变更数据。
+- Release：[v0.4.1 记录](./releases/v0.4.1.md)；本次不迁移数据库、不修改成员权限或捎点鉴权。
+
 ## Snapshot — 2026-11-07 活动后台正式上线
 
 - `SHIPPED` 生产 Worker `fc9cf3f6-ed2e-475d-a73f-2a98058f3b20`，运行代码 `e5783ee0342533f815cb5d1ecacf3d6a88b01e0d`。[正式发布记录](./releases/v0.4.0.md)
