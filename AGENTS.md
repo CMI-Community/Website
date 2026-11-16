@@ -58,3 +58,7 @@
 ## 2026-11-07 活动后台上线授权
 
 负责人已确认上线，使用 [Issue #50](https://github.com/CMI-Community/Website/issues/50) 与受保护的 production Environment 推进。保留现网新变更和本地验收资料。先核对生产资源及备份、在 staging 演练、回读已迁入的海报，再切换正式站。
+
+## 2026-11-16 社区内容管理上线授权
+
+维护者明确要求按流程上线本版，先完成备份和数据库迁移，再检查图片浏览、照片活动管理和系列栏目。使用 Issue #54、受保护 production Environment 与独立 Release Record；保留已有活动、媒体和私有恢复材料。此授权覆盖本轮验收发现的公开字段边界修复，不替代管理员 OTP 登录。

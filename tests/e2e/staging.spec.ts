@@ -230,7 +230,7 @@ test("staging presents future and completed activities around NOW", async ({ pag
     )).toBe(activity.posterWidth);
     await expect(card.getByRole("link", { name: /查看活动详情/ })).toHaveAttribute(
       "href",
-      activity.detailUrl,
+      `/events/${activity.posterKey.replace(/^activity-/, "").replace(/\.webp$/, "")}`,
     );
   }
   for (const activity of expected.museumReady) {
@@ -253,7 +253,7 @@ test("staging presents future and completed activities around NOW", async ({ pag
   await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth))
     .toBe(selected.posterWidth);
   await expect(selectedCard.getByRole("link", { name: /查看活动详情/ }))
-    .toHaveAttribute("href", selected.detailUrl);
+    .toHaveAttribute("href", `/events/${selected.posterKey.replace(/^activity-/, "").replace(/\.webp$/, "")}`);
 
   if (testInfo.project.name === "desktop-chromium") {
     await posterButton.hover({ position: { x: 24, y: 50 } });
@@ -313,11 +313,11 @@ test("Photo Museum preserves every image and supports navigation and full-screen
   await expect.poll(() => visibleImage.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
   expect(await visibleImage.evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
   const thumbnailPath = await visibleImage.getAttribute("src");
-  expect(thumbnailPath).toMatch(/^\/media\/photo-museum\/v2\/thumbs\//);
+  expect(thumbnailPath).toMatch(/^\/media\/community\/photos\//);
   const thumbnailResponse = await page.request.get(thumbnailPath!);
   expect(thumbnailResponse.ok()).toBeTruthy();
   expect(thumbnailResponse.headers()["content-type"]).toContain("image/webp");
-  expect(thumbnailResponse.headers()["cache-control"]).toContain("immutable");
+  expect(thumbnailResponse.headers()["cache-control"]).toContain("no-store");
 
   await visiblePhoto.click();
   const visiblePhotoNumber = Number(visiblePhotoId!.slice(-3));
@@ -341,7 +341,7 @@ test("Photo Museum preserves every image and supports navigation and full-screen
   await expect(page.locator("#event-museum .cmi-wall-controls")).toBeAttached();
 });
 
-test("Photo Museum exposes both immutable WebP variants for all 528 records", async ({ request }, testInfo) => {
+test("Photo Museum exposes both status-checked WebP variants for all 528 records", async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "one complete asset projection check is sufficient");
   test.setTimeout(360_000);
 
@@ -361,7 +361,7 @@ test("Photo Museum exposes both immutable WebP variants for all 528 records", as
       }
       expect(response.status(), batchPaths[index]).toBe(200);
       expect(response.headers()["content-type"], batchPaths[index]).toContain("image/webp");
-      expect(response.headers()["cache-control"], batchPaths[index]).toContain("immutable");
+      expect(response.headers()["cache-control"], batchPaths[index]).toContain("no-store");
       await response.dispose();
     }
   }
@@ -404,11 +404,12 @@ test("Google and GitHub have clickable login entries", async ({ request }, testI
   }
 });
 
-test("the public poster projection contains 180 safe records", async ({ request }) => {
+test("the public poster projection merges managed and historical safe records", async ({ request }) => {
   const response = await request.get("/api/v1/posters");
   expect(response.ok()).toBeTruthy();
   const payload = await response.json();
-  expect(payload.posters).toHaveLength(180);
+  expect(payload.posters.length).toBeGreaterThanOrEqual(180);
+  expect(new Set(payload.posters.map((p: { id: string }) => p.id)).size).toBe(payload.posters.length);
   expect(JSON.stringify(payload)).not.toMatch(
     /localPath|sourcePath|archivePath|authorization|evidence|"status"\s*:|"hash"\s*:/,
   );

@@ -14,7 +14,7 @@ import {
   listPhotos,
 } from "../app/modules/community-content/content-repository.server";
 import { saveSeries } from "../app/modules/community-content/content-service.server";
-import { listArchiveEvents } from "../app/modules/community-content/archive-repository.server";
+import { listArchiveEvents, listSeriesArchiveEvents } from "../app/modules/community-content/archive-repository.server";
 import { loadPublicPosterCatalog } from "../app/modules/activities/event-public";
 import type {
   CommunityPhoto,
@@ -491,6 +491,17 @@ describe("社区内容管理（真实隔离 D1/R2）", () => {
       title: "编辑后的旧活动",
       seriesId: series.id,
     });
+    const publicArchive = (await loadPublicPosterCatalog(env)).posters;
+    expect(publicArchive).toHaveLength(1);
+    expect(publicArchive[0]).toMatchObject({ title: "编辑后的旧活动" });
+    for (const projection of [publicArchive, await listSeriesArchiveEvents(env, series.id)]) {
+      expect(projection).toHaveLength(1);
+      expect(Object.keys(projection[0]).sort()).toEqual([
+        "id", "imagePath", "width", "height", "title", "publishedAt",
+        "publishedDate", "eventTime", "initiator", "summary", "articleUrl",
+        "category", "series",
+      ].sort());
+    }
     expect(
       (
         await api(

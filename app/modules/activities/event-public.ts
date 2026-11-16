@@ -6,7 +6,7 @@ import {
 } from "./activity-catalog";
 import { listEvents } from "./event-repository.server";
 import type { EventRecord } from "./event-schema";
-import { listArchiveEvents } from "../community-content/archive-repository.server";
+import { listArchiveEvents, publicArchivePoster } from "../community-content/archive-repository.server";
 
 export interface PublicEvent extends EventRecord {
   dateLabel: string;
@@ -103,7 +103,7 @@ export async function loadPublicPosterCatalog(
   let historical: EventMuseumPoster[] = [];
   let unavailable = false;
   try {
-    historical = await listArchiveEvents(env, true);
+    historical = (await listArchiveEvents(env, true)).map(publicArchivePoster);
   } catch {
     unavailable = true;
   }
