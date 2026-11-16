@@ -1,6 +1,7 @@
 # ADR 0012：社区系列、照片与历史活动管理
 
-- 状态：Accepted（维护者于 2026-11-16 授权发布）
+- 状态：Accepted
+- 接受依据：维护者于 2026-11-16 明确授权本轮发布
 - 日期：2026-11-15
 - 关联 Issue：[#54](https://github.com/CMI-Community/Website/issues/54)
 - Extends：[ADR 0005](./0005-homepage-museums-and-public-photo-catalog.md)、[ADR 0010](./0010-managed-events-and-scoped-integrations.md)
