@@ -167,6 +167,7 @@ test("Projects menu is available before and after the hero", async ({ page }) =>
   await expect(heroPanel).toHaveCount(0);
   await expect(heroTrigger).toBeFocused();
 
+  await page.evaluate(() => document.fonts.ready);
   await page.locator('.home-museum-entries a[href="#photo-museum"]').click();
   await expect(page.locator("#photo-museum")).toBeInViewport({ timeout: 15_000 });
   await expect(page.locator('.home-sticky-nav[data-visible="true"]')).toBeVisible({
@@ -282,6 +283,7 @@ test("staging presents future and completed activities around NOW", async ({ pag
 test("Photo Museum preserves every image and supports navigation and full-screen viewing", async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => document.fonts.ready);
   await page.locator('.home-museum-entries a[href="#photo-museum"]').click();
   await expect(page.locator("#photo-museum")).toBeInViewport();
   await expect(page.locator('.home-sticky-nav[data-visible="true"]')).toBeVisible({
