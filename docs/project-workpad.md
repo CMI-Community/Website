@@ -1,8 +1,31 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-07 20:25 Asia/Bangkok
+Last updated: 2026-11-08 09:46 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-15 图片浏览与社区内容管理（本地候选）
+
+- Issue：[图片浏览与社区内容管理 #54](https://github.com/CMI-Community/Website/issues/54)，T3；[ADR 0012](./adr/0012-community-series-and-photo-management.md)。
+- OBSERVED：超高竖图在原照片浏览器伸出手机屏幕，底部切换栏覆盖图像。修改前基线已封存：316 张实际截图、9 项不适用、无待完成项，涵盖桌面、窄屏、横屏及原生校验。
+- 本地候选：照片浏览器改用 viewport 尺寸与页面外弹层；后台新增照片与系列栏目管理、活动缩略图总览、历史海报覆盖编辑及栏目归属；公开系列页索引活动和照片。
+- VERIFIED：整合 `npm run check`、108 项单元、32 表迁移、完整 E2E 33 passed / 3 skipped，生产依赖审计 0 漏洞；35 组图片比例与视口边界检查通过。候选 440/440 实际状态截图已封存，无缺项。[本地验收记录](./releases/2026-11-15-community-content-local.md)。
+- 发布边界：已推送候选并建立[草稿 PR #55](https://github.com/CMI-Community/Website/pull/55)，未合并、未部署、未执行生产迁移或资料导入。旧公共素材域名及既有外部缓存不因官网下架而撤回；新增照片预览沿用原图，未生成独立压缩缩略图。
+
+## Snapshot — 2026-11-15 工具目录与导航
+
+- Issue：[工具目录与捎点路径恢复 #52](https://github.com/CMI-Community/Website/issues/52)。T1：恢复已有路径约定并增加首页入口。
+- VERIFIED：从 `v0.4.0` 发布记录分支建立候选；未修改构建的 19 个 Worker 模块与生产逐字节一致，保留活动后台与合作页。
+- VERIFIED：工具入口已恢复目录和 `/shaodian/` 分流；捎点代理保持 `3387c76a-a6fe-4713-bc16-50d53065bba1`。
+- VERIFIED：首页首屏与吸顶导航已增加「工具」候选，320px 窄屏保留独立 Logo 空间；完整检查、99 项单元及 29 项端到端回归通过，仓库 CI 全绿；生产 320/390/1280px 完整导航链路和原菜单实际点击通过，0 页面脚本错误。
+- SHIPPED：官网 Worker `36b3e05f-e04b-4b6e-b093-87f10df859fa`，工具入口 `f356ef2b-4cc5-42b9-8fc2-dd02fd1a942a`；17 个既有官网绑定保持，未变更数据。
+- Release：[v0.4.1 记录](./releases/v0.4.1.md)；本次不迁移数据库、不修改成员权限或捎点鉴权。
+
+## Snapshot — 2026-11-07 活动后台正式上线
+
+- `SHIPPED` 生产 Worker `fc9cf3f6-ed2e-475d-a73f-2a98058f3b20`，运行代码 `e5783ee0342533f815cb5d1ecacf3d6a88b01e0d`。[正式发布记录](./releases/v0.4.0.md)
+- `VERIFIED` 后台登录入口可用，10 场旧活动与 180 张历史海报保留。负责人指定的活动已公开，正式详情和原海报通过匿名验收。
+- 生产模型密钥已配置，完整图文实测待管理员登录。每日备份 Workflow 待配置。迁移前正式备份已回读并隔离恢复。发布代码与证据见 [GitHub Release](https://github.com/CMI-Community/Website/releases/tag/v0.4.0)。
 
 ## Snapshot — 2026-11-07 活动后台生产发布准备
 

@@ -14,10 +14,12 @@ export function AdminShell({
     <main className="event-admin">
       <header className="event-admin__header">
         <a href="/admin/events" className="event-admin__brand">
-          CMI <span>活动后台</span>
+          CMI <span>社区后台</span>
         </a>
         <nav aria-label="管理导航">
           <a href="/admin/events">活动</a>
+          <a href="/admin/photos">照片</a>
+          <a href="/admin/series">系列栏目</a>
           <a href="/admin/api-keys">API 授权</a>
           <a href="/" target="_blank" rel="noreferrer">
             查看{adminEnvironmentLabel[environment]} ↗

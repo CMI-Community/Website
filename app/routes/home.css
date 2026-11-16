@@ -491,6 +491,13 @@ body:has(.cmi-home-page) {
   .home-event-section .cmi-poster-wall--homepage .cmi-flow-wall { padding-top: 126px; }
 }
 
+@media (max-width: 360px) {
+  .home-sticky-nav { column-gap: 4px; }
+  .home-sticky-nav__brand img { width: 24px; height: 24px; }
+  .home-sticky-nav__sections > a { padding-inline: 3px; }
+  .home-sticky-nav .project-menu__trigger { padding-inline: 3px; }
+}
+
 @media (max-height: 720px) and (max-width: 840px) {
   .home-hero__statement h1 { font-size: 58px; }
   .home-hero__identity { margin-top: 8px; font-size: 14px; }

@@ -2,6 +2,8 @@ import { createRequestHandler, RouterContextProvider } from "react-router";
 import { cloudflareContext } from "../app/shared/cloudflare-context";
 import { handleActivityApi } from "./activity-api";
 import { handleEventMedia } from "./event-media";
+import { handleCommunityContentApi, handleCommunityMedia } from "./community-content";
+import { publicPhotoAsset } from "./photo-media";
 import { handleV1Api } from "./api";
 import { createAuth } from "./auth";
 import { handleFeedback } from "./feedback";
@@ -76,27 +78,6 @@ function canonicalRedirect(request: Request): Response | null {
   return Response.redirect(url.toString(), 308);
 }
 
-async function publicPhotoAsset(request: Request, env: CloudflareEnv): Promise<Response | null> {
-  const url = new URL(request.url);
-  const match = url.pathname.match(
-    /^\/media\/photo-museum\/(v[1-9][0-9]*)\/(thumbs|full)\/([a-z0-9][a-z0-9-]{2,63}\.webp)$/,
-  );
-  if (!match) return null;
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    return new Response(null, { status: 405, headers: { allow: "GET, HEAD" } });
-  }
-
-  const object = await env.MEDIA.get(`photo-museum/${match[1]}/${match[2]}/${match[3]}`);
-  if (!object) return new Response("Not found", { status: 404 });
-  const headers = new Headers();
-  object.writeHttpMetadata(headers);
-  headers.set("content-type", "image/webp");
-  headers.set("cache-control", "public, max-age=31536000, immutable");
-  headers.set("etag", object.httpEtag);
-  headers.set("x-content-type-options", "nosniff");
-  return new Response(request.method === "HEAD" ? null : object.body, { headers });
-}
-
 async function publicProjectAsset(request: Request, env: CloudflareEnv): Promise<Response | null> {
   const url = new URL(request.url);
   const match = url.pathname.match(
@@ -142,6 +123,10 @@ export default {
     if (redirect) return redirect;
 
     const url = new URL(request.url);
+    const communityMedia = await handleCommunityMedia(request, env);
+    if (communityMedia) return communityMedia;
+    const communityApi = await handleCommunityContentApi(request, env, ctx);
+    if (communityApi) return withApiHeaders(communityApi);
     const photoAsset = await publicPhotoAsset(request, env);
     if (photoAsset) return photoAsset;
     const projectAsset = await publicProjectAsset(request, env);

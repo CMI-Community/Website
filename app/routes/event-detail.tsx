@@ -48,7 +48,7 @@ export default function EventDetail({ loaderData }: Route.ComponentProps) {
         <p>发起／组织：{event.initiator}</p>
         {event.series && (
           <p>
-            {event.series.name}
+            {event.seriesUrl ? <a href={event.seriesUrl}>{event.series.name}</a> : event.series.name}
             {event.series.issue ? ` · 第 ${event.series.issue} 期` : ""}
           </p>
         )}

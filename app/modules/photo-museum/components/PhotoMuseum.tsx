@@ -7,6 +7,7 @@ import {
   type CSSProperties,
   type TouchEvent,
 } from "react";
+import { createPortal } from "react-dom";
 import type { PhotoRecord } from "../photo-catalog";
 import "./photo-museum.css";
 
@@ -18,6 +19,7 @@ interface PhotoMuseumProps {
 const LANE_COUNT = 7;
 
 function assetUrl(assetBase: string, path: string): string {
+  if (path.startsWith("/")) return path;
   return `${assetBase.replace(/\/$/, "")}/${path}`;
 }
 
@@ -128,7 +130,9 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
-  const touchStartRef = useRef<number | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [failedPhotoId, setFailedPhotoId] = useState<string | null>(null);
+  const isOpen = selectedIndex !== null;
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -171,19 +175,19 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
   );
 
   useEffect(() => {
-    if (selectedIndex === null) return undefined;
+    if (!isOpen) return undefined;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closePhoto();
-      if (event.key === "ArrowLeft") movePhoto(-1);
-      if (event.key === "ArrowRight") movePhoto(1);
+      if (event.key === "Escape") { event.preventDefault(); closePhoto(); }
+      if (event.key === "ArrowLeft") { event.preventDefault(); movePhoto(-1); }
+      if (event.key === "ArrowRight") { event.preventDefault(); movePhoto(1); }
       if (event.key !== "Tab" || !dialogRef.current) return;
 
       const focusable = Array.from(
-        dialogRef.current.querySelectorAll<HTMLElement>("button:not([disabled]), a[href]"),
+        dialogRef.current.querySelectorAll<HTMLElement>("button:not([disabled]):not([tabindex='-1']), a[href]"),
       );
       if (!focusable.length) return;
       const first = focusable[0];
@@ -202,18 +206,21 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [closePhoto, movePhoto, selectedIndex]);
+  }, [closePhoto, movePhoto, isOpen]);
 
   const handleTouchStart = (event: TouchEvent) => {
-    touchStartRef.current = event.touches[0]?.clientX ?? null;
+    const touch = event.touches[0];
+    touchStartRef.current = touch ? { x: touch.clientX, y: touch.clientY } : null;
   };
 
   const handleTouchEnd = (event: TouchEvent) => {
     const start = touchStartRef.current;
-    const end = event.changedTouches[0]?.clientX;
+    const end = event.changedTouches[0];
     touchStartRef.current = null;
-    if (start === null || end === undefined || Math.abs(start - end) < 48) return;
-    movePhoto(start > end ? 1 : -1);
+    if (!start || !end) return;
+    const dx = end.clientX - start.x;
+    if (Math.abs(dx) < 48 || Math.abs(dx) <= Math.abs(end.clientY - start.y)) return;
+    movePhoto(dx < 0 ? 1 : -1);
   };
 
   const selectedPhoto = selectedIndex === null ? null : orderedPhotos[selectedIndex];
@@ -252,7 +259,7 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
         <span>点击进入全屏浏览</span>
       </footer>
 
-      {selectedPhoto && selectedIndex !== null && (
+      {selectedPhoto && selectedIndex !== null && createPortal(
         <div
           className="photo-lightbox"
           role="dialog"
@@ -260,7 +267,7 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
           aria-label={`照片 ${selectedIndex + 1} / ${orderedPhotos.length}`}
           ref={dialogRef}
         >
-          <button className="photo-lightbox__backdrop" type="button" onClick={closePhoto} aria-label="关闭照片" />
+          <button className="photo-lightbox__backdrop" tabIndex={-1} type="button" onClick={closePhoto} aria-label="关闭照片背景" />
           <header className="photo-lightbox__header">
             <div>
               <b>PHOTO MUSEUM</b>
@@ -271,19 +278,21 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
             </button>
           </header>
           <figure onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <img
+            {failedPhotoId === selectedPhoto.id ? <p role="status">照片暂时无法显示，请切换其他照片或关闭。</p> : <img
+              key={selectedPhoto.id}
               src={assetUrl(assetBase, selectedPhoto.fullPath)}
               alt={selectedPhoto.alt}
               width={selectedPhoto.width}
               height={selectedPhoto.height}
-            />
+              onError={() => setFailedPhotoId(selectedPhoto.id)}
+            />}
           </figure>
           <nav className="photo-lightbox__controls" aria-label="照片切换">
             <button type="button" onClick={() => movePhoto(-1)} aria-label="上一张照片">← <span>上一张</span></button>
             <p>{selectedPhoto.alt}</p>
             <button type="button" onClick={() => movePhoto(1)} aria-label="下一张照片"><span>下一张</span> →</button>
           </nav>
-        </div>
+        </div>, document.body,
       )}
     </div>
   );

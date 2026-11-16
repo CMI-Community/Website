@@ -6,11 +6,13 @@ import {
 } from "./activity-catalog";
 import { listEvents } from "./event-repository.server";
 import type { EventRecord } from "./event-schema";
+import { listArchiveEvents } from "../community-content/archive-repository.server";
 
 export interface PublicEvent extends EventRecord {
   dateLabel: string;
   timeLabel: string;
   publicUrl: string;
+  seriesUrl: string | null;
 }
 function displayEvent(event: EventRecord): PublicEvent {
   const dateLabel =
@@ -33,10 +35,22 @@ function displayEvent(event: EventRecord): PublicEvent {
     dateLabel,
     timeLabel,
     publicUrl: `/events/${encodeURIComponent(event.id)}`,
+    seriesUrl: null,
   };
 }
 export async function listPublicEvents(db: D1Database): Promise<PublicEvent[]> {
-  return (await listEvents(db, true)).map(displayEvent);
+  const [events, memberships] = await Promise.all([
+    listEvents(db, true),
+    db.prepare("SELECT m.event_id,s.name,s.slug,s.status FROM activity_series_memberships m JOIN community_series s ON s.id=m.series_id").all<{ event_id: string; name: string; slug: string; status: string }>(),
+  ]);
+  const seriesByEvent = new Map(memberships.results.map(item => [item.event_id, item]));
+  return events.map(event => {
+    const series = seriesByEvent.get(event.id);
+    return {
+      ...displayEvent(series ? { ...event, series: { name: series.name, issue: event.series?.name === series.name ? event.series.issue : null } } : event),
+      seriesUrl: series?.status === "published" ? `/series/${encodeURIComponent(series.slug)}` : null,
+    };
+  });
 }
 export async function getPublicEvent(
   db: D1Database,
@@ -85,38 +99,11 @@ export async function loadPublicPosterCatalog(
   env: { DB: D1Database; MEDIA: R2Bucket },
   referenceTime: Date = new Date(),
 ): Promise<{ posters: EventMuseumPoster[]; unavailable: boolean }> {
-  // Load managed identities even for hidden events. A stale historical duplicate must
-  // never make an unpublished managed event visible again.
-  const [activities, managed, originals] = await Promise.all([
-    listPublicActivities(env.DB),
-    listEvents(env.DB),
-    env.DB.prepare(
-      "SELECT event_id,original_json FROM event_migration_records",
-    ).all<{ event_id: string; original_json: string }>(),
-  ]);
-  const ids = new Set(
-    managed.flatMap((event) => [event.id, `activity-${event.id}.webp`]),
-  );
-  const urls = new Set(managed.map((event) => event.detailUrl).filter(Boolean));
-  for (const row of originals.results) {
-    const original = JSON.parse(row.original_json) as { detailUrl?: string };
-    if (original.detailUrl) urls.add(original.detailUrl);
-    ids.add(row.event_id);
-    ids.add(`activity-${row.event_id}.webp`);
-  }
+  const activities = await listPublicActivities(env.DB);
   let historical: EventMuseumPoster[] = [];
   let unavailable = false;
   try {
-    const object = await env.MEDIA.get("poster-wall/v1/catalog.json");
-    if (!object) throw new Error("catalog missing");
-    const parsed = (await object.json()) as
-      { posters?: EventMuseumPoster[] } | EventMuseumPoster[];
-    const posters = Array.isArray(parsed) ? parsed : parsed.posters;
-    if (!Array.isArray(posters) || !posters.length)
-      throw new Error("catalog empty");
-    historical = posters.filter(
-      (poster) => !ids.has(poster.id) && !urls.has(poster.articleUrl),
-    );
+    historical = await listArchiveEvents(env, true);
   } catch {
     unavailable = true;
   }

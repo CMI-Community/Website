@@ -250,16 +250,28 @@
 }
 
 .photo-lightbox {
+  --photo-ink: #0b0b09;
+  --photo-paper: #f0eadf;
+  --photo-muted: #a79f91;
   position: fixed;
-  z-index: 500;
+  z-index: 1000;
   inset: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr) auto;
-  padding: 18px;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
   color: var(--photo-paper);
   background: rgb(5 5 4 / 96%);
   animation: photo-lightbox-in 220ms ease both;
 }
+
+.photo-lightbox,
+.photo-lightbox * { box-sizing: border-box; }
 
 @keyframes photo-lightbox-in {
   from { opacity: 0; }
@@ -278,6 +290,7 @@
 .photo-lightbox__controls {
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 .photo-lightbox__header {
@@ -301,25 +314,31 @@
   cursor: pointer;
 }
 
-.photo-lightbox__header button { padding: 8px 10px; }
+.photo-lightbox__header button { min-height: 44px; min-width: 60px; padding: 8px 10px; }
 .photo-lightbox__header button span { margin-left: 6px; color: #ffba83; font-size: 15px; }
 
 .photo-lightbox figure {
   display: grid;
   place-items: center;
   min-height: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 12px;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .photo-lightbox figure img {
   display: block;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  box-shadow: 0 24px 90px rgb(0 0 0 / 48%);
+  pointer-events: auto;
 }
 
 .photo-lightbox__controls {
@@ -330,7 +349,7 @@
   min-height: 52px;
 }
 
-.photo-lightbox__controls button { min-height: 36px; padding: 7px 11px; }
+.photo-lightbox__controls button { min-height: 44px; padding: 7px 11px; }
 .photo-lightbox__controls p {
   margin: 0;
   overflow: hidden;
@@ -341,8 +360,8 @@
   white-space: nowrap;
 }
 
-.photo-lightbox button:hover,
-.photo-lightbox button:focus-visible {
+.photo-lightbox button:not(.photo-lightbox__backdrop):hover,
+.photo-lightbox button:not(.photo-lightbox__backdrop):focus-visible {
   color: var(--photo-ink);
   outline: none;
   background: var(--photo-paper);
@@ -371,7 +390,7 @@
   .photo-museum__set { gap: 2px; padding-right: 2px; }
   .photo-museum__footer { padding: 4px 10px 5px; font-size: 6px; }
 
-  .photo-lightbox { padding: 10px; }
+  .photo-lightbox { padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
   .photo-lightbox figure { padding: 6px 0; }
   .photo-lightbox__controls { gap: 7px; }
   .photo-lightbox__controls button { min-width: 48px; padding-inline: 8px; }

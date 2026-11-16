@@ -3,6 +3,8 @@ import { data } from "react-router";
 import type { Route } from "./+types/admin-event-edit";
 import { cloudflareContext } from "../shared/cloudflare-context";
 import { getEvent } from "../modules/activities/event-repository.server";
+import { getEventSeriesMemberships, listSeries } from "../modules/community-content/content-repository.server";
+import type { EventSeriesMembership } from "../modules/community-content/content-schema";
 import {
   requireAdminPage,
   privateHeaders,
@@ -29,10 +31,12 @@ export async function loader({ request, context, params }: Route.LoaderArgs) {
   const { env, ctx } = context.get(cloudflareContext);
   await requireAdminPage(request, env, ctx);
   const environment = env.APP_ENV;
-  if (!params.id || params.id === "new") return { event: null, environment };
+  const [series, memberships] = await Promise.all([listSeries(env.DB), getEventSeriesMemberships(env.DB)]);
+  const membership = memberships.find(item => item.eventId === params.id) ?? null;
+  if (!params.id || params.id === "new") return { event: null, environment, series, membership };
   const event = await getEvent(env.DB, params.id);
   if (!event) throw data("活动不存在", { status: 404 });
-  return { event, environment };
+  return { event, environment, series, membership };
 }
 const empty: EventInput = {
   title: "",
@@ -73,6 +77,8 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
   const siteLabel = adminEnvironmentLabel[loaderData.environment];
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [event, setEvent] = useState<EventRecord | null>(loaderData.event);
+  const [membership, setMembership] = useState<EventSeriesMembership | null>(loaderData.membership);
+  const [seriesId, setSeriesId] = useState<string | null>(loaderData.membership?.seriesId ?? null);
   const [form, setForm] = useState<EventInput>(() => inputOf(loaderData.event));
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -205,6 +211,17 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
       const saved = result.event;
       const eventPath = `/events/${encodeURIComponent(saved.id)}`;
       if (!event) window.history.replaceState(null, "", `/admin${eventPath}`);
+      if (seriesId !== (membership?.seriesId ?? null)) {
+        try {
+          const assigned = await adminApi<{ membership: EventSeriesMembership }>(`/api/v1/admin/event-series/${encodeURIComponent(saved.id)}`, {
+            method: "PATCH", headers: { "If-Match": `"v${membership?.version ?? 0}"` }, body: JSON.stringify({ seriesId }),
+          });
+          setMembership(assigned.membership);
+        } catch (failure) {
+          setError(`活动已保存，但栏目归属未保存：${errorMessage(failure)}`);
+          return;
+        }
+      }
       if (saved.status !== "published") {
         setMessage("活动已保存。");
         return;
@@ -423,6 +440,20 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
           </label>
           <small id="event-summary-count">{form.summary.length} / 500</small>
           <label>
+            所属系列栏目
+            <select aria-label="所属系列栏目" value={seriesId ?? ""} onChange={event => {
+              const nextId = event.target.value || null;
+              const next = loaderData.series.find(item => item.id === nextId);
+              setSeriesId(nextId);
+              setForm(current => ({ ...current, series: next ? { name: next.name, issue: current.series?.name === next.name ? current.series.issue : null } : null }));
+              setMessage("");
+            }}>
+              <option value="">未归属栏目</option>
+              {loaderData.series.map(item => <option key={item.id} value={item.id}>{item.name}{item.status === "published" ? "" : "（栏目未公开）"}</option>)}
+            </select>
+            <small>每场活动可归属一个系列。<a href="/admin/series" target="_blank" rel="noreferrer">管理系列栏目 ↗</a>，保存活动时一并保存归属。</small>
+          </label>
+          <label>
             上传海报 *
             <input
               type="file"
@@ -472,6 +503,7 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
           </div>
           <details>
             <summary>更多信息</summary>
+            <p className="event-admin__note">系列名称保留旧版文字记录；公开展示优先使用上方选择的系列栏目。</p>
             <label>
               发起／组织
               <input
@@ -506,12 +538,12 @@ export default function AdminEventEdit({ loaderData }: Route.ComponentProps) {
                   type="number"
                   min={1}
                   step={1}
-                  disabled={!form.series}
+                  disabled={!form.series && !seriesId}
                   value={form.series?.issue ?? ""}
                   onChange={(e) =>
-                    form.series &&
+                    (form.series || seriesId) &&
                     set("series", {
-                      ...form.series,
+                      name: loaderData.series.find(item => item.id === seriesId)?.name ?? form.series!.name,
                       issue: e.target.value ? Number(e.target.value) : null,
                     })
                   }

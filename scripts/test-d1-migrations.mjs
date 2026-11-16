@@ -57,6 +57,12 @@ try {
     "integration_api_keys",
     "event_admin_otp_sessions",
     "event_otp_send_limits",
+    "community_series",
+    "community_photos",
+    "activity_series_memberships",
+    "community_imports",
+    "community_write_assertions",
+    "legacy_event_overrides",
   ];
   const missing = required.filter((name) => !names.has(name));
   if (missing.length) throw new Error(`Missing D1 tables: ${missing.join(", ")}`);

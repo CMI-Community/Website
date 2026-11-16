@@ -89,6 +89,8 @@ beforeEach(() => {
     "0002_fix_auth_rate_limit_id.sql",
     "0003_add_project_archive.sql",
     "0004_add_activity_management.sql",
+    "0005_add_event_integration_auth.sql",
+    "0006_add_community_content.sql",
   ])
     sqlite.exec(readFileSync(`migrations/${name}`, "utf8"));
   sqlite.exec(`INSERT INTO auth_users(id,name,email,emailVerified,createdAt,updatedAt) VALUES('test-admin','Synthetic admin','admin@example.com',1,0,0);
@@ -390,5 +392,59 @@ describe("event atomic writes", () => {
       expect(event.dateLabel).toBe("2026.07.10（补录日期）");
       expect(event.timeLabel).toBe("");
     }
+  });
+  it("projects the assigned series without borrowing a different legacy issue, and keeps events public when the series is hidden", async () => {
+    const created = await saveEvent(
+      db,
+      {
+        ...input,
+        series: { name: "旧系列 A", issue: 13 },
+        status: "published",
+      },
+      { actor },
+    );
+    sqlite
+      .prepare(
+        "INSERT INTO community_series(id,slug,name,status,created_at,updated_at) VALUES('assigned-series','series-b','新系列 B','published',?,?)",
+      )
+      .run("2026-11-15T00:00:00Z", "2026-11-15T00:00:00Z");
+    sqlite
+      .prepare(
+        "INSERT INTO activity_series_memberships(event_id,series_id,version,updated_at) VALUES(?,'assigned-series',1,?)",
+      )
+      .run(created.event.id, "2026-11-15T00:00:00Z");
+
+    const publicEvent = (await listPublicEvents(db)).find(
+      (event) => event.id === created.event.id,
+    );
+    expect(publicEvent).toMatchObject({
+      status: "published",
+      series: { name: "新系列 B", issue: null },
+      seriesUrl: "/series/series-b",
+    });
+    expect(
+      (await listPublicActivities(db)).find(
+        (event) => event.id === created.event.id,
+      )?.series,
+    ).toMatchObject({ name: "新系列 B", issue: null });
+    expect((await getEvent(db, created.event.id))?.series).toEqual({
+      name: "旧系列 A",
+      issue: 13,
+    });
+
+    sqlite
+      .prepare(
+        "UPDATE community_series SET status='unpublished' WHERE id='assigned-series'",
+      )
+      .run();
+    expect(
+      (await listPublicEvents(db)).find(
+        (event) => event.id === created.event.id,
+      ),
+    ).toMatchObject({
+      status: "published",
+      series: { name: "新系列 B", issue: null },
+      seriesUrl: null,
+    });
   });
 });

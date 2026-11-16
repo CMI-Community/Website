@@ -17,6 +17,8 @@ Release Record 是 production 发布和治理版本的仓库内持久证据。Gi
 | `v0.3.4` | 纠正 CMI TALK #13，新增《明月照他乡》大人/儿童双路线活动 | [CMI TALK #13 and Cultural Night](./v0.3.4.md) |
 | `v0.3.5` | 活动合作须知独立页、首页入口与兼容安全更新 | [活动合作须知](./v0.3.5.md) |
 | `v0.3.6` | 首页顶部及滚动固定导航增加合作须知入口 | [顶部合作入口](./v0.3.6.md) |
+| `v0.4.0` | 活动后台及 D1/R2 正式发布 | [活动后台](./v0.4.0.md) |
+| `v0.4.1` | 工具目录与捎点路径恢复、官网工具导航 | [工具入口](./v0.4.1.md) |
 
 production 发布前复制 [template.md](./template.md)。回滚时更新原记录并关联新的 Bug/Incident Issue，不删除失败发布历史。
 
@@ -25,3 +27,4 @@ production 发布前复制 [template.md](./template.md)。回滚时更新原记�
 | 日期 | 范围 | 本地验收记录 |
 | --- | --- | --- |
 | 2026-11-01 | 活动后台第一版，仅本地分支与提交 | [Events admin local](./2026-11-01-events-admin-local.md) |
+| 2026-11-15 | 图片浏览修复、照片与活动管理、系列栏目，仅本地候选 | [Community content local](./2026-11-15-community-content-local.md) |
