@@ -22,7 +22,7 @@ interface OverrideRow {
   series_name: string | null;
   series_status: PublicationStatus | null;
 }
-function publicPoster(poster: EventMuseumPoster): EventMuseumPoster {
+export function publicArchivePoster(poster: EventMuseumPoster): EventMuseumPoster {
   // Catalog maintenance fields must never leak through route loader serialization.
   return {
     id: poster.id,
@@ -81,7 +81,7 @@ export async function listArchiveEvents(
         return [];
       return [
         {
-          ...publicPoster(poster),
+          ...publicArchivePoster(poster),
           ...(override
             ? {
                 title: override.title,
@@ -104,9 +104,9 @@ export async function listSeriesArchiveEvents(
   env: Pick<CloudflareEnv, "DB" | "MEDIA">,
   seriesId: string,
 ) {
-  return (await listArchiveEvents(env, true)).filter(
-    (event) => event.seriesId === seriesId,
-  );
+  return (await listArchiveEvents(env, true))
+    .filter((event) => event.seriesId === seriesId)
+    .map(publicArchivePoster);
 }
 export async function saveArchiveEvent(
   env: Pick<CloudflareEnv, "DB" | "MEDIA">,
