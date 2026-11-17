@@ -15,7 +15,7 @@ node tools/community-tools/verify-routing.mjs
 
 ## 部署约定
 
-目标 Worker 为 `cmi-community-tools`。保留现有 `SHAODIAN → cmi-tool-shaodian` 服务绑定、自定义域名与配置，上传 `worker.mjs`、`pages.mjs` 两个模块，主模块为 `worker.mjs`。可使用 Cloudflare 的 Replace Worker Script Content API 更新内容并保留配置。
+目标 Worker 为 `cmi-community-tools`。保留现有 `SHAODIAN → cmi-tool-shaodian` 服务绑定、自定义域名与配置，上传 `worker.mjs`、`pages.mjs`、`projects.mjs` 三个模块，主模块为 `worker.mjs`。可使用 Cloudflare 的 Replace Worker Script Content API 更新内容并保留配置。
 
 捎点浏览器地址使用 `/shaodian/`，入口去掉该前缀后将原方法、正文、Cookie、Origin 和查询参数交给现有捎点代理。同源 Location 改写回项目路径。Cookie 名称和值及 Path 保持原样，浏览器存储仍使用同一 origin。不要把捎点代理替换成旧占位页。
 
