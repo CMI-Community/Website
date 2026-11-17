@@ -761,6 +761,12 @@
   display: none;
 }
 
+@media (min-width: 841px) {
+  .cmi-poster-wall:has(.cmi-community-dock) .cmi-wall-controls {
+    bottom: 78px;
+  }
+}
+
 .cmi-control-group {
   display: flex;
   gap: 2px;

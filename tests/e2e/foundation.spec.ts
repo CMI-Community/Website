@@ -406,6 +406,12 @@ test("poster wall keeps time ordering independent of synchronous and differentia
   await page.goto("/archive/posters");
   await expect(page.locator(".cmi-poster-wall")).toHaveAttribute("data-sort-order", "date-desc");
   await expect(page.locator(".cmi-poster-wall")).toHaveAttribute("data-scroll-style", "sync");
+  const archiveControls = page.locator(".cmi-controls-entry");
+  if (await archiveControls.isVisible()) await archiveControls.click();
+  await page.getByRole("button", { name: "翻转墙", exact: true }).click();
+  await expect(page.locator(".cmi-flip-cell").first()).toBeVisible();
+  await page.getByRole("button", { name: "流动墙", exact: true }).click();
+  await expect(page.locator(".cmi-flow-wall--sync")).toBeVisible();
 });
 
 test("activity timeline removes its 3D motion when reduced motion is requested", async ({ page }) => {
