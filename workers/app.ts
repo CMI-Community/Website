@@ -4,6 +4,7 @@ import { handleActivityApi } from "./activity-api";
 import { handleEventMedia } from "./event-media";
 import { handleCommunityContentApi, handleCommunityMedia } from "./community-content";
 import { publicPhotoAsset } from "./photo-media";
+import { publicPosterColorImage } from "./poster-media";
 import { handleV1Api } from "./api";
 import { createAuth } from "./auth";
 import { handleFeedback } from "./feedback";
@@ -127,6 +128,8 @@ export default {
     if (communityMedia) return communityMedia;
     const communityApi = await handleCommunityContentApi(request, env, ctx);
     if (communityApi) return withApiHeaders(communityApi);
+    const posterColorImage = await publicPosterColorImage(request, env);
+    if (posterColorImage) return posterColorImage;
     const photoAsset = await publicPhotoAsset(request, env);
     if (photoAsset) return photoAsset;
     const projectAsset = await publicProjectAsset(request, env);

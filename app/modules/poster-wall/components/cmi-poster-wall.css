@@ -808,26 +808,6 @@
   font-weight: 700;
 }
 
-.cmi-sort-control select {
-  min-width: 0;
-  max-width: 100%;
-  min-height: 31px;
-  padding: 4px 6px;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  color: var(--paper);
-  background: var(--ink);
-  font: inherit;
-  font-size: 10px;
-  color-scheme: dark;
-  cursor: pointer;
-}
-
-.cmi-sort-control select:focus-visible {
-  outline: 2px solid var(--signal-pale);
-  outline-offset: 3px;
-}
-
 .cmi-speed-control {
   display: flex;
   align-items: center;
@@ -1694,7 +1674,6 @@
     flex: 1 1 100%;
     padding-block: 4px;
   }
-  .cmi-sort-control select { flex: 1; }
   .cmi-control-group--scroll {
     flex: 1 1 auto;
     border-right: 0;
@@ -1847,4 +1826,20 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Four explicit sort choices stay visible and keyboard accessible on every device. */
+.cmi-wall-controls { flex-wrap: wrap; max-width: min(1080px, calc(100% - 36px)); }
+.cmi-sort-control { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cmi-sort-control > span:first-child { white-space: nowrap; }
+.cmi-sort-options { display: flex; flex-wrap: wrap; gap: 2px; }
+.cmi-color-status { font-size: 10px; line-height: 1.6; color: var(--cream); }
+.cmi-color-status button { margin-left: 6px; }
+.cmi-sort-again { border: 1px solid rgba(238,233,220,.35) !important; }
+@media (max-width: 840px) {
+  .cmi-wall-controls { max-width: none; }
+  .cmi-sort-control { width: 100%; }
+  .cmi-sort-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); flex: 1; }
+  .cmi-sort-options button { padding-inline: 5px; white-space: nowrap; }
+  .cmi-color-status { flex-basis: 100%; }
 }

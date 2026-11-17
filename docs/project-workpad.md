@@ -1,8 +1,17 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-18 03:53 Asia/Bangkok
+Last updated: 2026-11-18 04:19 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-18 四种海报排序与发布准备
+
+- 维护者已授权增加随机／实际像素色谱排序、处理截图与依赖后按流程上线；延续 [Issue #60](https://github.com/CMI-Community/Website/issues/60)、[PR #61](https://github.com/CMI-Community/Website/pull/61) 与 [ADR 0014](./adr/0014-poster-spectrum-and-local-glob-safeguard.md)。
+- 本地实现：默认时间倒序与同步向上，另有时间正序、随机（可重新打乱）及色谱排序；排序和滚动方式独立。实际像素按需分析、会话缓存、进度／失败重试；历史图片仅经发布白名单的同域只读入口分析。
+- VERIFIED：生产海报构建仍为 v0.5.0 的同一资源 SHA-256，原 440/440 baseline 可复用；当前源码没有原生排序下拉框，四种按钮为真实新版 UI，旧未发布候选的缺图历史保留。
+- VERIFIED：本地完整 check、117 单元及 32 表迁移检查通过；带攻击进程硬超时的本地 picomatch 修补通过，全部传递副本已替换，`npm audit --omit=dev` 为 0，原审计门禁保留。完整 E2E 与新候选图集进行中。
+- OBSERVED：首轮 E2E 两端新增排序流程通过；旧手机图片浏览用例在指针自动滚动前记录位置导致 205px 测量差，已改为在真实 pointerdown 记录开窗位置，再核验关闭后恢复。
+- 发布边界：尚未合并／部署；没有生产数据、媒体或权限写入。按 CI → staging → 受保护 production Environment 推进 v0.6.0。
 
 ## Snapshot — 2026-11-18 活动排序与同步滚动（本地候选）
 

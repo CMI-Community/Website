@@ -4,6 +4,15 @@ import { CommunityDock } from './CommunityDock.jsx'
 import { FeedbackPanel } from './FeedbackPanel.jsx'
 import { createFeedbackRepository } from './feedbackRepository.js'
 import { orderPosters } from '../poster-ordering'
+import { comparePosterPalettes, shufflePosters } from '../poster-colors'
+import { loadPosterPalettes } from './posterPaletteLoader.js'
+
+const SORT_ORDERS = [
+  { value: 'date-desc', label: '时间倒序', title: '时间倒序（未来 → 过去）' },
+  { value: 'date-asc', label: '时间正序', title: '时间正序（过去 → 未来）' },
+  { value: 'random', label: '随机排序', title: '随机排序' },
+  { value: 'color', label: '色彩排序', title: '色彩排序（按色谱）' },
+]
 
 const DIRECTIONS = [
   { value: 'left', label: '向左', glyph: '←' },
@@ -433,7 +442,7 @@ function DetailDrawer({ poster, assetBase, onClose }) {
  * @param {'flow'|'flip'} [props.initialMode='flow'] 初始显示模式。
  * @param {'left'|'right'|'up'|'down'} [props.initialDirection='up'] 初始流动方向。
  * @param {'sync'|'differential'} [props.initialScrollStyle='sync'] 同步或差速滚动。
- * @param {'date-desc'|'date-asc'} [props.initialSortOrder='date-desc'] 活动时间排序。
+ * @param {'date-desc'|'date-asc'|'random'|'color'} [props.initialSortOrder='date-desc'] 活动时间排序。
  * @param {number} [props.initialSpeed=1] 初始速度倍率。
  * @param {number} [props.initialFlipFrequency=72] 翻转墙每分钟的概率检查节拍数。
  * @param {number} [props.initialFlipSpeed=1] 翻转动画速度倍率。
@@ -484,6 +493,10 @@ export function CmiPosterWall({
   const [direction, setDirection] = useState(initialDirection)
   const [scrollStyle, setScrollStyle] = useState(initialScrollStyle)
   const [sortOrder, setSortOrder] = useState(initialSortOrder)
+  const [randomSeed, setRandomSeed] = useState(1)
+  const [palettes, setPalettes] = useState(() => new Map())
+  const [paletteProgress, setPaletteProgress] = useState(null)
+  const [paletteAttempt, setPaletteAttempt] = useState(0)
   const [speed, setSpeed] = useState(() => boundedNumber(initialSpeed, 1, 0.55, 1.8))
   const [flipFrequency, setFlipFrequency] = useState(() => boundedNumber(initialFlipFrequency, 72, 30, 120))
   const [flipSpeed, setFlipSpeed] = useState(() => boundedNumber(initialFlipSpeed, 1, 0.5, 2))
@@ -503,10 +516,29 @@ export function CmiPosterWall({
     [feedbackRepository],
   )
 
-  const orderedPosters = useMemo(
-    () => orderPosters(posters, sortOrder),
-    [posters, sortOrder],
-  )
+  useEffect(() => {
+    if (sortOrder !== 'color') return undefined
+    let cancelled = false
+    setPaletteProgress({ completed: 0, total: posters.length, failed: 0 })
+    loadPosterPalettes(posters, assetBase, progress => {
+      if (!cancelled) setPaletteProgress(progress)
+    }, () => cancelled).then(result => {
+      if (!cancelled) setPalettes(result)
+    })
+    return () => { cancelled = true }
+  }, [posters, assetBase, sortOrder, paletteAttempt])
+
+  const orderedPosters = useMemo(() => {
+    const chronological = orderPosters(posters, sortOrder === 'date-asc' ? 'date-asc' : 'date-desc')
+    if (sortOrder === 'random') return shufflePosters(chronological, randomSeed)
+    if (sortOrder === 'color') return chronological.sort((a, b) => comparePosterPalettes(palettes.get(a.id), palettes.get(b.id)))
+    return chronological
+  }, [posters, sortOrder, randomSeed, palettes])
+
+  const chooseSort = value => {
+    if (value === 'random') setRandomSeed(crypto.getRandomValues(new Uint32Array(1))[0])
+    setSortOrder(value)
+  }
 
   const selectPoster = useCallback((poster) => {
     setFeedbackOpen(false)
@@ -603,13 +635,27 @@ export function CmiPosterWall({
             </button>
           </div>
 
-          <label className="cmi-sort-control">
+          <div className="cmi-sort-control" role="group" aria-label="活动排序">
             <span>排序</span>
-            <select aria-label="活动排序" value={sortOrder} onChange={event => setSortOrder(event.target.value)}>
-              <option value="date-desc">时间倒序（未来 → 过去）</option>
-              <option value="date-asc">时间正序（过去 → 未来）</option>
-            </select>
-          </label>
+            <div className="cmi-sort-options">
+              {SORT_ORDERS.map(order => (
+                <button key={order.value} type="button" title={order.title} aria-label={order.title}
+                  aria-pressed={sortOrder === order.value} className={sortOrder === order.value ? 'is-active' : ''}
+                  onClick={() => chooseSort(order.value)}>{order.label}</button>
+              ))}
+            </div>
+            {sortOrder === 'random' && <button type="button" className="cmi-sort-again" onClick={() => chooseSort('random')}>重新打乱</button>}
+            {sortOrder === 'color' && (
+              <span className="cmi-color-status" role="status" aria-live="polite">
+                {!paletteProgress || paletteProgress.completed < paletteProgress.total
+                  ? `正在分析色彩 ${paletteProgress?.completed ?? 0}/${posters.length}`
+                  : `红 → 紫 · 黑白灰${paletteProgress.failed ? ` · ${paletteProgress.failed} 张未能分析` : ''}`}
+                {paletteProgress?.failed > 0 && paletteProgress.completed === paletteProgress.total && (
+                  <button type="button" onClick={() => setPaletteAttempt(value => value + 1)}>重试分析</button>
+                )}
+              </span>
+            )}
+          </div>
 
           {mode === 'flow' && (
             <>
@@ -731,7 +777,7 @@ export function CmiPosterWall({
           />
         ) : (
           <FlipWall
-            key={sortOrder}
+            key={`${sortOrder}-${sortOrder === 'random' ? randomSeed : 0}-${sortOrder === 'color' ? palettes.size : 0}`}
             posters={orderedPosters}
             assetBase={assetBase}
             paused={paused || Boolean(selected) || feedbackOpen}

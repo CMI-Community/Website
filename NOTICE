@@ -8,3 +8,7 @@ License, Version 2.0.
 The license does not grant rights to CMI names, marks, identity, domains,
 accounts, editorial content, photographs, posters, or user content. See
 BRAND.md for the operative boundary.
+
+This distribution includes a modified copy of picomatch 4.0.7 under its MIT
+license. See vendor/picomatch-safe/LICENSE and README.md for attribution,
+provenance, security changes, and removal conditions.

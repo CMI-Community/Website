@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { expect, test } from "@playwright/test";
 import { defineLannaProjectTests } from "./lanna-tests";
+import { patternPng } from "../../scripts/seed-lanna-e2e.mjs";
 
 defineLannaProjectTests();
 
@@ -374,7 +375,7 @@ test("poster wall keeps time ordering independent of synchronous and differentia
     .evaluateAll(nodes => [...new Set(nodes.map(node => node.getAttribute("data-poster-key")!))])
     .then(keys => keys.filter(key => exactKeys.has(key as typeof exactEvents[number]["posterKey"])));
   await expect.poll(orderedKeys).toEqual([...exactEvents].sort((a, b) => b.startsAt - a.startsAt).map(event => event.posterKey));
-  await wall.getByLabel("活动排序").selectOption("date-asc");
+  await wall.getByRole("button", { name: "时间正序（过去 → 未来）", exact: true }).click();
   await expect.poll(orderedKeys).toEqual([...exactEvents].sort((a, b) => a.startsAt - b.startsAt).map(event => event.posterKey));
 
   const displacement = await wall.locator(".cmi-flow-track").evaluate(element => {
@@ -412,6 +413,63 @@ test("poster wall keeps time ordering independent of synchronous and differentia
   await expect(page.locator(".cmi-flip-cell").first()).toBeVisible();
   await page.getByRole("button", { name: "流动墙", exact: true }).click();
   await expect(page.locator(".cmi-flow-wall--sync")).toBeVisible();
+});
+
+test("poster random order stays stable and color order follows actual image pixels", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/archive/posters", { waitUntil: "domcontentloaded" });
+  const wall = page.locator(".cmi-poster-wall");
+  const open = wall.locator(".cmi-controls-entry");
+  if (await open.isVisible()) await open.click();
+  const keys = () => wall.locator(".cmi-flow-set").first().locator("[data-poster-key]").evaluateAll(nodes => [...new Set(nodes.map(node => node.getAttribute("data-poster-key")!))]);
+  const chronological = await keys();
+  await wall.getByRole("button", { name: "随机排序", exact: true }).click();
+  const firstShuffle = await keys();
+  expect([...firstShuffle].sort()).toEqual([...chronological].sort());
+  expect(firstShuffle).not.toEqual(chronological);
+  await wall.getByRole("button", { name: "差速滚动", exact: true }).click();
+  await wall.getByRole("button", { name: "同步滚动", exact: true }).click();
+  expect(await keys()).toEqual(firstShuffle);
+  await wall.getByRole("button", { name: "重新打乱", exact: true }).click();
+  expect(await keys()).not.toEqual(firstShuffle);
+  // Deliberately reverse the chronological hue order. Canvas must read these
+  // bytes, rather than guessing a palette from dates, ids or poster titles.
+  const palette = [[150, 0, 255], [0, 0, 255], [0, 255, 255], [0, 255, 0], [255, 255, 0], [255, 120, 0], [255, 0, 0]];
+  const sourceToIndex = await wall.locator(".cmi-flow-set").first().locator(".cmi-poster-tile").evaluateAll(nodes => nodes.map(node => ({ id: node.getAttribute("data-poster-key")!, src: node.querySelector("img")!.getAttribute("src")! })));
+  let failImage = false;
+  const imageRoute = async (route: import("@playwright/test").Route) => {
+    const pathname = new URL(route.request().url()).pathname;
+    let id = sourceToIndex.find(row => new URL(row.src, "http://local").pathname === pathname)?.id;
+    if (pathname.startsWith("/media/poster-colors/")) id = decodeURIComponent(pathname.split("/").at(-1)!);
+    if (!id) return route.continue();
+    if (failImage) return route.fulfill({ status: 404, body: "Synthetic image unavailable" });
+    const color = palette[chronological.indexOf(id) % palette.length];
+    return route.fulfill({ contentType: "image/png", body: patternPng(48, 48, [color, color]) });
+  };
+  await page.route("**/*", imageRoute);
+  await wall.getByRole("button", { name: "色彩排序（按色谱）", exact: true }).click();
+  await expect(wall.getByRole("status")).toContainText("红 → 紫", { timeout: 30_000 });
+  const byHue = await keys();
+  const expected = [...chronological].sort((a, b) => (6 - chronological.indexOf(a) % 7) - (6 - chronological.indexOf(b) % 7));
+  await expect.poll(keys).toEqual(expected);
+  expect(byHue).not.toEqual(chronological);
+  await wall.getByRole("button", { name: "差速滚动", exact: true }).click();
+  await expect(wall).toHaveAttribute("data-sort-order", "color");
+  const absent = await page.request.get("/media/poster-colors/synthetic-missing.webp");
+  expect(absent.status()).toBe(404);
+  expect((await page.request.post("/media/poster-colors/synthetic-missing.webp")).status()).toBe(405);
+  // A new document has a fresh session cache. Fail every analysis image and
+  // confirm that the wall remains usable with an honest retry state.
+  failImage = true;
+  await page.reload({ waitUntil: "domcontentloaded" });
+  if (await open.isVisible()) await open.click();
+  await wall.getByRole("button", { name: "色彩排序（按色谱）", exact: true }).click();
+  await expect(wall.getByRole("status")).toContainText("张未能分析", { timeout: 30_000 });
+  await expect(wall.getByRole("button", { name: "重试分析", exact: true })).toBeVisible();
+  expect(await keys()).toEqual(chronological);
+  await wall.getByRole("button", { name: "时间倒序（未来 → 过去）", exact: true }).click();
+  await expect(wall.getByRole("status")).toHaveCount(0);
 });
 
 test("activity timeline removes its 3D motion when reduced motion is requested", async ({ page }) => {
