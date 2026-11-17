@@ -1,0 +1,11 @@
+{
+  "license": "MIT",
+  "main": "index.js",
+  "engines": {
+    "node": ">=12"
+  },
+  "name": "@cmi-community/picomatch-safe",
+  "version": "4.0.7-cmi.1",
+  "private": true,
+  "description": "Local restricted build of picomatch 4.0.7 with single-branch repeated-extglob safeguards"
+}

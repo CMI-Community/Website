@@ -505,6 +505,40 @@
 }
 
 .cmi-flow-wall--left .cmi-flow-track { animation-name: cmi-scroll-left; }
+.cmi-flow-wall--sync {
+  display: block;
+  transform: none;
+}
+
+.cmi-flow-wall--sync .cmi-flow-track {
+  gap: 0;
+}
+
+.cmi-flow-wall--sync .cmi-flow-set {
+  display: grid;
+  gap: 9px;
+}
+
+.cmi-flow-wall--sync.cmi-flow-wall--vertical .cmi-flow-set {
+  grid-template-columns: repeat(var(--sync-lanes), minmax(0, 1fr));
+}
+
+.cmi-flow-wall--sync.cmi-flow-wall--horizontal .cmi-flow-set {
+  height: 100%;
+  grid-template-rows: repeat(var(--sync-lanes), minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: var(--sync-tile-width);
+}
+
+.cmi-flow-wall--sync.cmi-flow-wall--horizontal .cmi-poster-tile {
+  width: 100%;
+}
+
+.cmi-flow-wall--sync:has(.cmi-poster-tile:hover) .cmi-flow-track,
+.cmi-flow-wall--sync:has(.cmi-poster-tile:focus-visible) .cmi-flow-track {
+  animation-play-state: paused;
+}
+
 .cmi-flow-wall--right .cmi-flow-track { animation-name: cmi-scroll-right; }
 .cmi-flow-wall--up .cmi-flow-track { animation-name: cmi-scroll-up; }
 .cmi-flow-wall--down .cmi-flow-track { animation-name: cmi-scroll-down; }
@@ -713,6 +747,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  max-width: calc(100% - 52px);
+  flex-wrap: wrap;
   padding: 5px;
   border: 1px solid rgba(238, 233, 220, 0.25);
   background: rgba(15, 15, 13, 0.84);
@@ -723,6 +759,12 @@
 .cmi-controls-entry,
 .cmi-controls-backdrop {
   display: none;
+}
+
+@media (min-width: 841px) {
+  .cmi-poster-wall:has(.cmi-community-dock) .cmi-wall-controls {
+    bottom: 78px;
+  }
 }
 
 .cmi-control-group {
@@ -754,6 +796,16 @@
   width: 29px;
   padding-inline: 0;
   font-size: 15px;
+}
+
+.cmi-sort-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--paper-dim);
+  font-size: 9px;
+  font-weight: 700;
 }
 
 .cmi-speed-control {
@@ -1589,6 +1641,7 @@
     right: 10px;
     bottom: calc(64px + env(safe-area-inset-bottom));
     left: 10px;
+    max-width: none;
     flex-wrap: wrap;
     justify-content: flex-start;
     padding: 10px;
@@ -1617,6 +1670,14 @@
   }
 
   .cmi-speed-control input { width: 100%; }
+  .cmi-sort-control {
+    flex: 1 1 100%;
+    padding-block: 4px;
+  }
+  .cmi-control-group--scroll {
+    flex: 1 1 auto;
+    border-right: 0;
+  }
   .cmi-control-group--direction { padding-right: 4px; }
   .cmi-control-group--direction button { width: 26px; }
 
@@ -1627,9 +1688,14 @@
     overflow: visible;
   }
 
-  .cmi-wall-controls[data-mode="flip"] .cmi-control-group {
+  .cmi-wall-controls[data-mode="flip"] .cmi-control-group--mode {
     grid-column: 1;
     grid-row: 1;
+  }
+
+  .cmi-wall-controls[data-mode="flip"] .cmi-sort-control {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 
   .cmi-wall-controls[data-mode="flip"] .cmi-pause-control {
@@ -1639,7 +1705,7 @@
 
   .cmi-wall-controls[data-mode="flip"] .cmi-flip-tuning {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 3;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 7px 12px;
     padding: 6px 2px 1px;
@@ -1738,6 +1804,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cmi-flow-track {
+    animation: none !important;
+  }
+
   .cmi-flow-track,
   .cmi-flip-cell__inner,
   .cmi-poster-tile__image-wrap,
@@ -1756,4 +1826,20 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Four explicit sort choices stay visible and keyboard accessible on every device. */
+.cmi-wall-controls { flex-wrap: wrap; max-width: min(1080px, calc(100% - 36px)); }
+.cmi-sort-control { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cmi-sort-control > span:first-child { white-space: nowrap; }
+.cmi-sort-options { display: flex; flex-wrap: wrap; gap: 2px; }
+.cmi-color-status { font-size: 10px; line-height: 1.6; color: var(--cream); }
+.cmi-color-status button { margin-left: 6px; }
+.cmi-sort-again { border: 1px solid rgba(238,233,220,.35) !important; }
+@media (max-width: 840px) {
+  .cmi-wall-controls { max-width: none; }
+  .cmi-sort-control { width: 100%; }
+  .cmi-sort-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); flex: 1; }
+  .cmi-sort-options button { padding-inline: 5px; white-space: nowrap; }
+  .cmi-color-status { flex-basis: 100%; }
 }

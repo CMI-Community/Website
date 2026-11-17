@@ -29,3 +29,5 @@ production 发布前复制 [template.md](./template.md)。回滚时更新原记�
 | --- | --- | --- |
 | 2026-11-01 | 活动后台第一版，仅本地分支与提交 | [Events admin local](./2026-11-01-events-admin-local.md) |
 | 2026-11-15 | 图片浏览修复、照片与活动管理、系列栏目，仅本地候选 | [Community content local](./2026-11-15-community-content-local.md) |
+| 2026-11-18 | 活动时间排序与同步／差速滚动，本地候选 | [Event wall local](./2026-11-18-event-wall-local.md) |
+| 2026-11-18 | 四种排序、同步滚动及依赖修补候选 | [Spectrum candidate](./2026-11-18-event-wall-spectrum-candidate.md) |

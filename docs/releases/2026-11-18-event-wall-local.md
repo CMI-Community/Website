@@ -1,0 +1,40 @@
+# 活动排序与同步滚动：本地候选验收
+
+- 状态：Local candidate，未合并、未部署
+- 日期：2026-11-18，Asia/Bangkok
+- Issue：[#60](https://github.com/CMI-Community/Website/issues/60)
+- 审查：[Draft PR #61](https://github.com/CMI-Community/Website/pull/61)
+- 决策：[ADR 0013](../adr/0013-event-museum-time-order-and-motion.md)
+- 基线：main `f3a24fa39673d6b15f94e0e963ca5193af0bf304`；运行版本 v0.5.0 `5dc72cfc9ba0e76be7282121db160a82b238169d`。两者运行源码一致，海报组件构建与实际线上资源 SHA-256 一致。
+- 候选运行源码：`343a8cc910d8c0a5f719123cde62602d30146b96`。后续文档提交不改变这份运行身份。
+
+## 实际行为
+
+首页 Event Museum 与独立海报档案默认按活动时间倒序，从未来到过去；设置中可切换时间正序。完整、可靠的活动日期优先，没有日期、只有年份或补录占位时回退到发布日期；没有任何有效日期的海报放在末尾。
+
+默认同步向上滚动，以一个动画轨道承载整组海报，保持相对位置；可以独立切换差速滚动、方向、速度和暂停。悬停及键盘聚焦暂停整组同步海报，减少动态效果时停止流动。手机设置展开，桌面独立档案设置位于社区链接上方，避免遮挡按钮。保留翻转墙及海报详情。
+
+全部已发布且媒体已核验的受管活动进入海报墙，包括未来活动。近期时间线继续使用原来的进行中、即将与已完成分组。公共 DTO 白名单、未发布及下架过滤继续生效。
+
+## 验证
+
+- VERIFIED：最终 `npm run check` 通过；111 单元测试、32 表 D1 迁移检查、类型、构建与 staging dry-run 完成。
+- VERIFIED：完整本地 E2E 35 passed / 3 skipped，包含两种排序、固定参考时间下的未来活动、整组位移、暂停/继续、滚动方式独立、方向、减少动画及档案翻转墙按钮的实际点击。
+- 三项跳过是手机端去重的元数据、PNG 导出和共享 D1 流程；三项在桌面均已通过。
+- OBSERVED：首次候选的桌面控制条与社区链接重叠；通过真实截图发现后移到链接上方，并补充浏览器回归。
+- 本地交互预览使用官网已公开海报作为展示样本，与合成数据回归分开；不作为 production 已更新的证据。
+
+- BLOCKED：远端 [CI 44173463953](https://github.com/CMI-Community/Website/actions/runs/44173463953) 在 `npm audit --omit=dev` 阶段失败，未运行后续功能检查。原因是既有 picomatch 4.0.7 的 [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)，报告 5 条关联高危依赖；官方公告无修复版本，npm latest 仍为 4.0.7。本分支 package.json / lock 与 main 一致，不采用强制降级或跳过门禁。
+
+## 界面证据
+
+图集保留在忽略 Git 的本地目录，未上传公开仓库。合成样本及受控失败只证明界面状态，不代表真实管理员 OTP、邮件投递或生产业务操作。
+
+- baseline：`output/playwright/releases/20261118T025648515428+0700-v0-5-0-5dc72cfc9ba0-baseline-386e36d1/index.html`，440/440。
+- candidate：`output/playwright/releases/20261118T034704481535+0700-unversioned-343a8cc910d8-343a8cc910d8-candidate-92736429/index.html`，488 captured / 2 blocked，共 490 项。两项缺口是桌面和手机的原生排序菜单展开截图；功能切换已通过 E2E，但系统捕获返回 `noWindowsAvailable`，闭合菜单与黑图已被目视检查拒收。
+- CORRECTED：前一候选包在目视复核前由 helper 封存，原生菜单两图不符合目标状态。保留其失败历史，以上修正包为当前证据；不得依据旧包的 complete 标记宣称完整验收。
+- production：未部署，无本轮 production 图集。
+
+## 迁移、发布与回滚
+
+无数据库迁移、媒体写入、权限或 Secret 变更；未执行远端 D1/R2 写入。公共海报只读投影改变未来活动的入馆时间。本轮未合并或部署，不创建正式 GitHub Release。发布沿用受保护流程，代码回滚可恢复 v0.5.0 的投影及默认滚动行为，不删除任何活动与媒体。

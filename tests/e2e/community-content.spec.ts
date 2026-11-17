@@ -165,9 +165,14 @@ test("administrator publishes a series and related photos, browses the gallery a
       const photoButton = copies.nth(visibleCopy);
       await expect(photoButton).toBeVisible();
       await photoButton.focus();
-      const oldScroll = await visitor.evaluate(() => window.scrollY);
+      // Pointer input may scroll a partly visible tile before opening it. Measure
+      // at pointerdown so the assertion checks restoration from the real trigger.
+      await photoButton.evaluate(button => button.addEventListener("pointerdown", () => {
+        (button as HTMLElement).dataset.testScrollAtOpen = String(window.scrollY);
+      }, { once: true }));
       const oldOverflow = await visitor.locator("body").evaluate(body => body.style.overflow);
       await photoButton.click();
+      const oldScroll = Number(await photoButton.getAttribute("data-test-scroll-at-open"));
       const lightbox = visitor.locator(".photo-lightbox");
       await expect(lightbox).toBeVisible();
       await expect(lightbox.locator("figure img")).toHaveAttribute("alt", caption);

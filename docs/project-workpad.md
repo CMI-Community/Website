@@ -1,8 +1,28 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-16 09:47 Asia/Bangkok
+Last updated: 2026-11-18 04:52 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-18 四种海报排序与发布准备
+
+- 维护者已授权增加随机／实际像素色谱排序、处理截图与依赖后按流程上线；延续 [Issue #60](https://github.com/CMI-Community/Website/issues/60)、[PR #61](https://github.com/CMI-Community/Website/pull/61) 与 [ADR 0014](./adr/0014-poster-spectrum-and-local-glob-safeguard.md)。
+- 本地实现：默认时间倒序与同步向上，另有时间正序、随机（可重新打乱）及色谱排序；排序和滚动方式独立。实际像素按需分析、会话缓存、进度／失败重试；历史图片仅经发布白名单的同域只读入口分析。
+- VERIFIED：生产海报构建仍为 v0.5.0 的同一资源 SHA-256，原 440/440 baseline 可复用；当前源码没有原生排序下拉框，四种按钮为真实新版 UI，旧未发布候选的缺图历史保留。
+- VERIFIED：本地完整 check、117 单元及 32 表迁移检查通过；带攻击进程硬超时的本地 picomatch 修补通过，全部传递副本已替换，`npm audit --omit=dev` 为 0，原审计门禁保留。完整本地 E2E 37 passed / 3 skipped；[required CI](https://github.com/CMI-Community/Website/actions/runs/44178894225) 全绿。新候选 518 captured / 2 not_applicable，共 520 项，0 缺口，已完整目视复核封存。[候选记录](./releases/2026-11-18-event-wall-spectrum-candidate.md)。
+- OBSERVED：首轮 E2E 两端新增排序流程通过；旧手机图片浏览用例在指针自动滚动前记录位置导致 205px 测量差，已改为在真实 pointerdown 记录开窗位置，再核验关闭后恢复。
+- 发布边界：尚未合并／正式部署；已从通过 CI 的候选触发 staging Workflow，等待真实公开素材验收。没有生产数据、媒体或权限写入，正式发布继续使用受保护 production Environment。
+
+## Snapshot — 2026-11-18 活动排序与同步滚动（本地候选）
+
+- Issue：[#60](https://github.com/CMI-Community/Website/issues/60)，T3；[ADR 0013](./adr/0013-event-museum-time-order-and-motion.md)。
+- 审查：[Draft PR #61](https://github.com/CMI-Community/Website/pull/61)，未合并。
+- 本地实现：首页 Event Museum 与完整海报档案默认按活动时间倒序、同步向上滚动；设置中可独立切换时间正序与差速滚动，保留方向、流速、暂停和详情。
+- VERIFIED：同步轨道中的海报具有相同位移；已发布未来活动进入海报墙，近期时间线继续按原状态规则呈现。缺少可靠活动日期的旧海报回退发布日期，补录占位不冒充真实举办时间。
+- VERIFIED：完整 `npm run check` 通过，111 单元、32 表迁移检查、构建与 staging dry-run；完整本地 E2E 35 passed / 3 skipped，含桌面与手机排序、同速位移、暂停、方向和减少动态效果。跳过项为手机端去重的元数据、PNG 导出与共享 D1 流程；三项在桌面均已执行通过。
+- 界面证据：当前线上组件与基线构建逐字节一致；修改前 440/440 状态已封存并目视检查。候选 488/490 状态已捕获，2 项原生排序菜单截图因系统捕获失败明确 blocked；不宣称完整快照验收。[本地验收记录](./releases/2026-11-18-event-wall-local.md)。
+- BLOCKED：远端 CI 被既有 picomatch 4.0.7 审计告警拦截；官方无修复版本，本分支未改变依赖或放宽门禁。详情见本地验收记录。
+- 发布边界：本轮为本地候选，未合并或部署，不修改生产 D1/R2、权限或 Secret。
 
 ## Snapshot — 2026-11-16 v0.5.0 生产发布验收
 

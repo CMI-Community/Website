@@ -23,3 +23,7 @@ ADR 保存跨任务仍然有效、影响长期边界或难以回滚的决定。�
 - [ADR 0011：可选海报与正文自动填表](./0011-optional-event-autofill.md)
 
 - [ADR 0012：社区系列、照片与历史活动管理](./0012-community-series-and-photo-management.md) — Proposed，本地实施候选。
+
+- [ADR 0013：活动海报按时间浏览与独立滚动方式](./0013-event-museum-time-order-and-motion.md) — Accepted，2026-11-18；仅替代 ADR 0009 的 Museum 入馆时间限制。
+
+- [ADR 0014](./0014-poster-spectrum-and-local-glob-safeguard.md)：随机／像素色谱排序与本地 glob 安全修补（Accepted）。
