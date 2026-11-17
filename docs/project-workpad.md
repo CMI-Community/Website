@@ -8,7 +8,8 @@ Last updated: 2026-11-08 09:46 Asia/Bangkok
 
 - [Issue #58](https://github.com/CMI-Community/Website/issues/58)：目录增加可配置 `creator`，捎点显示不器@CMI；T1，仅展示配置。
 - VERIFIED：线上入口与源码一致，捎点后端保持原版本；候选三视口与原路由检查通过。
-- [候选与回退记录](./operations/tools-creator-candidate.md)。
+- SHIPPED：工具入口 `f7082766-480f-4be6-a260-531ffcab28cb`；正式三视口及捎点访问验证通过，绑定与后端保持。
+- [发布与回退记录](./releases/tools-creator-2026-11-17.md)。
 
 ## Snapshot — 2026-11-15 工具目录与导航
 
