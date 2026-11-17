@@ -7,6 +7,7 @@ Last updated: 2026-11-18 03:48 Asia/Bangkok
 ## Snapshot — 2026-11-18 活动排序与同步滚动（本地候选）
 
 - Issue：[#60](https://github.com/CMI-Community/Website/issues/60)，T3；[ADR 0013](./adr/0013-event-museum-time-order-and-motion.md)。
+- 审查：[Draft PR #61](https://github.com/CMI-Community/Website/pull/61)，未合并。
 - 本地实现：首页 Event Museum 与完整海报档案默认按活动时间倒序、同步向上滚动；设置中可独立切换时间正序与差速滚动，保留方向、流速、暂停和详情。
 - VERIFIED：同步轨道中的海报具有相同位移；已发布未来活动进入海报墙，近期时间线继续按原状态规则呈现。缺少可靠活动日期的旧海报回退发布日期，补录占位不冒充真实举办时间。
 - VERIFIED：完整 `npm run check` 通过，111 单元、32 表迁移检查、构建与 staging dry-run；完整本地 E2E 35 passed / 3 skipped，含桌面与手机排序、同速位移、暂停、方向和减少动态效果。跳过项为手机端去重的元数据、PNG 导出与共享 D1 流程；三项在桌面均已执行通过。

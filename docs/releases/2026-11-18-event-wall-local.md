@@ -3,6 +3,7 @@
 - 状态：Local candidate，未合并、未部署
 - 日期：2026-11-18，Asia/Bangkok
 - Issue：[#60](https://github.com/CMI-Community/Website/issues/60)
+- 审查：[Draft PR #61](https://github.com/CMI-Community/Website/pull/61)
 - 决策：[ADR 0013](../adr/0013-event-museum-time-order-and-motion.md)
 - 基线：main `f3a24fa39673d6b15f94e0e963ca5193af0bf304`；运行版本 v0.5.0 `5dc72cfc9ba0e76be7282121db160a82b238169d`。两者运行源码一致，海报组件构建与实际线上资源 SHA-256 一致。
 - 候选运行源码：`343a8cc910d8c0a5f719123cde62602d30146b96`。后续文档提交不改变这份运行身份。
