@@ -3,6 +3,7 @@ import { BackgroundRadio } from './BackgroundRadio.jsx'
 import { CommunityDock } from './CommunityDock.jsx'
 import { FeedbackPanel } from './FeedbackPanel.jsx'
 import { createFeedbackRepository } from './feedbackRepository.js'
+import { orderPosters } from '../poster-ordering'
 
 const DIRECTIONS = [
   { value: 'left', label: '向左', glyph: '←' },
@@ -61,7 +62,7 @@ function splitIntoLanes(items, count) {
   return lanes
 }
 
-function PosterTile({ poster, assetBase, onSelect, index, eager = false }) {
+function PosterTile({ poster, assetBase, onSelect, index, eager = false, duplicate = false }) {
   return (
     <button
       className="cmi-poster-tile"
@@ -69,6 +70,8 @@ function PosterTile({ poster, assetBase, onSelect, index, eager = false }) {
       onClick={() => onSelect(poster)}
       aria-label={`查看海报：${poster.title}`}
       data-poster-key={poster.id}
+      tabIndex={duplicate ? -1 : undefined}
+      aria-hidden={duplicate ? 'true' : undefined}
       style={{ '--tile-index': index }}
     >
       <span className="cmi-poster-tile__image-wrap">
@@ -85,6 +88,55 @@ function PosterTile({ poster, assetBase, onSelect, index, eager = false }) {
         <span>{poster.series.name}</span>
       </span>
     </button>
+  )
+}
+
+function SynchronousFlow({ posters, assetBase, direction, speed, paused, onSelect, size }) {
+  const vertical = direction === 'up' || direction === 'down'
+  const laneCount = vertical
+    ? clamp(Math.ceil(size.width / 190), 3, 8)
+    : clamp(Math.ceil(size.height / 215), 3, 5)
+  const tileWidth = vertical
+    ? Math.max(1, (size.width - 20 - (laneCount - 1) * 9) / laneCount)
+    : Math.max(1, (size.height - 153 - (laneCount - 1) * 9) / laneCount * 0.8)
+  const tileHeight = tileWidth / 0.8
+  const minimumItems = vertical
+    ? laneCount * (Math.ceil(Math.max(1, size.height - 153) / (tileHeight + 9)) + 1)
+    : laneCount * (Math.ceil(size.width / (tileWidth + 9)) + 1)
+  const repeatCount = posters.length ? Math.max(1, Math.ceil(minimumItems / posters.length)) : 0
+  const items = Array.from({ length: repeatCount }, () => posters).flat()
+  const span = Math.ceil(items.length / laneCount) * ((vertical ? tileHeight : tileWidth) + 9)
+
+  return (
+    <div
+      className={`cmi-flow-wall cmi-flow-wall--sync cmi-flow-wall--${vertical ? 'vertical' : 'horizontal'} cmi-flow-wall--${direction}`}
+      data-paused={paused ? 'true' : 'false'}
+      aria-label={`同步滚动海报墙，${DIRECTIONS.find(item => item.value === direction)?.label}`}
+      style={{
+        '--sync-lanes': laneCount,
+        '--sync-tile-width': `${tileWidth}px`,
+        '--duration': `${Math.max(1, span / (32 * speed))}s`,
+        '--lane-delay': '0s',
+      }}
+    >
+      <div className="cmi-flow-track">
+        {[0, 1].map(repeat => (
+          <div className="cmi-flow-set" key={repeat} aria-hidden={repeat === 1 ? 'true' : undefined}>
+            {items.map((poster, index) => (
+              <PosterTile
+                key={`${repeat}-${index}-${poster.id}`}
+                poster={poster}
+                assetBase={assetBase}
+                onSelect={onSelect}
+                index={index}
+                eager={repeat === 0 && index < minimumItems}
+                duplicate={repeat === 1 || index >= posters.length}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -120,6 +172,7 @@ function FlowWall({ posters, assetBase, direction, speed, paused, onSelect, size
                     onSelect={onSelect}
                     index={laneIndex * 20 + posterIndex}
                     eager={repeat === 0 && posterIndex < 2}
+                    duplicate={repeat === 1}
                   />
                 ))}
               </div>
@@ -150,7 +203,7 @@ function FlipWall({ posters, assetBase, paused, onSelect, size, frequency, flipS
 
   useEffect(() => {
     const next = Array.from({ length: count }, (_, index) => ({
-      front: Math.floor((index * posters.length) / count) % posters.length,
+      front: index % posters.length,
       back: (Math.floor((index * posters.length) / count) + Math.ceil(posters.length / 2)) % posters.length,
       flipping: false,
       turn: 0,
@@ -378,7 +431,9 @@ function DetailDrawer({ poster, assetBase, onClose }) {
  * @param {string} props.assetBase 优化后海报图片的公共路径。
  * @param {string} [props.logoUrl='/brand/cmi-community-logo.png'] CMI 社区 Logo 的公共路径。
  * @param {'flow'|'flip'} [props.initialMode='flow'] 初始显示模式。
- * @param {'left'|'right'|'up'|'down'} [props.initialDirection='left'] 初始流动方向。
+ * @param {'left'|'right'|'up'|'down'} [props.initialDirection='up'] 初始流动方向。
+ * @param {'sync'|'differential'} [props.initialScrollStyle='sync'] 同步或差速滚动。
+ * @param {'date-desc'|'date-asc'} [props.initialSortOrder='date-desc'] 活动时间排序。
  * @param {number} [props.initialSpeed=1] 初始速度倍率。
  * @param {number} [props.initialFlipFrequency=72] 翻转墙每分钟的概率检查节拍数。
  * @param {number} [props.initialFlipSpeed=1] 翻转动画速度倍率。
@@ -402,7 +457,9 @@ export function CmiPosterWall({
   assetBase = '/posters/',
   logoUrl = '/brand/cmi-community-logo.png',
   initialMode = 'flow',
-  initialDirection = 'left',
+  initialDirection = 'up',
+  initialScrollStyle = 'sync',
+  initialSortOrder = 'date-desc',
   initialSpeed = 1,
   initialFlipFrequency = 72,
   initialFlipSpeed = 1,
@@ -425,6 +482,8 @@ export function CmiPosterWall({
   const size = useElementSize(rootRef)
   const [mode, setMode] = useState(initialMode)
   const [direction, setDirection] = useState(initialDirection)
+  const [scrollStyle, setScrollStyle] = useState(initialScrollStyle)
+  const [sortOrder, setSortOrder] = useState(initialSortOrder)
   const [speed, setSpeed] = useState(() => boundedNumber(initialSpeed, 1, 0.55, 1.8))
   const [flipFrequency, setFlipFrequency] = useState(() => boundedNumber(initialFlipFrequency, 72, 30, 120))
   const [flipSpeed, setFlipSpeed] = useState(() => boundedNumber(initialFlipSpeed, 1, 0.5, 2))
@@ -445,8 +504,8 @@ export function CmiPosterWall({
   )
 
   const orderedPosters = useMemo(
-    () => [...posters].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)),
-    [posters],
+    () => orderPosters(posters, sortOrder),
+    [posters, sortOrder],
   )
 
   const selectPoster = useCallback((poster) => {
@@ -464,6 +523,7 @@ export function CmiPosterWall({
 
   const closeFeedback = useCallback(() => setFeedbackOpen(false), [])
   const closeDetail = useCallback(() => setSelected(null), [])
+  const FlowDisplay = scrollStyle === 'sync' ? SynchronousFlow : FlowWall
 
   return (
     <section
@@ -471,6 +531,8 @@ export function CmiPosterWall({
       ref={rootRef}
       style={{ height }}
       data-mode={mode}
+      data-sort-order={sortOrder}
+      data-scroll-style={scrollStyle}
       aria-label="CMI Community Event Poster Museum 海报墙"
     >
       <div className="cmi-poster-wall__grain" aria-hidden="true" />
@@ -532,17 +594,33 @@ export function CmiPosterWall({
             data-mode={mode}
             data-mobile-open={controlsOpen ? 'true' : 'false'}
           >
-          <div className="cmi-control-group" aria-label="显示模式">
-            <button type="button" className={mode === 'flow' ? 'is-active' : ''} onClick={() => setMode('flow')}>
+          <div className="cmi-control-group cmi-control-group--mode" role="group" aria-label="显示模式">
+            <button type="button" aria-pressed={mode === 'flow'} className={mode === 'flow' ? 'is-active' : ''} onClick={() => setMode('flow')}>
               流动墙
             </button>
-            <button type="button" className={mode === 'flip' ? 'is-active' : ''} onClick={() => setMode('flip')}>
+            <button type="button" aria-pressed={mode === 'flip'} className={mode === 'flip' ? 'is-active' : ''} onClick={() => setMode('flip')}>
               翻转墙
             </button>
           </div>
 
+          <label className="cmi-sort-control">
+            <span>排序</span>
+            <select aria-label="活动排序" value={sortOrder} onChange={event => setSortOrder(event.target.value)}>
+              <option value="date-desc">时间倒序（未来 → 过去）</option>
+              <option value="date-asc">时间正序（过去 → 未来）</option>
+            </select>
+          </label>
+
           {mode === 'flow' && (
             <>
+              <div className="cmi-control-group cmi-control-group--scroll" role="group" aria-label="滚动方式">
+                <button type="button" aria-pressed={scrollStyle === 'sync'} className={scrollStyle === 'sync' ? 'is-active' : ''} onClick={() => setScrollStyle('sync')}>
+                  同步滚动
+                </button>
+                <button type="button" aria-pressed={scrollStyle === 'differential'} className={scrollStyle === 'differential' ? 'is-active' : ''} onClick={() => setScrollStyle('differential')}>
+                  差速滚动
+                </button>
+              </div>
               <div className="cmi-control-group cmi-control-group--direction" aria-label="流动方向">
                 {DIRECTIONS.map((item) => (
                   <button
@@ -550,6 +628,7 @@ export function CmiPosterWall({
                     key={item.value}
                     className={direction === item.value ? 'is-active' : ''}
                     onClick={() => setDirection(item.value)}
+                    aria-pressed={direction === item.value}
                     aria-label={item.label}
                     title={item.label}
                   >
@@ -630,7 +709,7 @@ export function CmiPosterWall({
             </div>
           )}
 
-          <button className="cmi-pause-control" type="button" onClick={() => setPaused((value) => !value)}>
+          <button className="cmi-pause-control" type="button" aria-pressed={paused} onClick={() => setPaused((value) => !value)}>
             <span aria-hidden="true">{paused ? '▶' : 'Ⅱ'}</span>
             {paused ? '继续' : '暂停'}
           </button>
@@ -640,7 +719,8 @@ export function CmiPosterWall({
 
       <main className="cmi-wall-stage">
         {mode === 'flow' ? (
-          <FlowWall
+          <FlowDisplay
+            key={`${sortOrder}-${scrollStyle}-${direction}`}
             posters={orderedPosters}
             assetBase={assetBase}
             direction={direction}
@@ -651,6 +731,7 @@ export function CmiPosterWall({
           />
         ) : (
           <FlipWall
+            key={sortOrder}
             posters={orderedPosters}
             assetBase={assetBase}
             paused={paused || Boolean(selected) || feedbackOpen}

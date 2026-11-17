@@ -505,6 +505,40 @@
 }
 
 .cmi-flow-wall--left .cmi-flow-track { animation-name: cmi-scroll-left; }
+.cmi-flow-wall--sync {
+  display: block;
+  transform: none;
+}
+
+.cmi-flow-wall--sync .cmi-flow-track {
+  gap: 0;
+}
+
+.cmi-flow-wall--sync .cmi-flow-set {
+  display: grid;
+  gap: 9px;
+}
+
+.cmi-flow-wall--sync.cmi-flow-wall--vertical .cmi-flow-set {
+  grid-template-columns: repeat(var(--sync-lanes), minmax(0, 1fr));
+}
+
+.cmi-flow-wall--sync.cmi-flow-wall--horizontal .cmi-flow-set {
+  height: 100%;
+  grid-template-rows: repeat(var(--sync-lanes), minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: var(--sync-tile-width);
+}
+
+.cmi-flow-wall--sync.cmi-flow-wall--horizontal .cmi-poster-tile {
+  width: 100%;
+}
+
+.cmi-flow-wall--sync:has(.cmi-poster-tile:hover) .cmi-flow-track,
+.cmi-flow-wall--sync:has(.cmi-poster-tile:focus-visible) .cmi-flow-track {
+  animation-play-state: paused;
+}
+
 .cmi-flow-wall--right .cmi-flow-track { animation-name: cmi-scroll-right; }
 .cmi-flow-wall--up .cmi-flow-track { animation-name: cmi-scroll-up; }
 .cmi-flow-wall--down .cmi-flow-track { animation-name: cmi-scroll-down; }
@@ -713,6 +747,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  max-width: calc(100% - 52px);
+  flex-wrap: wrap;
   padding: 5px;
   border: 1px solid rgba(238, 233, 220, 0.25);
   background: rgba(15, 15, 13, 0.84);
@@ -754,6 +790,36 @@
   width: 29px;
   padding-inline: 0;
   font-size: 15px;
+}
+
+.cmi-sort-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--paper-dim);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.cmi-sort-control select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 31px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--paper);
+  background: var(--ink);
+  font: inherit;
+  font-size: 10px;
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+.cmi-sort-control select:focus-visible {
+  outline: 2px solid var(--signal-pale);
+  outline-offset: 3px;
 }
 
 .cmi-speed-control {
@@ -1589,6 +1655,7 @@
     right: 10px;
     bottom: calc(64px + env(safe-area-inset-bottom));
     left: 10px;
+    max-width: none;
     flex-wrap: wrap;
     justify-content: flex-start;
     padding: 10px;
@@ -1617,6 +1684,15 @@
   }
 
   .cmi-speed-control input { width: 100%; }
+  .cmi-sort-control {
+    flex: 1 1 100%;
+    padding-block: 4px;
+  }
+  .cmi-sort-control select { flex: 1; }
+  .cmi-control-group--scroll {
+    flex: 1 1 auto;
+    border-right: 0;
+  }
   .cmi-control-group--direction { padding-right: 4px; }
   .cmi-control-group--direction button { width: 26px; }
 
@@ -1627,9 +1703,14 @@
     overflow: visible;
   }
 
-  .cmi-wall-controls[data-mode="flip"] .cmi-control-group {
+  .cmi-wall-controls[data-mode="flip"] .cmi-control-group--mode {
     grid-column: 1;
     grid-row: 1;
+  }
+
+  .cmi-wall-controls[data-mode="flip"] .cmi-sort-control {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 
   .cmi-wall-controls[data-mode="flip"] .cmi-pause-control {
@@ -1639,7 +1720,7 @@
 
   .cmi-wall-controls[data-mode="flip"] .cmi-flip-tuning {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 3;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 7px 12px;
     padding: 6px 2px 1px;
@@ -1738,6 +1819,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cmi-flow-track {
+    animation: none !important;
+  }
+
   .cmi-flow-track,
   .cmi-flip-cell__inner,
   .cmi-poster-tile__image-wrap,

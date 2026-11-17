@@ -1,5 +1,4 @@
 import {
-  partitionActivities,
   toEventMuseumPoster,
   type ActivityDefinition,
   type EventMuseumPoster,
@@ -97,7 +96,6 @@ export async function listPublicActivities(
 /** One catalog projection for the homepage, archive and public API. */
 export async function loadPublicPosterCatalog(
   env: { DB: D1Database; MEDIA: R2Bucket },
-  referenceTime: Date = new Date(),
 ): Promise<{ posters: EventMuseumPoster[]; unavailable: boolean }> {
   const activities = await listPublicActivities(env.DB);
   let historical: EventMuseumPoster[] = [];
@@ -107,10 +105,9 @@ export async function loadPublicPosterCatalog(
   } catch {
     unavailable = true;
   }
-  const published = partitionActivities(
-    activities,
-    referenceTime,
-  ).museumReady.map(toEventMuseumPoster);
+  // Browsing from future to past includes every published, verified activity.
+  // The homepage's bounded recent timeline keeps its separate lifecycle rules.
+  const published = activities.map(toEventMuseumPoster);
   return {
     posters: [...published, ...historical],
     unavailable: unavailable && published.length === 0,

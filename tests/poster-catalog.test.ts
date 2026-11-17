@@ -1,5 +1,41 @@
 import { describe, expect, it } from "vitest";
 import { sanitizeCatalog } from "../scripts/poster-catalog.mjs";
+import { orderPosters, posterSortTime } from "../app/modules/poster-wall/poster-ordering";
+
+describe("poster time ordering", () => {
+  it("orders by event time ahead of publication time in both directions, keeping unknown dates last", () => {
+    const posters = [
+      { id: "past", eventTime: "2025.01.01 · 周三 · 18:00–20:00 · 清迈时间", publishedAt: "2026-11-01" },
+      { id: "unknown", eventTime: "日期待补", publishedAt: "" },
+      { id: "future", eventTime: "2027年1月1日 14:00–16:00", publishedAt: "2024-01-01" },
+      { id: "legacy", eventTime: "仅记载年份：2026", publishedAt: "2026-01-01" },
+    ];
+    expect(orderPosters(posters).map(p => p.id)).toEqual(["future", "legacy", "past", "unknown"]);
+    expect(orderPosters(posters, "date-asc").map(p => p.id)).toEqual(["past", "legacy", "future", "unknown"]);
+    expect(posters[0].id).toBe("past");
+  });
+
+  it("respects times within a day and normalizes publication time zones", () => {
+    const posters = [
+      { id: "morning", eventTime: "2026.11.18 · 周三 · 10:00–12:00 · 清迈时间" },
+      { id: "evening", eventTime: "2026.11.18 · 周三 · 18:00–20:00 · 清迈时间" },
+    ];
+    expect(orderPosters(posters).map(p => p.id)).toEqual(["evening", "morning"]);
+    expect(posterSortTime({ publishedAt: "2026-11-18 10:00:00" }))
+      .toBe(posterSortTime({ publishedAt: "2026-11-18T03:00:00Z" }));
+    expect(posterSortTime({ publishedAt: "2026-11-18T10:00:00+07:00" }))
+      .toBe(posterSortTime(posters[0]));
+  });
+
+  it("does not promote backfill placeholders, partial years or invalid calendar dates to event dates", () => {
+    for (const eventTime of ["2026.07.10（补录日期）", "2026年", "2026.02.30 · 10:00", "2026.11.18 · 25:00"]) {
+      expect(posterSortTime({ eventTime, publishedAt: "2025-01-02" }))
+        .toBe(Date.parse("2025-01-02T00:00:00+07:00"));
+    }
+    expect(posterSortTime({ publishedAt: "", publishedDate: "2025-06-01" }))
+      .toBe(Date.parse("2025-06-01T00:00:00+07:00"));
+  });
+});
 
 describe("public poster catalog", () => {
   it("keeps only display fields", () => {

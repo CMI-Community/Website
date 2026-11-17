@@ -52,7 +52,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const activityLifecycle = partitionActivities(activities, activityReferenceTime);
   const [photoResult, posterResult] = await Promise.allSettled([
     loadMuseumPhotoCatalog(env),
-    loadPublicPosterCatalog(env, activityReferenceTime),
+    loadPublicPosterCatalog(env),
   ]);
   // Event Museum assets are already public, versioned, and shared across
   // environments. Keeping this projection stable also makes local homepage

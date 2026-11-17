@@ -359,6 +359,55 @@ test("page fits the active viewport", async ({ page }) => {
   expect(archiveDimensions.scrollWidth).toBeLessThanOrEqual(archiveDimensions.clientWidth + 1);
 });
 
+test("poster wall keeps time ordering independent of synchronous and differential motion", async ({ page }) => {
+  await page.goto("/?__activityNow=2026-09-19T08%3A00%3A00.000Z", { waitUntil: "domcontentloaded" });
+  const wall = page.locator("#event-museum .cmi-poster-wall");
+  await wall.scrollIntoViewIfNeeded();
+  await expect(wall).toHaveAttribute("data-scroll-style", "sync");
+  await expect(wall.locator(".cmi-flow-wall")).toHaveClass(/cmi-flow-wall--up/);
+  await expect(wall.locator(".cmi-flow-track")).toHaveCount(1);
+  const open = wall.locator(".cmi-controls-entry");
+  if (await open.isVisible()) await open.click();
+  const exactEvents = ACTIVITY_EXPECTATIONS.filter(event => !event.dateLabel.includes("补录"));
+  const exactKeys = new Set(exactEvents.map(event => event.posterKey));
+  const orderedKeys = () => wall.locator(".cmi-flow-set").first().locator("[data-poster-key]")
+    .evaluateAll(nodes => [...new Set(nodes.map(node => node.getAttribute("data-poster-key")!))])
+    .then(keys => keys.filter(key => exactKeys.has(key as typeof exactEvents[number]["posterKey"])));
+  await expect.poll(orderedKeys).toEqual([...exactEvents].sort((a, b) => b.startsAt - a.startsAt).map(event => event.posterKey));
+  await wall.getByLabel("活动排序").selectOption("date-asc");
+  await expect.poll(orderedKeys).toEqual([...exactEvents].sort((a, b) => a.startsAt - b.startsAt).map(event => event.posterKey));
+
+  const displacement = await wall.locator(".cmi-flow-track").evaluate(element => {
+    const animation = element.getAnimations()[0];
+    if (!animation) throw new Error("The synchronous wall did not animate");
+    animation.pause();
+    const tiles = Array.from(element.querySelectorAll(".cmi-flow-set:first-child .cmi-poster-tile")).slice(0, 3);
+    animation.currentTime = 1000;
+    const before = tiles.map(tile => tile.getBoundingClientRect().y);
+    animation.currentTime = 2000;
+    const deltas = tiles.map((tile, index) => tile.getBoundingClientRect().y - before[index]);
+    animation.play();
+    return deltas;
+  });
+  expect(displacement[0]).toBeLessThan(-1);
+  for (const delta of displacement) expect(delta).toBeCloseTo(displacement[0], 2);
+  await wall.getByRole("button", { name: "暂停", exact: true }).click();
+  await expect.poll(() => wall.locator(".cmi-flow-track").evaluate(element => getComputedStyle(element).animationPlayState)).toBe("paused");
+  await wall.getByRole("button", { name: "继续", exact: true }).click();
+  await wall.getByRole("button", { name: "差速滚动", exact: true }).click();
+  await expect(wall).toHaveAttribute("data-sort-order", "date-asc");
+  await expect(wall.getByRole("button", { name: "差速滚动", exact: true })).toHaveAttribute("aria-pressed", "true");
+  expect(await wall.locator(".cmi-flow-track").count()).toBeGreaterThan(1);
+  await wall.getByRole("button", { name: "同步滚动", exact: true }).click();
+  await wall.getByRole("button", { name: "向左", exact: true }).click();
+  await expect(wall.locator(".cmi-flow-wall")).toHaveClass(/cmi-flow-wall--left/);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect.poll(() => wall.locator(".cmi-flow-track").evaluate(element => getComputedStyle(element).animationName)).toBe("none");
+  await page.goto("/archive/posters");
+  await expect(page.locator(".cmi-poster-wall")).toHaveAttribute("data-sort-order", "date-desc");
+  await expect(page.locator(".cmi-poster-wall")).toHaveAttribute("data-scroll-style", "sync");
+});
+
 test("activity timeline removes its 3D motion when reduced motion is requested", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(`/?__activityNow=${encodeURIComponent(new Date(ACTIVITY_TIMELINE_TEST_NOW).toISOString())}`, {

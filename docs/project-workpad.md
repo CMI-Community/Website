@@ -1,8 +1,17 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-16 09:47 Asia/Bangkok
+Last updated: 2026-11-18 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-18 活动排序与同步滚动（本地候选）
+
+- Issue：[#60](https://github.com/CMI-Community/Website/issues/60)，T3；[ADR 0013](./adr/0013-event-museum-time-order-and-motion.md)。
+- 本地实现：首页 Event Museum 与完整海报档案默认按活动时间倒序、同步向上滚动；设置中可独立切换时间正序与差速滚动，保留方向、流速、暂停和详情。
+- VERIFIED：同步轨道中的海报具有相同位移；已发布未来活动进入海报墙，近期时间线继续按原状态规则呈现。缺少可靠活动日期的旧海报回退发布日期，补录占位不冒充真实举办时间。
+- VERIFIED：完整 `npm run check` 通过，111 单元、32 表迁移检查、构建与 staging dry-run；完整本地 E2E 35 passed / 3 skipped，含桌面与手机排序、同速位移、暂停、方向和减少动态效果。跳过项为已有真实外部认证/邮件配置依赖。
+- 界面证据：当前线上组件与基线构建逐字节一致；修改前 440/440 状态已封存并目视检查。候选快照及最终验收记录制作中。
+- 发布边界：本轮为本地候选，未合并或部署，不修改生产 D1/R2、权限或 Secret。
 
 ## Snapshot — 2026-11-16 v0.5.0 生产发布验收
 
