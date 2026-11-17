@@ -24,6 +24,8 @@
 - OBSERVED：首次候选的桌面控制条与社区链接重叠；通过真实截图发现后移到链接上方，并补充浏览器回归。
 - 本地交互预览使用官网已公开海报作为展示样本，与合成数据回归分开；不作为 production 已更新的证据。
 
+- BLOCKED：远端 [CI 44173463953](https://github.com/CMI-Community/Website/actions/runs/44173463953) 在 `npm audit --omit=dev` 阶段失败，未运行后续功能检查。原因是既有 picomatch 4.0.7 的 [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)，报告 5 条关联高危依赖；官方公告无修复版本，npm latest 仍为 4.0.7。本分支 package.json / lock 与 main 一致，不采用强制降级或跳过门禁。
+
 ## 界面证据
 
 图集保留在忽略 Git 的本地目录，未上传公开仓库。合成样本及受控失败只证明界面状态，不代表真实管理员 OTP、邮件投递或生产业务操作。
