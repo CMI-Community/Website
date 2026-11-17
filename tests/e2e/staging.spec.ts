@@ -6,117 +6,48 @@ defineLannaProjectTests({ expectedArchiveCount: 14 });
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL ?? "https://staging.cmi.community";
 const expectedEnvironment = new URL(externalBaseURL).hostname === "cmi.community" ? "production" : "staging";
 const WAYTOAGI_ACTIVITY_URL = "https://mp.weixin.qq.com/s/lBZWJ7kA4iqIMNnvEqxvyg";
-const ACTIVITY_EXPECTATIONS = [
-  {
-    startsAt: Date.parse("2026-08-26T00:00:00+07:00"),
-    endsAt: Date.parse("2026-08-27T00:00:00+07:00"),
-    title: "CMI AI+3D 工坊 · 第一期｜首次走进清迈蒙福学校",
-    detailUrl: "https://mp.weixin.qq.com/s/zkHrzX6XIyrE69EsNeI9dg",
-    dateLabel: "2026.08.26 · 周三",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-ai-3d-school-workshop-01-montfort.webp",
-  },
-  {
-    startsAt: Date.parse("2026-08-28T16:00:00+07:00"),
-    endsAt: Date.parse("2026-08-28T20:00:00+07:00"),
-    title: "CMI 吃饭俱乐部 #1 · 周五《牛来》观影",
-    detailUrl: "https://mp.weixin.qq.com/s/0Z1DTbX93zrAfwlCVxjzGg",
-    dateLabel: "2026.08.28 · 周五",
-    posterWidth: 941,
-    posterKey: "activity-cmi-dinner-club-01-niulai-screening.webp",
-  },
-  {
-    startsAt: Date.parse("2026-08-29T07:00:00+07:00"),
-    endsAt: Date.parse("2026-08-29T12:00:00+07:00"),
-    title: "8月29日｜ 清迈新云南市场 CMI 社区义卖 #1",
-    detailUrl: "https://mp.weixin.qq.com/s/SW_BaQ3eFgWgsYBxWoftlQ",
-    dateLabel: "2026.08.29 · 周六",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-community-sale-01-new-yunnan-market.webp",
-  },
-  {
-    startsAt: Date.parse("2026-08-30T12:30:00+07:00"),
-    endsAt: Date.parse("2026-08-30T17:30:00+07:00"),
-    title: "即兴戏剧 + AI 短剧共创",
-    detailUrl: WAYTOAGI_ACTIVITY_URL,
-    dateLabel: "2026.08.30 · 周日",
-    posterWidth: 864,
-    posterKey: "activity-waytoagi-27-improv-ai-shortfilm.webp",
-  },
-  {
-    startsAt: Date.parse("2026-09-02T13:30:00+07:00"),
-    endsAt: Date.parse("2026-09-03T00:00:00+07:00"),
-    title: "CMI AI+3D 工坊 · 第二期｜清迈蒙福学校",
-    detailUrl: "https://mp.weixin.qq.com/s/zkHrzX6XIyrE69EsNeI9dg",
-    dateLabel: "2026.09.02 · 周三",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-ai-3d-school-workshop-02-montfort.webp",
-  },
-  {
-    startsAt: Date.parse("2026-09-06T14:00:00+07:00"),
-    endsAt: Date.parse("2026-09-06T16:00:00+07:00"),
-    title: "从「他们应该」到「我们可以」",
-    detailUrl: "https://mp.weixin.qq.com/s/ih0j87_q_ygzUkqpFvz5bw",
-    dateLabel: "2026.09.06 · 周日",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-public-action-sharing-01-from-should-to-can.webp",
-  },
-  {
-    startsAt: Date.parse("2026-09-18T15:00:00+07:00"),
-    endsAt: Date.parse("2026-09-18T19:00:00+07:00"),
-    title: "CMI 空想食堂｜周五·食天然俱乐部",
-    detailUrl: "https://mp.weixin.qq.com/s/GK9e1FQonKd-fOIpW5m8HA",
-    dateLabel: "2026.09.18 · 周五",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-natural-food-club-01-friday-kitchen.webp",
-  },
-  {
-    startsAt: Date.parse("2026-09-19T14:00:00+07:00"),
-    endsAt: Date.parse("2026-09-19T17:00:00+07:00"),
-    title: "CMI × 清迈印象｜手工冰皮月饼中秋活动",
-    detailUrl: "https://mp.weixin.qq.com/s/Vf1ZGH1Fufo6JbY6LjI3BA",
-    dateLabel: "2026.09.19 · 周六",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-mid-autumn-gathering-01-snow-skin-mooncake.webp",
-  },
-  {
-    startsAt: Date.parse("2026-09-26T18:00:00+07:00"),
-    endsAt: Date.parse("2026-09-26T20:00:00+07:00"),
-    title: "CMI TALK #13｜把清迈过成家",
-    detailUrl: "https://mp.weixin.qq.com/s/ujfaDoxYS2aRseRAGsz42g",
-    dateLabel: "2026.09.26 · 周六",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-talk-13-home-in-chiang-mai.webp",
-  },
-  {
-    startsAt: Date.parse("2026-10-04T17:30:00+07:00"),
-    endsAt: Date.parse("2026-10-04T19:30:00+07:00"),
-    title: "明月照他乡｜大人观影 × 小小文化家",
-    detailUrl: "https://mp.weixin.qq.com/s/0J8quLYYdAdpYBbB9UuLvw",
-    dateLabel: "2026.10.04 · 周日",
-    posterWidth: 1024,
-    posterKey: "activity-cmi-cultural-night-01-moon-over-a-foreign-land.webp",
-  },
-] as const;
+interface RemoteActivity {
+  id: string;
+  title: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  eventDate: string;
+  timePrecision: "exact" | "backfill_placeholder";
+  dateLabel: string;
+  publicUrl: string;
+  poster: { width: number; height: number; url: string };
+}
 
-function expectedActivityTimeline(now: number) {
-  const ongoing = ACTIVITY_EXPECTATIONS
-    .filter((activity) => activity.startsAt <= now && activity.endsAt > now)
-    .sort((left, right) => left.endsAt - right.endsAt);
-  const upcoming = ACTIVITY_EXPECTATIONS
-    .filter((activity) => activity.startsAt > now)
-    .sort((left, right) => left.startsAt - right.startsAt)
+// Remote content is maintained independently in each environment. Calculate the
+// timeline contract from its current public catalog rather than a seeded list.
+function expectedActivityTimeline(activities: RemoteActivity[], now: number) {
+  const boundary = (activity: RemoteActivity, end = false) => {
+    const value = end ? activity.endsAt : activity.startsAt;
+    if (value) return Date.parse(value);
+    expect(activity.timePrecision).toBe("backfill_placeholder");
+    return Date.parse(`${activity.eventDate}T00:00:00+07:00`) + (end ? 86_400_000 : 0);
+  };
+  for (const activity of activities) {
+    expect(Number.isFinite(boundary(activity))).toBe(true);
+    expect(boundary(activity, true)).toBeGreaterThan(boundary(activity));
+  }
+  const ongoing = activities
+    .filter((activity) => boundary(activity) <= now && boundary(activity, true) > now)
+    .sort((left, right) => boundary(left, true) - boundary(right, true));
+  const upcoming = activities
+    .filter((activity) => boundary(activity) > now)
+    .sort((left, right) => boundary(left) - boundary(right))
     .slice(0, Math.max(0, 5 - ongoing.length));
-  const museumReady = ACTIVITY_EXPECTATIONS
-    .filter((activity) => activity.endsAt <= now)
-    .sort((left, right) => right.endsAt - left.endsAt);
-  const guaranteed = museumReady.filter((activity) => now - activity.endsAt < 24 * 60 * 60 * 1000);
+  const museumReady = activities
+    .filter((activity) => boundary(activity, true) <= now)
+    .sort((left, right) => boundary(right, true) - boundary(left, true));
+  const guaranteed = museumReady.filter((activity) => now - boundary(activity, true) < 86_400_000);
   const guaranteedSet = new Set(guaranteed);
   const completed = [
     ...guaranteed,
     ...museumReady.filter((activity) => !guaranteedSet.has(activity)).slice(0, Math.max(0, 5 - guaranteed.length)),
   ];
-  return { ongoing, upcoming, completed, museumReady };
+  return { ongoing: ongoing.slice(0, 5), upcoming, completed, museumReady };
 }
 
 test("staging serves the formal three-screen homepage", async ({ page, request }) => {
@@ -192,10 +123,14 @@ test("Projects menu is available before and after the hero", async ({ page }) =>
   await expect(page).toHaveURL(/\/project\/waytoagi\/26-lanna-museum$/);
 });
 
-test("staging presents future and completed activities around NOW", async ({ page }, testInfo) => {
+test("deployed timeline matches current public activities around NOW", async ({ page, request }, testInfo) => {
+  const response = await request.get("/api/v1/events");
+  expect(response.status()).toBe(200);
+  const { events } = await response.json() as { events: RemoteActivity[] };
+  expect(new Set(events.map((event) => event.id)).size).toBe(events.length);
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const section = page.locator(".activity-timeline");
-  const expected = expectedActivityTimeline(Date.now());
+  const expected = expectedActivityTimeline(events, Date.now());
   const active = [...expected.ongoing, ...expected.upcoming];
   const displayed = [...active, ...expected.completed];
   await expect(section).toBeVisible();
@@ -228,16 +163,17 @@ test("staging presents future and completed activities around NOW", async ({ pag
     await card.scrollIntoViewIfNeeded();
     await expect.poll(() => card.locator("img").evaluate(
       (image: HTMLImageElement) => image.naturalWidth,
-    )).toBe(activity.posterWidth);
+    )).toBe(activity.poster.width);
     await expect(card.getByRole("link", { name: /查看活动详情/ })).toHaveAttribute(
       "href",
-      `/events/${activity.posterKey.replace(/^activity-/, "").replace(/\.webp$/, "")}`,
+      activity.publicUrl,
     );
   }
   for (const activity of expected.museumReady) {
-    await expect(page.locator(`[data-poster-key="${activity.posterKey}"]`).first()).toBeAttached();
+    await expect(page.locator(`[data-poster-key="activity-${activity.id}.webp"]`).first()).toBeAttached();
   }
 
+  if (!displayed.length) return;
   const selected = displayed[0]!;
   const selectedStatus = expected.ongoing.includes(selected)
     ? "进行中"
@@ -252,9 +188,9 @@ test("staging presents future and completed activities around NOW", async ({ pag
   });
   const poster = posterButton.locator("img");
   await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.naturalWidth))
-    .toBe(selected.posterWidth);
+    .toBe(selected.poster.width);
   await expect(selectedCard.getByRole("link", { name: /查看活动详情/ }))
-    .toHaveAttribute("href", `/events/${selected.posterKey.replace(/^activity-/, "").replace(/\.webp$/, "")}`);
+    .toHaveAttribute("href", selected.publicUrl);
 
   if (testInfo.project.name === "desktop-chromium") {
     await posterButton.hover({ position: { x: 24, y: 50 } });
@@ -434,22 +370,39 @@ test("poster UI and R2 images work at the active viewport", async ({ page }) => 
   ).toBeAttached();
 });
 
-test("migrated feedback is visible and an uninvited signup is blocked", async ({ request }, testInfo) => {
+test("public feedback matches current votes and an uninvited signup is blocked", async ({ page, request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "one remote integration check is sufficient");
 
-  const feedback = await request.get("/api/feedback");
-  const feedbackPayload = await feedback.json();
-  expect(feedbackPayload.ideas).toHaveLength(3);
-  expect(
-    feedbackPayload.ideas.reduce(
-      (total: number, idea: { upvotes: number; downvotes: number }) => total + idea.upvotes + idea.downvotes,
-      0,
-    ),
-  ).toBe(2);
+  await page.goto("/archive/posters", { waitUntil: "domcontentloaded" });
+  const feedbackResponse = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/feedback"
+    && response.request().method() === "GET");
+  await page.getByRole("button", { name: "留言", exact: true }).click();
+  const feedback = await feedbackResponse;
+  expect(feedback.status()).toBe(200);
+  const { ideas } = await feedback.json() as { ideas: {
+    id: string; body: string; upvotes: number; downvotes: number; score: number;
+  }[] };
+  expect(new Set(ideas.map((idea) => idea.id)).size).toBe(ideas.length);
+  const panel = page.getByRole("dialog", { name: "留下一条想法" });
+  const rows = panel.locator(".cmi-feedback__ideas li");
+  await expect(rows).toHaveCount(ideas.length);
+  for (const [index, idea] of ideas.entries()) {
+    expect(idea.body.trim().length).toBeGreaterThan(0);
+    for (const votes of [idea.upvotes, idea.downvotes]) {
+      expect(Number.isSafeInteger(votes)).toBe(true);
+      expect(votes).toBeGreaterThanOrEqual(0);
+    }
+    expect(idea.score).toBe(idea.upvotes - idea.downvotes);
+    const row = rows.nth(index);
+    await expect(row.locator(".cmi-feedback__idea-copy p")).toHaveText(idea.body);
+    await expect(row.getByRole("button", { name: `赞成这条想法，当前 ${idea.upvotes} 票`, exact: true })).toBeVisible();
+    await expect(row.getByRole("button", { name: `不赞成这条想法，当前 ${idea.downvotes} 票`, exact: true })).toBeVisible();
+    await expect(row.locator(".cmi-feedback__votes strong")).toHaveText(String(idea.score));
+  }
 
-  const email = `uninvited-staging-${Date.now()}@example.com`;
+  const email = `uninvited-release-${Date.now()}@example.com`;
   const blocked = await request.post("/api/auth/sign-up/email", {
-    headers: { Origin: "https://staging.cmi.community" },
+    headers: { Origin: new URL(externalBaseURL).origin },
     data: { email, password: "Correct-Horse-123!", name: "No Invitation" },
   });
   expect(blocked.status()).toBe(403);

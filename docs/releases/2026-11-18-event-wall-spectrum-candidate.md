@@ -1,10 +1,10 @@
 # 四种海报排序与同步滚动：v0.6.0 候选验收
 
-- 状态：Candidate verified；未部署
+- 状态：Candidate verified（发布前记录；后续正式发布见 [v0.6.0](./v0.6.0.md)）
 - 日期：2026-11-18，Asia/Bangkok
 - Issue / PR：[#60](https://github.com/CMI-Community/Website/issues/60) / [#61](https://github.com/CMI-Community/Website/pull/61)
 - 决策：[ADR 0013](../adr/0013-event-museum-time-order-and-motion.md)、[ADR 0014](../adr/0014-poster-spectrum-and-local-glob-safeguard.md)
-- 当前 production：v0.5.0，源码 `5dc72cfc9ba0e76be7282121db160a82b238169d`，Worker `9c0c7d50-8381-49ca-bedb-3c4731d080f5`；现场 deployments list 与公开 poster bundle SHA-256 均匹配。
+- 候选验收时 production：v0.5.0，源码 `5dc72cfc9ba0e76be7282121db160a82b238169d`，Worker `9c0c7d50-8381-49ca-bedb-3c4731d080f5`；现场 deployments list 与公开 poster bundle SHA-256 均匹配。
 - 候选运行源码：`3fb83dd163e82b2dd27043a4279915a7f5938085`；隔离构建的 157 个应用／Worker／package／vendor 文件与此提交逐字节一致。
 - 本轮维护者已明确授权解决截图和依赖问题后按流程上线；当前记录不冒充 production 发布。
 

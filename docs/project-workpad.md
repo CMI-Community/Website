@@ -1,8 +1,17 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-18 04:52 Asia/Bangkok
+Last updated: 2026-11-18 05:15 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Snapshot — 2026-11-18 v0.6.0 正式上线
+
+- SHIPPED：[#61](https://github.com/CMI-Community/Website/pull/61) 合并，受保护 [production Workflow 44186050000](https://github.com/CMI-Community/Website/actions/runs/44186050000) 成功；运行源码 `d693e70bc55055c703b4c92732e440540e2d334d`，Worker `7a7446b2-35fa-4af5-9f08-d1e8758b1553`。[发布及回滚记录](./releases/v0.6.0.md)。
+- VERIFIED：正式站默认未来到过去、同步向上；时间正序、随机／重新打乱、实际像素色谱及差速切换可用。三个视口中 209 张真实公开海报色彩分析全部成功，0 page errors／横向溢出；资源哈希与候选 staging 相同。
+- VERIFIED：本地 check 117 单元及 32 表迁移检查、完整本地 E2E 37 passed / 3 skipped、staging 与 production 远端各 23 passed / 5 skipped；production audit 0，原门禁保留。
+- CORRECTED：production 首轮旧种子测试与现有活动／投票不符；验收改为当前公开接口与 UI 的逐项核对，完整生产重跑通过；本轮无业务写入。
+- 界面归档：baseline 440 captured；最终候选 518 captured / 2 not_applicable / 0 缺口；production 18/18 实际公开只读图，均目视复核。公开生产补充不宣称真实后台 OTP 验收。
+- 无数据库／媒体迁移、Secret 或环境保护变更；旧 Worker `9c0c7d50-8381-49ca-bedb-3c4731d080f5` 保留。色谱近似及 picomatch 本地 fork 后续维护条件见 ADR 0014。后续文档／测试提交不作为生产 SHA。
 
 ## Snapshot — 2026-11-18 四种海报排序与发布准备
 
