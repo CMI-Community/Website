@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { data, useNavigate } from "react-router";
 import type { Route } from "./+types/admin-blog-edit";
 import { AdminShell } from "../modules/activities/AdminShell";
@@ -36,6 +36,7 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
 }) {
   const navigate = useNavigate();
   const editor = useRef<BlogEditorActions>(null);
+  const importMessage = useRef<HTMLParagraphElement>(null);
   const [post, setPost] = useState(initial);
   const [draft, setDraft] = useState(initial?.draft ?? emptyDraft);
   const [preview, setPreview] = useState(false);
@@ -46,6 +47,9 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
   const [importFeedback, setImportFeedback] = useState<{ message: string; failed: boolean } | null>(null);
   const [confirmUnpublish, setConfirmUnpublish] = useState(false);
   const [duplicate, setDuplicate] = useState("");
+  useEffect(() => {
+    if (importFeedback?.failed) importMessage.current?.scrollIntoView({ block: "nearest" });
+  }, [importFeedback]);
   const busy = Boolean(operation || pending);
   const eventKeys = draft.events.map(event => event.kind + ":" + event.id);
   const inherited = new Set(options.events.flatMap(event => event.status === "published" && event.seriesId && eventKeys.includes(event.kind + ":" + event.id) ? [event.seriesId] : []));
@@ -155,7 +159,7 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
             {importEnabled && <button type="button" disabled={busy || !draft.sourceUrl} onClick={() => void importWeChat()}>导入公众号链接</button>}
           </div>
           {operation === "import" && <p role="status" className="blog-admin-note">正在读取公众号文章…</p>}
-          {importFeedback && <p role={importFeedback.failed ? "alert" : "status"} className={importFeedback.failed ? "blog-admin-error" : "blog-admin-note"}>{importFeedback.message}</p>}
+          {importFeedback && <p ref={importMessage} role={importFeedback.failed ? "alert" : "status"} className={importFeedback.failed ? "blog-admin-error" : "blog-admin-note"}>{importFeedback.message}</p>}
           {duplicate && <p role="status" className="blog-admin-note">这个链接已有文章。<a href={"/admin/blog/" + duplicate}>打开文章</a></p>}
         </fieldset>
         <h2>正文</h2>
