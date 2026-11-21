@@ -332,6 +332,13 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     await page.getByLabel("文章作者").selectOption({ label: authorName });
     await page.getByLabel("公众号原文网址（可选）").fill(source);
 
+    await page.route("**/api/v1/admin/blog/wechat", route => route.fulfill({
+      status: 422, json: { error: { message: "公众号页面暂时无法读取。请复制图文到编辑器。" } },
+    }), { times: 1 });
+    await page.getByRole("button", { name: "导入公众号链接" }).click();
+    await expect(page.getByRole("alert")).toBeInViewport();
+    await expect(page.getByLabel("公众号原文网址（可选）")).toHaveValue(source);
+
     const paragraphs = Array.from({ length: 45 }, (_, i) => "<p>合成长文第 " + (i + 1) + " 段，验证段落完整性和正文顺序。</p>").join("");
     const png = "data:image/png;base64," + logo.toString("base64");
     const html = '<h2>活动现场</h2><figure><img src="' + png + '" alt="第一张图"><figcaption>第一张图注</figcaption></figure>' +
@@ -344,7 +351,7 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
       clipboardData.setData("text/html", markup);
       element.dispatchEvent(new ClipboardEvent("paste", { clipboardData, bubbles: true, cancelable: true }));
     }, html);
-    await expect(page.getByRole("status")).toHaveText("已粘贴图文。");
+    await expect(page.locator(".blog-editor").getByRole("status")).toHaveText("已粘贴图文。");
     await expect(textbox.locator("figure img")).toHaveCount(2);
     await page.locator(".blog-picker summary").filter({ hasText: "活动" }).click();
     await page.getByLabel("搜索活动").fill(suffix);

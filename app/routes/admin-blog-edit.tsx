@@ -43,6 +43,7 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
   const [operation, setOperation] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [importFeedback, setImportFeedback] = useState<{ message: string; failed: boolean } | null>(null);
   const [confirmUnpublish, setConfirmUnpublish] = useState(false);
   const [duplicate, setDuplicate] = useState("");
   const busy = Boolean(operation || pending);
@@ -92,6 +93,7 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
     setOperation("import");
     setStatus("");
     setError("");
+    setImportFeedback(null);
     setDuplicate("");
     try {
       const result = await adminApi<ImportResponse>(blogAdminApi + "/wechat", { method: "POST", body: JSON.stringify({ url: draft.sourceUrl }) });
@@ -105,9 +107,9 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
         summary: current.summary || result.summary,
         displayDate: !post && current.displayDate === emptyDraft.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(result.displayDate) ? result.displayDate : current.displayDate,
       }));
-      setStatus(missed ? `正文已导入，${missed} 张图片待补传。` : "图文已导入，请核对后保存。");
+      setImportFeedback({ message: missed ? `正文已导入，${missed} 张图片待补传。` : "图文已导入，请核对后保存。", failed: false });
     } catch (cause) {
-      setError(errorMessage(cause));
+      setImportFeedback({ message: errorMessage(cause), failed: true });
     } finally {
       setOperation("");
     }
@@ -129,9 +131,8 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
       <button type="button" disabled={busy} onClick={() => void persist("unpublish")}>确认下架</button>
       <button type="button" onClick={() => setConfirmUnpublish(false)}>取消</button>
     </div>}
-    {(status || operation || pending > 0) && <p role="status" className="blog-admin-note">{pending > 0 ? `正在处理 ${pending} 张图片…` : operation === "import" ? "正在读取公众号文章…" : operation ? "正在保存…" : status}</p>}
+    {(status || (operation && operation !== "import") || pending > 0) && <p role="status" className="blog-admin-note">{pending > 0 ? `正在处理 ${pending} 张图片…` : operation ? "正在保存…" : status}</p>}
     {error && <p role="alert" className="blog-admin-error">{error}</p>}
-    {duplicate && <p role="status" className="blog-admin-note">这个链接已有文章。<a href={"/admin/blog/" + duplicate}>打开文章</a></p>}
 
     <div className="blog-edit-layout" hidden={preview}>
       <div className="blog-edit-main">
@@ -153,6 +154,9 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
             <label>公众号原文网址（可选）<input type="url" value={draft.sourceUrl} maxLength={2048} onChange={event => update("sourceUrl", event.target.value)} /></label>
             {importEnabled && <button type="button" disabled={busy || !draft.sourceUrl} onClick={() => void importWeChat()}>导入公众号链接</button>}
           </div>
+          {operation === "import" && <p role="status" className="blog-admin-note">正在读取公众号文章…</p>}
+          {importFeedback && <p role={importFeedback.failed ? "alert" : "status"} className={importFeedback.failed ? "blog-admin-error" : "blog-admin-note"}>{importFeedback.message}</p>}
+          {duplicate && <p role="status" className="blog-admin-note">这个链接已有文章。<a href={"/admin/blog/" + duplicate}>打开文章</a></p>}
         </fieldset>
         <h2>正文</h2>
         <p className="blog-admin-note">可在这里写作，也可直接粘贴公众号图文。</p>
