@@ -3,6 +3,10 @@ import type { CommunitySeries } from "./content-schema";
 
 export type HomeSeriesEntry = Pick<CommunitySeries, "slug" | "name" | "description" | "logoUrl">;
 
+function syncLogoVisibility(image: HTMLImageElement | null) {
+  if (image) image.hidden = image.complete && image.naturalWidth === 0;
+}
+
 export function HomeSeries({ series }: { series: HomeSeriesEntry[] | null }) {
   const trackRef = useRef<HTMLUListElement>(null);
   const [edges, setEdges] = useState({ previous: false, next: false });
@@ -62,8 +66,17 @@ export function HomeSeries({ series }: { series: HomeSeriesEntry[] | null }) {
                 <span className="home-series__logo" aria-hidden="true">
                   {Array.from(entry.name)[0]}
                   {entry.logoUrl && (
-                    <img src={entry.logoUrl} alt="" width={64} height={64} loading="lazy" decoding="async"
-                      onError={event => { event.currentTarget.hidden = true; }} />
+                    <img
+                      ref={syncLogoVisibility}
+                      src={entry.logoUrl}
+                      alt=""
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      decoding="async"
+                      onError={event => syncLogoVisibility(event.currentTarget)}
+                      onLoad={event => syncLogoVisibility(event.currentTarget)}
+                    />
                   )}
                 </span>
                 <div className="home-series__copy">

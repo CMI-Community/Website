@@ -82,6 +82,9 @@ test("administrator publishes a series and related photos, browses the gallery a
     const seriesCard = homeSeries.getByRole("link", { name: new RegExp(name) });
     await expect(seriesCard).toHaveAttribute("href", `/series/${slug}`);
     await expect(seriesCard.locator("img")).toHaveAttribute("src", series!.logoUrl!);
+    await visitor.route(`**${series!.logoUrl!}`, route => route.fulfill({ status: 404 }), { times: 1 });
+    await visitor.goto("/?fixture=series-logo-missing", { waitUntil: "domcontentloaded" });
+    await expect(seriesCard.locator("img")).toHaveAttribute("hidden", "");
     await seriesCard.click();
     await expect(visitor.getByRole("heading", { name, exact: true })).toBeVisible();
     expect((await request.get(series!.logoUrl!)).status()).toBe(200);
@@ -152,12 +155,13 @@ test("administrator publishes a series and related photos, browses the gallery a
     // The homepage uses a separate lightbox. A real very tall PNG must leave
     // every control in the viewport, including when the browser rotates.
     const originalViewport = visitor.viewportSize()!;
+    await visitor.emulateMedia({ reducedMotion: "reduce" });
     for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 900 }, { width: 844, height: 390 }]) {
       await visitor.setViewportSize(viewport);
-      await visitor.goto("/", { waitUntil: "domcontentloaded" });
-      await visitor.locator("#photo-museum").scrollIntoViewIfNeeded();
-      const pause = visitor.getByRole("button", { name: "暂停流动", exact: true });
-      if (await pause.count()) await pause.click();
+      await visitor.goto(`/?photoViewport=${viewport.width}#photo-museum`, { waitUntil: "domcontentloaded" });
+      const museum = visitor.locator(".photo-museum");
+      await expect(museum).toHaveAttribute("data-paused", "true");
+      await expect(museum).toBeInViewport({ ratio: 0.8 });
       // The reverse-flow lane starts on the duplicate set. Click the real
       // visible tile, just as a pointer user does, rather than an offscreen copy.
       const copies = visitor.locator(`.photo-museum__card[data-photo-id="${photo!.id}"]`);
