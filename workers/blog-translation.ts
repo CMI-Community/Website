@@ -79,7 +79,7 @@ export async function getBlogTranslation(
   if (!post) throw new HttpError(404, "BLOG_NOT_FOUND", "文章暂不可用。");
   if (post.revisionId !== revision) throw new HttpError(409, "BLOG_UPDATED", "文章已更新，刷新页面后可以翻译新版。");
   if (post.locale === target) throw new HttpError(422, "BLOG_LANGUAGE", "请选择译文语言。");
-  const plan = prepareBlogTranslation(post);
+  const plan = prepareBlogTranslation(post, target);
   const stored = await db.prepare(`SELECT position,result_json AS result FROM blog_translation_chunks
     WHERE revision_id=? AND locale=? AND result_json IS NOT NULL`).bind(revision, target).all<{ position: number; result: string }>();
   const byPosition = new Map(stored.results.map(item => [item.position, item.result]));

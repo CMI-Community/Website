@@ -48,7 +48,7 @@ describe("Blog document", () => {
   });
 
   test("translates all prose segments and captions without touching media, links or their markers", () => {
-    const prepared = prepareBlogTranslation(original);
+    const prepared = prepareBlogTranslation(original, "en");
     const results = prepared.chunks.map(chunk => chunk.map(segment => ({ id: segment.id, text: "[" + segment.text + "]" })));
     const translated = prepared.apply(results);
     expect(translated).toMatchObject({ title: "[第一次聚会]", summary: "[完整图文。]" });
@@ -57,6 +57,34 @@ describe("Blog document", () => {
     expect(completeTranslationChunk(prepared.chunks[0], results[0].slice(1))).toBeNull();
     expect(completeTranslationChunk(prepared.chunks[0], results[0])).toEqual(results[0]);
     expect(original.body.content[2].attrs?.caption).toBe("活动合影");
+  });
+
+  test("restores English word spacing at preserved links, emphasis, inline code and long segment boundaries", () => {
+    const body = importBlogClipboard(
+      "<p>打开<a href='/series'>系列目录</a>，再继续。</p>" +
+      "<p>最后核对。<strong>WORKSHOP-042</strong>记录了<code>CMI-18</code>张卡片。</p>" +
+      "<p>补充<em> 词语</em>，保留1.<em>5</em>及未改写的re<em>use</em>。</p>" +
+      "<p>" + "这".repeat(1799) + "。下一句。</p>",
+    ).body;
+    const plan = prepareBlogTranslation({ ...original, body }, "en");
+    const translatedText = [
+      "open", "the series directory", ", then continue.",
+      "Final check.", "WORKSHOP-042", "records", "cards.",
+      "Extra", "word", ", keeping 1.", "5", " and re", "use", " as written.",
+      "Start here.", "Continue here.",
+    ];
+    const output = plan.apply(plan.chunks.map(chunk => chunk.map(segment => ({
+      id: segment.id,
+      text: Number(segment.id) < 2 ? segment.text : translatedText[Number(segment.id) - 2],
+    }))));
+    const contents = output.body.content.map(node => node.content?.map(item => item.text).join(""));
+    expect(contents).toEqual([
+      "open the series directory, then continue.",
+      "Final check. WORKSHOP-042 records CMI-18 cards.",
+      "Extra word, keeping 1.5 and reuse as written.",
+      "Start here. Continue here.",
+    ]);
+    expect(output.body.content[1].content?.find(item => item.marks?.[0].type === "code")).toMatchObject({ text: "CMI-18" });
   });
 });
 

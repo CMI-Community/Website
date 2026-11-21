@@ -12,6 +12,35 @@ export interface TranslatedBlogText extends BlogText { locale: BlogLocale; revis
 const maxSegment = 1800;
 const maxChunk = 5000;
 
+function needsEnglishSpace(left: string, right: string, sourceLeft: string, sourceRight: string) {
+  if (/\s$/u.test(left) || /^\s/u.test(right)) return false;
+  if (!/[a-z0-9.!?,;:)”]$/i.test(left) || !/^[("“]?[a-z0-9]/i.test(right)) return false;
+  if (/\s$/u.test(sourceLeft) || /^\s/u.test(sourceRight)) return true;
+  // An English word can already cross a mark in the source, such as an emphasized prefix.
+  if (/[a-z0-9]$/i.test(sourceLeft) && /^[a-z0-9]/i.test(sourceRight)) return false;
+  if (/\d[.,:]$/.test(left) && /^\d/.test(right)) return false;
+  return /\p{Script=Han}/u.test(sourceLeft) || /\p{Script=Han}/u.test(sourceRight);
+}
+
+function withEnglishInlineSpacing<T extends BlogNode>(source: BlogNode, translated: T): T {
+  const after = translated.content;
+  if (!after?.length || !source.content?.length) return translated;
+  const before = source.content;
+  if (translated.type === "paragraph" || translated.type === "heading") {
+    const spaced: BlogNode[] = [];
+    after.forEach((right, index) => {
+      const left = after[index - 1];
+      if (left?.text && right.text &&
+          needsEnglishSpace(left.text, right.text, before[index - 1].text ?? "", before[index].text ?? "")) {
+        spaced.push({ type: "text", text: " " });
+      }
+      spaced.push(right);
+    });
+    return spaced.length > after.length ? { ...translated, content: spaced } : translated;
+  }
+  return { ...translated, content: after.map((child, index) => withEnglishInlineSpacing(before[index], child)) };
+}
+
 function splitText(text: string): string[] {
   if (text.length <= maxSegment) return [text];
   const parts: string[] = [];
@@ -50,16 +79,16 @@ function visitText(source: BlogText, register: (text: string, set: (text: string
   visit(source.body);
 }
 
-export function prepareBlogTranslation(post: BlogText) {
+export function prepareBlogTranslation(post: BlogText, target: BlogLocale) {
   const text = { title: post.title, summary: post.summary, body: structuredClone(post.body) };
   const chunks: BlogTextSegment[][] = [];
-  const edits: { ids: string[]; set: (newText: string) => void }[] = [];
+  const edits: { parts: BlogTextSegment[]; set: (newText: string) => void }[] = [];
   let chunk: BlogTextSegment[] = [];
   let size = 0;
   let index = 0;
   visitText(text, (source, set) => {
     if (!source.trim()) return;
-    const ids: string[] = [];
+    const parts: BlogTextSegment[] = [];
     for (const part of splitText(source)) {
       const id = String(index++);
       if (chunk.length >= 70 || size + part.length > maxChunk) {
@@ -67,11 +96,12 @@ export function prepareBlogTranslation(post: BlogText) {
         chunk = [];
         size = 0;
       }
-      chunk.push({ id, text: part });
+      const segment = { id, text: part };
+      chunk.push(segment);
       size += part.length;
-      ids.push(id);
+      parts.push(segment);
     }
-    edits.push({ ids, set });
+    edits.push({ parts, set });
   });
   if (chunk.length) chunks.push(chunk);
 
@@ -80,14 +110,18 @@ export function prepareBlogTranslation(post: BlogText) {
     apply(translations: BlogTextSegment[][]): BlogText {
       const result = new Map(translations.flat().map(entry => [entry.id, entry.text]));
       for (const edit of edits) {
-        const merged = edit.ids.map(id => {
-          const translated = result.get(id);
+        let merged = "";
+        let previousSource = "";
+        for (const part of edit.parts) {
+          const translated = result.get(part.id);
           if (translated === undefined) throw new Error("Incomplete blog translation");
-          return translated;
-        }).join("");
+          if (target === "en" && needsEnglishSpace(merged, translated, previousSource, part.text)) merged += " ";
+          merged += translated;
+          previousSource = part.text;
+        }
         edit.set(merged);
       }
-      return text;
+      return target === "en" ? { ...text, body: withEnglishInlineSpacing(post.body, text.body) } : text;
     },
   };
 }
