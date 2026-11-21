@@ -16,4 +16,7 @@ interface CloudflareEnv {
   /** Server-side only, used when the administrator explicitly requests autofill. */
   OPENAI_API_KEY?: string;
   EVENT_AUTOFILL_MODEL?: string;
+  BLOG_OPENAI_API_KEY?: string;
+  BLOG_TRANSLATION_DAILY_LIMIT?: string;
+  BLOG_WECHAT_IMPORT_ENABLED?: string;
 }

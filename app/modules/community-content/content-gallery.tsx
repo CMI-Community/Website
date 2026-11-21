@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type TouchEvent } from "react";
 import type { CommunityPhoto } from "./content-schema";
 
-export function ContentGallery({ photos }: { photos: CommunityPhoto[] }) {
+type GalleryPhoto = Pick<CommunityPhoto, "id" | "alt" | "url" | "thumbnailUrl" | "width" | "height">;
+export function ContentGallery({ photos }: { photos: GalleryPhoto[] }) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);

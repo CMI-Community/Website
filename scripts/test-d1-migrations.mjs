@@ -63,6 +63,16 @@ try {
     "community_imports",
     "community_write_assertions",
     "legacy_event_overrides",
+    "blog_authors",
+    "blog_posts",
+    "blog_revisions",
+    "blog_revision_series",
+    "blog_revision_events",
+    "blog_revision_photos",
+    "blog_images",
+    "blog_revision_images",
+    "blog_translation_chunks",
+    "blog_translation_daily",
   ];
   const missing = required.filter((name) => !names.has(name));
   if (missing.length) throw new Error(`Missing D1 tables: ${missing.join(", ")}`);

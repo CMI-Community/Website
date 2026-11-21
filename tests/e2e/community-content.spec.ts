@@ -8,6 +8,7 @@ import { patternPng } from "../../scripts/seed-lanna-e2e.mjs";
 import type { CommunityPhoto, CommunitySeries } from "../../app/modules/community-content/content-schema";
 import type { EventRecord } from "../../app/modules/activities/event-schema";
 import type { ArchiveEvent } from "../../app/modules/community-content/archive-repository.server";
+import type { BlogPost } from "../../app/modules/blog/blog-schema";
 
 const origin = "http://127.0.0.1:5173";
 test.use({ actionTimeout: 15_000, navigationTimeout: 30_000 });
@@ -147,12 +148,13 @@ test("administrator publishes a series and related photos, browses the gallery a
     // The homepage uses a separate lightbox. A real very tall PNG must leave
     // every control in the viewport, including when the browser rotates.
     const originalViewport = visitor.viewportSize()!;
+    await visitor.emulateMedia({ reducedMotion: "reduce" });
     for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 900 }, { width: 844, height: 390 }]) {
       await visitor.setViewportSize(viewport);
-      await visitor.goto("/", { waitUntil: "domcontentloaded" });
-      await visitor.locator("#photo-museum").scrollIntoViewIfNeeded();
-      const pause = visitor.getByRole("button", { name: "暂停流动", exact: true });
-      if (await pause.count()) await pause.click();
+      await visitor.goto(`/?photoViewport=${viewport.width}#photo-museum`, { waitUntil: "domcontentloaded" });
+      const museum = visitor.locator(".photo-museum");
+      await expect(museum).toHaveAttribute("data-paused", "true");
+      await expect(museum).toBeInViewport({ ratio: 0.8 });
       // The reverse-flow lane starts on the duplicate set. Click the real
       // visible tile, just as a pointer user does, rather than an offscreen copy.
       const copies = visitor.locator(`.photo-museum__card[data-photo-id="${photo!.id}"]`);
@@ -164,12 +166,13 @@ test("administrator publishes a series and related photos, browses the gallery a
       expect(visibleCopy).toBeGreaterThanOrEqual(0);
       const photoButton = copies.nth(visibleCopy);
       await expect(photoButton).toBeVisible();
-      await photoButton.focus();
-      // Pointer input may scroll a partly visible tile before opening it. Measure
-      // at pointerdown so the assertion checks restoration from the real trigger.
-      await photoButton.evaluate(button => button.addEventListener("pointerdown", () => {
-        (button as HTMLElement).dataset.testScrollAtOpen = String(window.scrollY);
-      }, { once: true }));
+      // Record the viewport after native pointer focus and before React opens the viewer.
+      await photoButton.evaluate(button => {
+        (button as HTMLElement).focus({ preventScroll: true });
+        button.addEventListener("click", () => {
+          (button as HTMLElement).dataset.testScrollAtOpen = String(window.scrollY);
+        }, { once: true, capture: true });
+      });
       const oldOverflow = await visitor.locator("body").evaluate(body => body.style.overflow);
       await photoButton.click();
       const oldScroll = Number(await photoButton.getAttribute("data-test-scroll-at-open"));
@@ -256,6 +259,220 @@ test("administrator publishes a series and related photos, browses the gallery a
         const { title, summary, category, initiator, seriesId, status } = originalArchive;
         await context.request.patch(path, { headers: { ...headers, "If-Match": `"v${currentEvent.version}"` }, data: { title, summary, category, initiator, seriesId, status } });
       }
+    }
+    await visitor.close();
+  }
+});
+
+test("blog supports bylines, long rich-text paste, related content, revisions and withdrawal", async ({ page, context, browser, request }) => {
+  test.setTimeout(180_000);
+  await signIn(context);
+  const visitor = await browser.newPage({ viewport: page.viewportSize()! });
+  const suffix = randomUUID().slice(0, 8);
+  const authorName = "合成博客作者 " + suffix;
+  const title = "合成社区回顾 " + suffix;
+  const alt = "合成博客图库 " + suffix;
+  const source = "https://mp.weixin.qq.com/s/synthetic-blog-" + suffix;
+  const slug = "synthetic-blog-series-" + suffix;
+  const archivePath = "/api/v1/admin/archive-events/synthetic-community-archive";
+  let series: CommunitySeries | undefined;
+  let event: EventRecord | undefined;
+  let photo: CommunityPhoto | undefined;
+  let archive: ArchiveEvent | undefined;
+  let post: BlogPost | undefined;
+  let newer: BlogPost | undefined;
+  const originalTitle = title;
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  visitor.on("pageerror", error => errors.push(error.message));
+  const putVersion = (version: number) => ({ ...headers, "If-Match": '"v' + version + '"' });
+
+  try {
+    const mediaUpload = await context.request.post("/api/v1/admin/media", {
+      headers, multipart: { file: { name: "synthetic-blog-photo.png", mimeType: "image/png", buffer: logo } },
+    });
+    expect(mediaUpload.status()).toBe(201);
+    const media = (await mediaUpload.json()).media;
+    const seriesResponse = await context.request.post("/api/v1/admin/series", {
+      headers, data: { slug, name: "合成博客关联系列 " + suffix, status: "published" },
+    });
+    expect(seriesResponse.status()).toBe(201);
+    series = (await seriesResponse.json()).series;
+    const eventResponse = await context.request.post("/api/v1/admin/events", { headers, data: {
+      title: "合成博客关联活动 " + suffix, startsAt: "2025-01-15T10:00:00+07:00", endsAt: "2025-01-15T12:00:00+07:00",
+      location: "合成活动现场", category: "合成测试", summary: "本地博客验证活动。", posterMediaId: media.id, status: "published",
+    } });
+    expect(eventResponse.status()).toBe(201);
+    event = (await eventResponse.json()).event;
+    expect((await context.request.patch("/api/v1/admin/event-series/" + event!.id, {
+      headers: putVersion(0), data: { seriesId: series!.id },
+    })).ok()).toBe(true);
+    const photoResponse = await context.request.post("/api/v1/admin/photos", {
+      headers, data: { mediaId: media.id, alt, status: "published", seriesId: series!.id, eventId: event!.id },
+    });
+    expect(photoResponse.status()).toBe(201);
+    photo = (await photoResponse.json()).photo;
+    archive = (await (await context.request.get(archivePath)).json()).event;
+    expect((await context.request.patch(archivePath, {
+      headers: putVersion(archive!.version), data: { seriesId: series!.id, status: "published" },
+    })).ok()).toBe(true);
+
+    await visitor.goto("/admin/blog/new");
+    await expect(visitor).toHaveURL(/\/admin\/login$/);
+    const denied = await request.post("/api/v1/admin/blog/authors", { headers, data: { displayName: "Unauthorized", active: true } });
+    expect(denied.status()).toBe(401);
+    await page.goto("/admin/blog/authors");
+    await page.getByRole("form", { name: "新建作者" }).getByLabel("作者署名", { exact: true }).fill(authorName);
+    await page.getByRole("button", { name: "添加作者", exact: true }).click();
+    await expect(page.getByRole("status")).toHaveText("作者已添加。");
+    await page.goto("/admin/blog/new");
+    await page.getByLabel("文章标题").fill(title);
+    await page.getByLabel("摘要（可选）").fill("用来验收长文和关联的社区回顾。");
+    await page.getByLabel("发布日期").fill("2025-01-03");
+    await page.getByLabel("文章作者").selectOption({ label: authorName });
+    await page.getByLabel("公众号原文网址（可选）").fill(source);
+
+    await page.route("**/api/v1/admin/blog/wechat", route => route.fulfill({
+      status: 422, json: { error: { message: "公众号页面暂时无法读取。请复制图文到编辑器。" } },
+    }), { times: 1 });
+    await page.getByRole("button", { name: "导入公众号链接" }).click();
+    await expect(page.getByRole("alert")).toBeInViewport();
+    await expect(page.getByLabel("公众号原文网址（可选）")).toHaveValue(source);
+
+    const paragraphs = Array.from({ length: 45 }, (_, i) => "<p>合成长文第 " + (i + 1) + " 段，验证段落完整性和正文顺序。</p>").join("");
+    const png = "data:image/png;base64," + logo.toString("base64");
+    const html = '<h2>活动现场</h2><figure><img src="' + png + '" alt="第一张图"><figcaption>第一张图注</figcaption></figure>' +
+      paragraphs + '<figure><img src="' + png + '" alt="第二张图"><figcaption>第二张图注</figcaption></figure>' +
+      "<mpvoice></mpvoice><p>公众号长文最终段</p>";
+    const textbox = page.getByRole("textbox", { name: "文章正文" });
+    await expect(textbox).toBeEditable();
+    await textbox.evaluate((element, markup) => {
+      const clipboardData = new DataTransfer();
+      clipboardData.setData("text/html", markup);
+      element.dispatchEvent(new ClipboardEvent("paste", { clipboardData, bubbles: true, cancelable: true }));
+    }, html);
+    await expect(page.locator(".blog-editor").getByRole("status")).toHaveText("已粘贴图文。");
+    await expect(textbox.locator("figure img")).toHaveCount(2);
+    await page.locator(".blog-picker summary").filter({ hasText: "活动" }).click();
+    await page.getByLabel("搜索活动").fill(suffix);
+    await page.getByRole("checkbox", { name: new RegExp(event!.title) }).check();
+    await expect(page.getByText("通过活动关联到 " + series!.name)).toBeVisible();
+    await page.getByLabel("搜索活动").fill("synthetic-community-archive");
+    await page.getByRole("checkbox", { name: /历史活动/ }).check();
+    await page.locator(".blog-picker summary").filter({ hasText: "照片" }).click();
+    await page.getByLabel("搜索照片").fill(alt);
+    await page.getByRole("checkbox", { name: alt }).check();
+    await page.getByRole("button", { name: "预览文章" }).click();
+    await expect(page.getByRole("article", { name: "文章预览" }).locator("figcaption")).toHaveText(["第一张图注", "第二张图注"]);
+    await page.getByRole("button", { name: "返回编辑" }).click();
+
+    let saved = page.waitForResponse(response => new URL(response.url()).pathname === "/api/v1/admin/blog/posts" && response.request().method() === "POST");
+    await page.getByRole("button", { name: "保存草稿" }).click();
+    expect((await saved).status()).toBe(201);
+    post = (await (await saved).json()).post;
+    const publicPath = "/blog/" + encodeURIComponent(post!.slug);
+    await expect(page).toHaveURL(new RegExp("/admin/blog/" + post!.id + "$"));
+    expect((await request.get(publicPath)).status()).toBe(404);
+
+    const published = page.waitForResponse(response => new URL(response.url()).pathname.endsWith("/publish") && response.request().method() === "POST");
+    await page.getByRole("button", { name: "发布文章", exact: true }).click();
+    expect((await published).status()).toBe(200);
+    post = (await (await published).json()).post;
+    await visitor.goto(publicPath);
+    await expect(visitor.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    await expect(visitor.locator(".blog-byline time")).toHaveText("2025-01-03");
+    await expect(visitor.locator(".blog-byline")).toContainText(authorName);
+    await expect(visitor.locator("figcaption")).toHaveText(["第一张图注", "第二张图注"]);
+    await expect(visitor.getByText("公众号长文最终段", { exact: true })).toBeVisible();
+    await expect(visitor.locator(".blog-prose__embed a")).toHaveAttribute("href", source);
+    const publicImage = await visitor.locator(".blog-prose img").first().getAttribute("src");
+    expect(publicImage?.startsWith("/media/blog/")).toBe(true);
+    expect((await request.get(publicImage!)).status()).toBe(200);
+    await expect(visitor.getByRole("button", { name: "放大查看：" + alt })).toBeVisible();
+
+    const newTitle = "Another synthetic review " + suffix;
+    const second = await context.request.post("/api/v1/admin/blog/posts", { headers, data: {
+      ...post!.draft, title: newTitle, locale: "en", displayDate: "2026-10-03", sourceUrl: "",
+      events: [], seriesIds: [], photoIds: [],
+    } });
+    expect(second.status()).toBe(201);
+    newer = (await second.json()).post;
+    const secondPublication = await context.request.post("/api/v1/admin/blog/posts/" + newer!.id + "/publish", { headers: putVersion(newer!.version) });
+    expect(secondPublication.status()).toBe(200);
+    newer = (await secondPublication.json()).post;
+    await visitor.goto("/blog");
+    await expect(visitor.locator(".blog-links a").allTextContents()).resolves.toEqual([newTitle, title]);
+    const deactivated = await context.request.put("/api/v1/admin/blog/authors/" + post!.draft.authorId, {
+      headers: putVersion(1), data: { displayName: authorName, active: false },
+    });
+    expect(deactivated.status()).toBe(200);
+    await visitor.goto(publicPath);
+    await expect(visitor.locator(".blog-byline")).toContainText(authorName);
+
+    const translationPath = "**/api/v1/blog/*/translation";
+    await visitor.route(translationPath, route => route.fulfill({
+      status: 503, json: { error: { message: "全文翻译暂不可用。" } },
+    }), { times: 1 });
+    await visitor.getByRole("button", { name: "English" }).click();
+    await expect(visitor.getByRole("alert")).toContainText("全文翻译暂不可用");
+    await expect(visitor.getByRole("heading", { name: originalTitle, exact: true })).toBeVisible();
+    let translationRequests = 0;
+    await visitor.route(translationPath, route => {
+      translationRequests++;
+      return translationRequests === 1 ? route.fulfill({ status: 202, json: { done: 0, total: 1 } }) : route.fulfill({
+        status: 200, json: { locale: "en", revisionId: post!.revisionId, title: "Synthetic English recap", summary: "", body: post!.draft.body },
+      });
+    });
+    await visitor.getByRole("button", { name: "English" }).click();
+    await expect(visitor.getByRole("heading", { name: "Synthetic English recap" })).toBeVisible();
+    await visitor.getByRole("button", { name: "View original" }).click();
+    await expect(visitor.getByRole("heading", { name: title, exact: true })).toBeVisible();
+
+    await visitor.goto("/series/" + slug);
+    await expect(visitor.locator("#series-blog").getByRole("link", { name: title, exact: true })).toHaveCount(1);
+    await expect(visitor.locator("#series-events").getByRole("link", { name: title, exact: true })).toHaveCount(1);
+    await visitor.goto("/events/" + event!.id);
+    await expect(visitor.getByRole("link", { name: title, exact: true })).toBeVisible();
+
+    await page.getByLabel("文章标题").fill(title + " · 待更新");
+    saved = page.waitForResponse(response => new URL(response.url()).pathname === "/api/v1/admin/blog/posts/" + post!.id && response.request().method() === "PUT");
+    await page.getByRole("button", { name: "保存草稿" }).click();
+    expect((await saved).status()).toBe(200);
+    post = (await (await saved).json()).post;
+    await visitor.goto(publicPath);
+    await expect(visitor.getByRole("heading", { name: title, exact: true })).toBeVisible();
+
+    expect((await context.request.patch("/api/v1/admin/photos/" + photo!.id, {
+      headers: putVersion(photo!.version), data: { status: "unpublished" },
+    })).ok()).toBe(true);
+    await visitor.reload();
+    await expect(visitor.getByRole("button", { name: "放大查看：" + alt })).toHaveCount(0);
+    await page.getByRole("button", { name: "下架", exact: true }).click();
+    const withdrawn = page.waitForResponse(response => response.url().endsWith("/unpublish") && response.request().method() === "POST");
+    await page.getByRole("button", { name: "确认下架", exact: true }).click();
+    expect((await withdrawn).status()).toBe(200);
+    post = (await (await withdrawn).json()).post;
+    expect((await request.get(publicPath)).status()).toBe(404);
+    expect((await request.get(publicImage!)).status()).toBe(404);
+    await visitor.goto("/series/" + slug);
+    await expect(visitor.locator("#series-blog").getByRole("link", { name: title, exact: true })).toHaveCount(0);
+    expect(errors).toEqual([]);
+  } finally {
+    if (post?.revisionId) await context.request.post("/api/v1/admin/blog/posts/" + post.id + "/unpublish", { headers: putVersion(post.version) });
+    if (newer?.revisionId) await context.request.post("/api/v1/admin/blog/posts/" + newer.id + "/unpublish", { headers: putVersion(newer.version) });
+    async function hide(path: string, property: "series" | "photo" | "event") {
+      const response = await context.request.get(path);
+      if (!response.ok()) return;
+      const item = (await response.json())[property];
+      if (item.status !== "unpublished") await context.request.patch(path, { headers: putVersion(item.version), data: { status: "unpublished" } });
+    }
+    if (photo) await hide("/api/v1/admin/photos/" + photo.id, "photo");
+    if (event) await hide("/api/v1/admin/events/" + event.id, "event");
+    if (series) await hide("/api/v1/admin/series/" + series.id, "series");
+    if (archive) {
+      const current = (await (await context.request.get(archivePath)).json()).event as ArchiveEvent;
+      const { title, summary, category, initiator, seriesId, status } = archive;
+      await context.request.patch(archivePath, { headers: putVersion(current.version), data: { title, summary, category, initiator, seriesId, status } });
     }
     await visitor.close();
   }

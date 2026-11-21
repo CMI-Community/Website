@@ -77,7 +77,7 @@
 .community-series__card:hover { border-color: #52866c; }
 .community-series__card h2 { margin-top: 6px; font-size: 23px; }
 .community-series__enter { display: block; margin-top: auto; padding-top: 24px; font-size: 14px; }
-.community-series__anchors { display: flex; gap: 28px; border-block: 1px solid #d6ded5; padding: 16px 0; }
+.community-series__anchors { display: flex; flex-wrap: wrap; gap: 12px 28px; border-block: 1px solid #d6ded5; padding: 16px 0; }
 .community-series__section { margin: 44px 0 64px; scroll-margin-top: 24px; }
 .community-series__section > h2 { font-size: 26px; }
 .community-series__empty { padding: 32px; border: 1px solid #d6ded5; border-radius: 10px; color: #586d61; margin: 24px 0; }
