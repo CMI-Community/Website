@@ -3,6 +3,8 @@ import { cloudflareContext } from "../app/shared/cloudflare-context";
 import { handleActivityApi } from "./activity-api";
 import { handleEventMedia } from "./event-media";
 import { handleCommunityContentApi, handleCommunityMedia } from "./community-content";
+import { handleBlogApi } from "./blog-api";
+import { handleBlogMedia } from "./blog-media";
 import { publicPhotoAsset } from "./photo-media";
 import { publicPosterColorImage } from "./poster-media";
 import { handleV1Api } from "./api";
@@ -124,6 +126,10 @@ export default {
     if (redirect) return redirect;
 
     const url = new URL(request.url);
+    const blogMedia = await handleBlogMedia(request, env);
+    if (blogMedia) return blogMedia;
+    const blogApi = await handleBlogApi(request, env, ctx);
+    if (blogApi) return withApiHeaders(blogApi);
     const communityMedia = await handleCommunityMedia(request, env);
     if (communityMedia) return communityMedia;
     const communityApi = await handleCommunityContentApi(request, env, ctx);

@@ -130,6 +130,7 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const previousScrollRef = useRef<ScrollToOptions | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const [failedPhotoId, setFailedPhotoId] = useState<string | null>(null);
   const isOpen = selectedIndex !== null;
@@ -154,6 +155,7 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
       const index = orderedPhotos.findIndex((item) => item.id === photo.id);
       if (index < 0) return;
       previousFocusRef.current = trigger;
+      previousScrollRef.current = { left: window.scrollX, top: window.scrollY, behavior: "instant" };
       setSelectedIndex(index);
     },
     [orderedPhotos],
@@ -161,7 +163,10 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
 
   const closePhoto = useCallback(() => {
     setSelectedIndex(null);
-    window.requestAnimationFrame(() => previousFocusRef.current?.focus({ preventScroll: true }));
+    window.requestAnimationFrame(() => {
+      previousFocusRef.current?.focus({ preventScroll: true });
+      if (previousScrollRef.current) window.scrollTo(previousScrollRef.current);
+    });
   }, []);
 
   const movePhoto = useCallback(
@@ -178,7 +183,7 @@ export function PhotoMuseum({ photos, assetBase }: PhotoMuseumProps) {
     if (!isOpen) return undefined;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
+    closeButtonRef.current?.focus({ preventScroll: true });
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") { event.preventDefault(); closePhoto(); }

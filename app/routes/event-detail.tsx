@@ -2,6 +2,9 @@ import { data } from "react-router";
 import type { Route } from "./+types/event-detail";
 import { cloudflareContext } from "../shared/cloudflare-context";
 import { getPublicEvent } from "../modules/activities/event-public";
+import { listEventBlogPosts } from "../modules/blog/blog-repository.server";
+import { BlogLinks } from "../modules/blog/BlogLinks";
+import "../modules/blog/blog.css";
 import "../modules/activities/admin.css";
 export const headers = () => ({ "Cache-Control": "no-store, max-age=0" });
 export function meta({ loaderData: loaded }: Route.MetaArgs) {
@@ -21,10 +24,10 @@ export async function loader({ params, context }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const event = await getPublicEvent(env.DB, params.id!);
   if (!event) throw data("活动不存在或尚未公开。", { status: 404 });
-  return { event };
+  return { event, blogs: await listEventBlogPosts(env.DB, { kind: "managed", id: event.id }) };
 }
 export default function EventDetail({ loaderData }: Route.ComponentProps) {
-  const { event } = loaderData;
+  const { event, blogs } = loaderData;
   return (
     <main className="public-event">
       <a className="event-admin__brand" href="/">
@@ -71,6 +74,10 @@ export default function EventDetail({ loaderData }: Route.ComponentProps) {
           <a href="/#event-museum">更多社区活动</a>
         </nav>
       </article>
+      {blogs.length > 0 && <section aria-label="活动相关文章">
+        <h2>活动相关文章</h2>
+        <BlogLinks posts={blogs} />
+      </section>}
     </main>
   );
 }

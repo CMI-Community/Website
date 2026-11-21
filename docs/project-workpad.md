@@ -1,8 +1,13 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-18 05:15 Asia/Bangkok
+Last updated: 2026-11-21 12:38 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
+
+## Now — 官网 Blog
+
+- [Issue #65](https://github.com/CMI-Community/Website/issues/65) · T3 · [ADR 0015](./adr/0015-blog-publishing.md)。首批包含写作、图文粘贴、作者、内容关联及中英全文翻译，公众号链接导入另做 staging 实测。
+- VERIFIED：改动前核对 v0.6.0 生产公开资源及封存图集。运行源码与封存候选的应用、迁移及依赖一致；同运行版本的扩展基线图集含 551 张截图和 2 项不适用状态。
 
 ## Snapshot — 2026-11-18 v0.6.0 正式上线
 

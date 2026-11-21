@@ -237,6 +237,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <div className="home-sticky-nav__sections">
           <a href="#photo-museum" tabIndex={navVisible ? 0 : -1} aria-current={activeSection === "photo-museum" ? "page" : undefined}>Photo Museum</a>
           <a href="#event-museum" tabIndex={navVisible ? 0 : -1} aria-current={activeSection === "event-museum" ? "page" : undefined}>Event Museum</a>
+          <a href="/blog" tabIndex={navVisible ? 0 : -1}>Blog</a>
           <a href="https://tool.cmi.community/" tabIndex={navVisible ? 0 : -1}>工具</a>
           <a href="/cooperation" tabIndex={navVisible ? 0 : -1}>活动合作须知</a>
           {navVisible && <ProjectMenu placement="sticky" />}
@@ -254,6 +255,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <p className="home-hero__location"><span>CHIANG MAI</span><b>18.7883° N · 98.9853° E</b></p>
             <a className="home-hero__cooperation" href="/cooperation">活动合作须知</a>
             <a className="home-hero__cooperation" href="https://tool.cmi.community/">工具</a>
+            <a className="home-hero__cooperation" href="/blog">Blog</a>
             <ProjectMenu placement="hero" />
           </nav>
         </header>

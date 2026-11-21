@@ -20,6 +20,7 @@ export function AdminShell({
           <a href="/admin/events">活动</a>
           <a href="/admin/photos">照片</a>
           <a href="/admin/series">系列栏目</a>
+          <a href="/admin/blog">博客文章</a>
           <a href="/admin/api-keys">API 授权</a>
           <a href="/" target="_blank" rel="noreferrer">
             查看{adminEnvironmentLabel[environment]} ↗
