@@ -1,6 +1,6 @@
 # ADR 0015：官网博客、署名与公开译文
 
-- 状态：Proposed
+- 状态：Accepted
 - 日期：2026-11-21
 - 关联 Issue：[Website #65](https://github.com/CMI-Community/Website/issues/65)
 
