@@ -8,7 +8,8 @@ import { ActivityTimeline } from "../modules/activities/components/ActivityTimel
 import { CmiPosterWall } from "../modules/poster-wall/components/CmiPosterWall.jsx";
 import { PhotoMuseum } from "../modules/photo-museum/components/PhotoMuseum";
 import { ProjectMenu } from "../modules/projects/components/ProjectMenu";
-import { loadMuseumPhotoCatalog } from "../modules/community-content/content-repository.server";
+import { listSeries, loadMuseumPhotoCatalog } from "../modules/community-content/content-repository.server";
+import { HomeSeries, type HomeSeriesEntry } from "../modules/community-content/HomeSeries";
 import { cloudflareContext } from "../shared/cloudflare-context";
 import { COMMUNITY_LINKS, COMMUNITY_SOCIALS, type CommunitySocial } from "../shared/community-socials";
 import "../modules/poster-wall/components/cmi-poster-wall.css";
@@ -50,9 +51,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     : new Date();
   const activities = await listPublicActivities(env.DB);
   const activityLifecycle = partitionActivities(activities, activityReferenceTime);
-  const [photoResult, posterResult] = await Promise.allSettled([
+  const [photoResult, posterResult, seriesResult] = await Promise.allSettled([
     loadMuseumPhotoCatalog(env),
     loadPublicPosterCatalog(env),
+    listSeries(env.DB, true),
   ]);
   // Event Museum assets are already public, versioned, and shared across
   // environments. Keeping this projection stable also makes local homepage
@@ -66,6 +68,9 @@ export async function loader({ context, request }: Route.LoaderArgs) {
       ongoing: activityLifecycle.ongoing,
       completed: activityLifecycle.completed,
     },
+    series: seriesResult.status === "fulfilled"
+      ? seriesResult.value.map(({ slug, name, description, logoUrl }): HomeSeriesEntry => ({ slug, name, description, logoUrl }))
+      : null,
     photoMuseum:
       photoResult.status === "fulfilled" && photoResult.value.length > 0
         ? {
@@ -85,20 +90,17 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   };
 }
 
-function SocialGlyph({ id }: { id: CommunitySocial["id"] }) {
-  const glyphs: Record<CommunitySocial["id"], string> = {
-    discord: "D+",
-    bilibili: "B",
-    official: "CMI",
-    xiaohongshu: "RED",
-    reddit: "r/",
-    github: "GH",
-    wechat: "微",
-  };
-  return <span className="home-social__glyph" aria-hidden="true">{glyphs[id]}</span>;
-}
+const socialLogos: Record<CommunitySocial["id"], string> = {
+  official: "official.png",
+  xiaohongshu: "xiaohongshu.jpg",
+  bilibili: "bilibili.png",
+  wechat: "wechat.jpg",
+  github: "github.svg",
+  reddit: "reddit.png",
+  discord: "discord.svg",
+};
 
-function HeroSocials() {
+function CommunityContacts() {
   const [qrOpen, setQrOpen] = useState(false);
   const [copyState, setCopyState] = useState("");
 
@@ -118,16 +120,13 @@ function HeroSocials() {
   };
 
   return (
-    <aside className="home-social" aria-label="找到 CMI Community">
-      <div className="home-social__heading">
-        <span>FIND / JOIN CMI</span>
-        <b>人在社区就在</b>
-      </div>
+    <aside className="home-social" aria-labelledby="home-social-title">
+      <h2 className="home-social__heading" id="home-social-title">社区联系方式</h2>
       <div className="home-social__grid">
         {COMMUNITY_SOCIALS.map((social) => {
           const body = (
             <>
-              <SocialGlyph id={social.id} />
+              <img className="home-social__logo" src={`/social/platforms/${socialLogos[social.id]}`} alt="" width={36} height={36} />
               <span className="home-social__copy">
                 <b>{social.label}</b>
                 <small>{social.detail}</small>
@@ -157,6 +156,7 @@ function HeroSocials() {
               key={social.id}
               onClick={social.action === "qr" ? () => setQrOpen((value) => !value) : copyWechat}
               aria-expanded={social.action === "qr" ? qrOpen : undefined}
+              aria-controls={social.action === "qr" && qrOpen ? "home-social-qr" : undefined}
             >
               {body}
             </button>
@@ -165,7 +165,7 @@ function HeroSocials() {
       </div>
 
       {qrOpen && (
-        <div className="home-social__qr" role="dialog" aria-label="CMI 公众号二维码">
+        <div className="home-social__qr" id="home-social-qr" role="dialog" aria-label="CMI 公众号二维码">
           <img src="/social/cmi-official-account-qr.jpg" alt="CMI 公众号关注二维码" />
           <div><b>微信扫码关注</b><span>公众号 · C M I</span></div>
           <button type="button" onClick={() => setQrOpen(false)} aria-label="关闭二维码">×</button>
@@ -272,8 +272,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
         <ActivityTimeline {...loaderData.activityTimeline} />
 
+        <HomeSeries series={loaderData.series} />
+
         <p className="home-cooperation-entry">
-          <a href="/series">按系列浏览活动 <span aria-hidden="true">→</span></a>
           <span>希望在 CMI 发起一场交流？</span>
           <a href="/cooperation">活动合作须知 <span aria-hidden="true">↗</span></a>
         </p>
@@ -293,7 +294,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </a>
         </nav>
 
-        <HeroSocials />
+        <CommunityContacts />
         <a className="home-hero__scroll-cue" href="#photo-museum"><span>向下进入社区记忆</span><b aria-hidden="true">↓</b></a>
       </section>
 

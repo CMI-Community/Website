@@ -17,6 +17,7 @@
   --signal: #ff4d1f;
   --signal-pale: #ffbe87;
   --line: rgba(238, 233, 220, 0.25);
+  --wall-background: radial-gradient(circle at 62% 45%, #2b2a24 0, var(--ink) 46%, #080807 100%);
   position: relative;
   isolation: isolate;
   width: 100%;
@@ -27,8 +28,12 @@
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 9.1vw 100%,
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 100% 20vh,
-    radial-gradient(circle at 62% 45%, #2b2a24 0, var(--ink) 46%, #080807 100%);
+    var(--wall-background);
   font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
+}
+
+.cmi-poster-wall--homepage {
+  background: var(--wall-background);
 }
 
 .cmi-poster-wall__grain {

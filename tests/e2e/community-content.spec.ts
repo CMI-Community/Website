@@ -77,7 +77,15 @@ test("administrator publishes a series and related photos, browses the gallery a
     series = (await (await createdSeries).json()).series;
     expect(series?.logoMediaId).toBeTruthy();
     await expect(page.getByRole("status")).toContainText("栏目已保存");
-    await visitor.goto(`/series/${slug}`);
+    await visitor.goto("/");
+    const homeSeries = visitor.getByRole("region", { name: "社区系列活动" });
+    const seriesCard = homeSeries.getByRole("link", { name: new RegExp(name) });
+    await expect(seriesCard).toHaveAttribute("href", `/series/${slug}`);
+    await expect(seriesCard.locator("img")).toHaveAttribute("src", series!.logoUrl!);
+    await visitor.route(`**${series!.logoUrl!}`, route => route.fulfill({ status: 404 }), { times: 1 });
+    await visitor.goto("/?fixture=series-logo-missing", { waitUntil: "domcontentloaded" });
+    await expect(seriesCard.locator("img")).toHaveAttribute("hidden", "");
+    await seriesCard.click();
     await expect(visitor.getByRole("heading", { name, exact: true })).toBeVisible();
     expect((await request.get(series!.logoUrl!)).status()).toBe(200);
 
@@ -147,12 +155,13 @@ test("administrator publishes a series and related photos, browses the gallery a
     // The homepage uses a separate lightbox. A real very tall PNG must leave
     // every control in the viewport, including when the browser rotates.
     const originalViewport = visitor.viewportSize()!;
+    await visitor.emulateMedia({ reducedMotion: "reduce" });
     for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 900 }, { width: 844, height: 390 }]) {
       await visitor.setViewportSize(viewport);
-      await visitor.goto("/", { waitUntil: "domcontentloaded" });
-      await visitor.locator("#photo-museum").scrollIntoViewIfNeeded();
-      const pause = visitor.getByRole("button", { name: "暂停流动", exact: true });
-      if (await pause.count()) await pause.click();
+      await visitor.goto(`/?photoViewport=${viewport.width}#photo-museum`, { waitUntil: "domcontentloaded" });
+      const museum = visitor.locator(".photo-museum");
+      await expect(museum).toHaveAttribute("data-paused", "true");
+      await expect(museum).toBeInViewport({ ratio: 0.8 });
       // The reverse-flow lane starts on the duplicate set. Click the real
       // visible tile, just as a pointer user does, rather than an offscreen copy.
       const copies = visitor.locator(`.photo-museum__card[data-photo-id="${photo!.id}"]`);
@@ -164,12 +173,14 @@ test("administrator publishes a series and related photos, browses the gallery a
       expect(visibleCopy).toBeGreaterThanOrEqual(0);
       const photoButton = copies.nth(visibleCopy);
       await expect(photoButton).toBeVisible();
-      await photoButton.focus();
       // Pointer input may scroll a partly visible tile before opening it. Measure
-      // at pointerdown so the assertion checks restoration from the real trigger.
-      await photoButton.evaluate(button => button.addEventListener("pointerdown", () => {
-        (button as HTMLElement).dataset.testScrollAtOpen = String(window.scrollY);
-      }, { once: true }));
+      // at pointerdown without starting a separate scroll from programmatic focus.
+      await photoButton.evaluate(button => {
+        button.focus({ preventScroll: true });
+        button.addEventListener("pointerdown", () => {
+          button.dataset.testScrollAtOpen = String(window.scrollY);
+        }, { once: true });
+      });
       const oldOverflow = await visitor.locator("body").evaluate(body => body.style.overflow);
       await photoButton.click();
       const oldScroll = Number(await photoButton.getAttribute("data-test-scroll-at-open"));
@@ -206,6 +217,8 @@ test("administrator publishes a series and related photos, browses the gallery a
     expect((await request.get(`/series/${slug}`)).status()).toBe(404);
     expect((await request.get(series!.logoUrl!)).status()).toBe(404);
     expect((await request.get(photo!.url)).status()).toBe(200);
+    await visitor.goto("/");
+    await expect(seriesCard).toHaveCount(0);
     const visibleSeriesResponse = await context.request.patch(`/api/v1/admin/series/${series!.id}`, { headers: { ...headers, "If-Match": `"v${series!.version}"` }, data: { status: "published" } });
     series = (await visibleSeriesResponse.json()).series;
 
