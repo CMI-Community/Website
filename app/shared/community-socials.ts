@@ -8,7 +8,7 @@ export const COMMUNITY_LINKS = {
 } as const;
 
 export const COMMUNITY_SOCIALS = [
-  { id: "official", label: "公众号", detail: "C M I", action: "qr" as const },
+  { id: "official", label: "公众号", detail: "扫码关注", action: "qr" as const },
   {
     id: "xiaohongshu",
     label: "小红书",
@@ -17,14 +17,14 @@ export const COMMUNITY_SOCIALS = [
   },
   {
     id: "bilibili",
-    label: "Bilibili",
+    label: "哔哩哔哩",
     detail: "CMI 影像频道",
     href: COMMUNITY_LINKS.bilibili,
   },
   {
     id: "wechat",
     label: "微信联系",
-    detail: COMMUNITY_LINKS.wechat,
+    detail: "复制微信号",
     action: "copy" as const,
   },
   {

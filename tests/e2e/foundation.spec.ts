@@ -135,7 +135,15 @@ test("root renders the formal community homepage with independent museum fallbac
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: "CMI Community", exact: true })).toBeVisible();
   await expect(page.getByText("一个在清迈的华人数字游民社区")).toBeVisible();
+  const series = page.getByRole("region", { name: "社区系列活动" });
+  await expect(series.getByRole("link", { name: "查看全部系列" })).toHaveAttribute("href", "/series");
+  await expect(page.getByRole("complementary", { name: "社区联系方式" })).toBeVisible();
   await expect(page.locator(".home-social__item")).toHaveCount(7);
+  const platformLogos = page.locator(".home-social__item img");
+  await expect(platformLogos).toHaveCount(7);
+  await expect.poll(() => platformLogos.evaluateAll(images =>
+    images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0),
+  )).toBe(true);
   const discord = page.locator('.home-social__item[href="https://discord.gg/BbaPPTRr9d"]');
   await expect(discord).toBeVisible();
   await expect(discord).not.toHaveClass(/is-featured/);
