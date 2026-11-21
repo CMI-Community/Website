@@ -14,7 +14,7 @@
 
 ## 运行配置
 
-- `BLOG_OPENAI_API_KEY` 是博客 Worker 的服务端密钥。先配置 staging 并验证中英全文生成、缓存命中与重试。模型只收到已经公开的文字段落、标题和图注。
+- `BLOG_OPENAI_API_KEY` 是博客 Worker 的服务端密钥。staging 先配置独立绑定并验证中英全文生成、缓存命中与重试。production 从同名 GitHub 环境 Secret 随受保护的 Worker 部署上传。模型只收到已经公开的文字段落、标题和图注。
 - `BLOG_TRANSLATION_DAILY_LIMIT` 控制每个环境每日可启动的翻译分段数，默认 120，按 UTC 日统计。读已有译文无需模型额度。
 - `BLOG_WECHAT_IMPORT_ENABLED` 是后续开放生产链接导入的开关。staging 用真实文章验证后再启用；富文本粘贴可独立使用。
 

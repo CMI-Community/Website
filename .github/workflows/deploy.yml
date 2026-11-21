@@ -62,6 +62,15 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Check Blog translation credential
+        shell: bash
+        env:
+          BLOG_OPENAI_API_KEY: ${{ secrets.BLOG_OPENAI_API_KEY }}
+        run: |
+          if [[ -z "$BLOG_OPENAI_API_KEY" ]]; then
+            echo "::error::Configure the Blog translation secret in the production environment."
+            exit 1
+          fi
       - run: npm ci
       - name: Apply production D1 migrations
         run: npm run db:migrate:production
@@ -74,7 +83,15 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Deploy production Worker
-        run: npm run deploy:production
+        shell: bash
+        run: |
+          umask 077
+          blog_secrets_file="$(mktemp "$RUNNER_TEMP/cmi-blog-secrets.XXXXXX")"
+          trap 'rm -- "$blog_secrets_file"' EXIT
+          node -e 'require("node:fs").writeFileSync(process.argv[1], JSON.stringify({BLOG_OPENAI_API_KEY: process.env.BLOG_OPENAI_API_KEY}))' "$blog_secrets_file"
+          unset BLOG_OPENAI_API_KEY
+          npm run deploy:production -- --secrets-file "$blog_secrets_file"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BLOG_OPENAI_API_KEY: ${{ secrets.BLOG_OPENAI_API_KEY }}
