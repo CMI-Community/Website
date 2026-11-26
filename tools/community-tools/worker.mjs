@@ -1,9 +1,11 @@
 import { HOME, NOT_FOUND, UNAVAILABLE } from './pages.mjs';
+import { PROJECTS } from './projects.mjs';
+export { PROJECTS } from './projects.mjs';
 
 const PUBLIC_ORIGIN = 'https://tool.cmi.community';
 export const RELEASE = 'paths-v1-20261115';
 // Each project owns a public prefix and an existing service binding.
-export const PROJECTS = [{ prefix: '/shaodian/', binding: 'SHAODIAN' }];
+// Routing and directory metadata share the same per-project configuration.
 const LEGACY_ASSETS = new Set([
   '/app.js', '/board.js', '/account.js', '/components.js', '/route.js', '/flight.js',
   '/style.css', '/components.css', '/brand/cmi-community-logo.png',
