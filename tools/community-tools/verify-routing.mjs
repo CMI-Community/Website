@@ -1,5 +1,25 @@
 import assert from 'node:assert/strict';
-import handler,{RELEASE} from './worker.mjs';
+import { readFileSync } from 'node:fs';
+import { registerHooks } from 'node:module';
+import { renderHome } from './pages.mjs';
+import { PROJECTS } from './projects.mjs';
+
+const images = new URL('./images/', import.meta.url);
+// Match the ArrayBuffer export of a Worker data module in the Node checks.
+const hooks = registerHooks({
+  load(url, context, nextLoad) {
+    if (!url.startsWith(images.href) || !url.endsWith('.webp')) return nextLoad(url, context);
+    return {
+      format: 'module',
+      source: `import { readFileSync } from 'node:fs';
+        export default Uint8Array.from(readFileSync(new URL(import.meta.url))).buffer;`,
+      shortCircuit: true,
+    };
+  },
+});
+const { default: handler } = await import('./worker.mjs');
+hooks.deregister();
+
 const origin='https://tool.cmi.community';let count=0;
 async function check(name,fn){await fn();count++;console.log('PASS '+name)}
 const request=(path,options)=>new Request(origin+path,options);
@@ -17,5 +37,39 @@ await check('legacy hash migration script exists',async()=>{const h=await(await 
 await check('HTTP redirect is restricted to correct host',async()=>{let r=await handler.fetch(new Request('http://tool.cmi.community/shaodian/?x=1'),env);assert.equal(r.status,308);assert.equal(r.headers.get('location'),origin+'/shaodian/?x=1');r=await handler.fetch(new Request('https://cmi.community/'),env);assert.equal(r.status,404)});
 await check('directory method limits do not block project POST',async()=>{assert.equal((await handler.fetch(request('/',{method:'POST'}),env)).status,405);assert.equal((await handler.fetch(request('/shaodian/api/listings',{method:'POST',body:'{}'}),env)).status,200)});
 await check('binding failure has HTML and JSON states',async()=>{for(const env of [{},{SHAODIAN:{fetch:async()=>{throw Error('unavailable')}}}]){assert.equal((await handler.fetch(request('/shaodian/'),env)).status,503);const api=await handler.fetch(request('/shaodian/api/board'),env);assert.equal(api.status,503);assert.ok((await api.json()).error)}});
-await check('HEAD directory has no body and release identity',async()=>{const r=await handler.fetch(request('/',{method:'HEAD'}),env);assert.equal(await r.text(),'');assert.equal(r.headers.get('x-cmi-tools-version'),RELEASE)});
+await check('HEAD directory has no body and release identity',async()=>{const r=await handler.fetch(request('/',{method:'HEAD'}),env);assert.equal(await r.text(),'');assert.equal(r.headers.get('x-cmi-tools-version'),'directory-20261126')});
+await check('external projects render as direct links with creator and artwork', async () => {
+  const home = await handler.fetch(request('/'), env);
+  const html = await home.text();
+  assert.match(home.headers.get('content-security-policy'), /img-src 'self'/);
+  assert.equal([...html.matchAll(/<article class="project">/g)].length, 7);
+  for (const project of PROJECTS.filter(project => project.href)) {
+    assert.equal(new URL(project.href).protocol, 'https:');
+    assert.ok(html.includes(`href="${project.href}"`));
+    assert.ok(html.includes(`src="${project.image}"`));
+    assert.ok(html.includes(project.name) && html.includes(project.description));
+    assert.ok(html.includes(`</span>${project.creator}</p>`));
+  }
+  assert.ok(html.includes('href="https://linklinkguan.github.io/cmi-loykrathong-cards/#river"'));
+  const noCreator = renderHome([{ ...PROJECTS[0], creator: '   ' }]);
+  assert.ok(!noCreator.includes('<p class="creator">'));
+  const specialText = renderHome([{ ...PROJECTS[0], creator: '林&<可>' }]);
+  assert.ok(specialText.includes('林&amp;&lt;可&gt;'));
+});
+await check('artwork is returned from a same-origin cacheable read-only route', async () => {
+  for (const project of PROJECTS.filter(project => project.image)) {
+    const response = await handler.fetch(request(project.image), env);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/webp');
+    assert.match(response.headers.get('cache-control'), /^public/);
+    const source = readFileSync(new URL(`./images/${project.id}.webp`, import.meta.url));
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), source);
+    const head = await handler.fetch(request(project.image, { method: 'HEAD' }), env);
+    assert.equal(head.status, 200);
+    assert.equal(head.headers.get('content-length'), String(source.length));
+    assert.equal(await head.text(), '');
+    assert.equal((await handler.fetch(request(project.image, { method: 'POST' }), env)).status, 405);
+  }
+  assert.equal((await handler.fetch(request('/project-images/other.webp'), env)).status, 404);
+});
 console.log('RESULT '+count+' route groups passed; no production writes');

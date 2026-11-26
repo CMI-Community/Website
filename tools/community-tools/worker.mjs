@@ -1,11 +1,10 @@
 import { HOME, NOT_FOUND, UNAVAILABLE } from './pages.mjs';
-import { PROJECTS } from './projects.mjs';
-export { PROJECTS } from './projects.mjs';
+import { PROJECT_IMAGES } from './project-images.mjs';
+import { PROJECTS, SHAODIAN } from './projects.mjs';
 
 const PUBLIC_ORIGIN = 'https://tool.cmi.community';
-export const RELEASE = 'paths-v1-20261115';
-// Each project owns a public prefix and an existing service binding.
-// Routing and directory metadata share the same per-project configuration.
+const RELEASE = 'directory-20261126';
+const PROXIED_PROJECTS = PROJECTS.filter(project => project.prefix && project.binding);
 const LEGACY_ASSETS = new Set([
   '/app.js', '/board.js', '/account.js', '/components.js', '/route.js', '/flight.js',
   '/style.css', '/components.css', '/brand/cmi-community-logo.png',
@@ -21,7 +20,7 @@ function response(body, status = 200, headers = {}) {
 function html(request, body, status = 200) {
   return response(request.method === 'HEAD' ? null : body, status, {
     'content-type': 'text/html; charset=utf-8',
-    'content-security-policy': "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    'content-security-policy': "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
     'x-content-type-options': 'nosniff',
     'referrer-policy': 'strict-origin-when-cross-origin',
     'x-robots-tag': 'noindex, nofollow',
@@ -76,7 +75,7 @@ export default {
       url.protocol = 'https:';
       return redirect(url.href);
     }
-    for (const project of PROJECTS) {
+    for (const project of PROXIED_PROJECTS) {
       if (url.pathname === project.prefix.slice(0, -1)) return redirect(project.prefix + url.search);
       if (url.pathname === project.prefix + 'index.html') return redirect(project.prefix + url.search);
       if (url.pathname.startsWith(project.prefix)) return projectRequest(request, env, project, true);
@@ -84,12 +83,21 @@ export default {
     // Previously opened root-based pages must still be able to finish their
     // requests without losing cookies, request bodies, methods or the Origin.
     if (url.pathname.startsWith('/api/') || LEGACY_ASSETS.has(url.pathname)) {
-      return projectRequest(request, env, PROJECTS[0], false);
+      return projectRequest(request, env, SHAODIAN, false);
     }
     if (!['GET', 'HEAD'].includes(request.method)) return response(null, 405, { allow: 'GET, HEAD' });
     if (url.pathname === '/legacy-shaodian.js') {
       return response(request.method === 'HEAD' ? null : LEGACY_SCRIPT, 200, {
         'content-type': 'application/javascript; charset=utf-8',
+        'x-content-type-options': 'nosniff',
+      });
+    }
+    const image = PROJECT_IMAGES.get(url.pathname);
+    if (image) {
+      return response(request.method === 'HEAD' ? null : image, 200, {
+        'content-type': 'image/webp',
+        'content-length': String(image.byteLength),
+        'cache-control': 'public, max-age=86400',
         'x-content-type-options': 'nosniff',
       });
     }
