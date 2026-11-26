@@ -22,6 +22,7 @@ Release Record 是 production 发布和治理版本的仓库内持久证据。Gi
 | `v0.5.0` | 图片浏览修复、照片及活动管理、系列栏目与增量迁移 | [社区内容管理](./v0.5.0.md) |
 | `v0.6.0` | 海报时间／随机／色谱排序、同步／差速滚动与依赖修补 | [海报排序与同步滚动](./v0.6.0.md) |
 | `v0.7.0` | 官网 Blog、作者、内容关联与中英全文翻译 | [官网 Blog](./v0.7.0.md) |
+| `tools-directory-2026-11-26` | 工具子域目录新增六个项目 | [工具目录](./tools-directory-2026-11-26.md) |
 
 production 发布前复制 [template.md](./template.md)。回滚时更新原记录并关联新的 Bug/Incident Issue，不删除失败发布历史。
 
