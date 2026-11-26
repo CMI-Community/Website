@@ -24,7 +24,7 @@ export default function AdminBlog({ loaderData: { posts, environment } }: Route.
       {posts.map(post => <li key={post.id}>
         <div><h2><a href={"/admin/blog/" + post.id}>{post.title || "未命名文章"}</a></h2>
           <p>{post.displayDate} · {post.author || "待选择作者"} · {post.revisionId ? "已发布" : post.hasPublication ? "已下架" : "草稿"}</p></div>
-        {post.revisionId && <a href={blogPostPath(post.slug)}>公开全文 ↗</a>}
+        {post.revisionId && <a href={blogPostPath(post.shortId)}>公开全文 ↗</a>}
       </li>)}
     </ul> : <p className="blog-admin-note">第一篇文章可以从新建文章开始。</p>}
   </AdminShell>;

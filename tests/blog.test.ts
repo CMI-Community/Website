@@ -3,7 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { Miniflare } from "miniflare";
 import { importBlogClipboard, parseWeChatPage } from "../app/modules/blog/blog-html";
 import { bangkokDate, normalizeWeChatUrl } from "../app/modules/blog/blog-schema";
-import { getPublicBlogRevision } from "../app/modules/blog/blog-repository.server";
+import { getBlogPost, getPublicBlogRevision, getPublicBlogShortId } from "../app/modules/blog/blog-repository.server";
 import { completeTranslationChunk, prepareBlogTranslation, type BlogTextSegment } from "../app/modules/blog/blog-translation";
 import { getBlogTranslation } from "../workers/blog-translation";
 import { importWeChatBlog } from "../workers/blog-wechat";
@@ -105,10 +105,13 @@ describe("Blog Worker with isolated D1", () => {
       compatibilityDate: "2026-08-01", d1Databases: ["DB"],
     });
     db = await emulator.getD1Database("DB") as unknown as D1Database;
-    for (const file of readdirSync("migrations").filter(name => name.endsWith(".sql")).sort()) {
+    async function applyMigration(file: string) {
       const statements = readFileSync("migrations/" + file, "utf8").replace(/^--.*$/gm, "").split(/;\s*(?:\n|$)/);
       await db.batch(statements.filter(sql => sql.trim()).map(sql => db.prepare(sql)));
     }
+    const files = readdirSync("migrations").filter(name => name.endsWith(".sql")).sort();
+    const upgrade = files.indexOf("0008_add_blog_presentation_and_links.sql");
+    for (const file of files.slice(0, upgrade)) await applyMigration(file);
     env = { DB: db, APP_ENV: "staging", BLOG_OPENAI_API_KEY: "synthetic-test-key" } as CloudflareEnv;
     await db.batch([
       db.prepare("INSERT INTO blog_authors(id,display_name,updated_at) VALUES('author','合成作者',?)").bind(now),
@@ -117,10 +120,18 @@ describe("Blog Worker with isolated D1", () => {
         VALUES(?,?,?,?,?,?,'2026-10-03','author',?)`).bind(id, postId, i ? "Revised title" : original.title, original.summary, JSON.stringify(original.body), i ? "en" : "zh-CN", now)),
       db.prepare("UPDATE blog_posts SET published_revision_id=? WHERE id=?").bind(first, postId),
     ]);
+    for (const file of files.slice(upgrade)) await applyMigration(file);
   }, 30_000);
 
   afterEach(() => vi.unstubAllGlobals());
   afterAll(async () => { await emulator?.dispose(); });
+
+  test("preserves a published article and its old draft when assigning a short link during migration", async () => {
+    const post = await getBlogPost(db, postId);
+    expect(post).toMatchObject({ shortId: 1, slug, draft: { coverImageId: null, heroImageId: null } });
+    expect(await getPublicBlogShortId(db, slug)).toBe(1);
+    expect(await getPublicBlogRevision(db, 1)).toMatchObject({ shortId: 1, revisionId: first, title: original.title });
+  });
 
   test("recovers from provider failure, coalesces concurrent requests, and does not serve stale or withdrawn revisions", async () => {
     const realFetch = globalThis.fetch;

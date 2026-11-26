@@ -76,6 +76,7 @@ async function assertIds(db: D1Database, select: string, ids: string[], message:
 
 async function verifyPublishable(env: Pick<CloudflareEnv, "DB" | "MEDIA">, draft: BlogDraft) {
   const { uploads, photos, pending, embedWithoutUrl, hasContent } = blogImageReferences(draft.body);
+  const leadImages = [draft.coverImageId, draft.heroImageId].filter(id => id !== null);
   if (!draft.title || !draft.authorId || !hasContent)
     throw new HttpError(422, "BLOG_FIELDS_REQUIRED", "发布前请填写标题、署名和正文。");
   if (pending) throw new HttpError(422, "BLOG_IMAGE_MISSING", "请补传或移除正文中缺失的图片。");
@@ -88,6 +89,7 @@ async function verifyPublishable(env: Pick<CloudflareEnv, "DB" | "MEDIA">, draft
     assertIds(env.DB, "SELECT COUNT(*) AS total FROM community_photos WHERE id", [...new Set([...draft.photoIds, ...photos])], "有照片已经移除，请检查关联。"),
     assertIds(env.DB, "SELECT COUNT(*) AS total FROM event_details WHERE content_id", draft.events.filter(event => event.kind === "managed").map(event => event.id), "有活动已经移除，请检查关联。"),
     assertIds(env.DB, "SELECT COUNT(*) AS total FROM blog_images WHERE id", uploads, "有正文图片尚未上传成功。"),
+    assertIds(env.DB, "SELECT COUNT(*) AS total FROM blog_images WHERE id", [...new Set(leadImages)], "请重新上传缺失的封面或头图。"),
     (async () => {
       if (!archiveIds.length) return;
       const archive = new Set((await listArchiveEvents(env)).map(event => event.id));
@@ -95,7 +97,7 @@ async function verifyPublishable(env: Pick<CloudflareEnv, "DB" | "MEDIA">, draft
         throw new HttpError(422, "BLOG_ARCHIVE_MISSING", "有历史活动已经移除，请检查关联。");
     })(),
   ]);
-  return uploads;
+  return [...new Set([...uploads, ...leadImages])];
 }
 
 export async function setBlogPublication(
@@ -114,9 +116,9 @@ export async function setBlogPublication(
   if (revisionId) {
     const uploads = await verifyPublishable(env, draft);
     statements.push(
-      db.prepare(`INSERT INTO blog_revisions(id,post_id,title,summary,locale,display_date,author_id,source_url,body_json,published_at)
-        VALUES(?,?,?,?,?,?,?,?,?,?)`).bind(revisionId, id, draft.title, draft.summary, draft.locale, draft.displayDate,
-        draft.authorId, draft.sourceUrl || null, JSON.stringify(draft.body), now),
+      db.prepare(`INSERT INTO blog_revisions(id,post_id,title,summary,locale,display_date,author_id,source_url,body_json,published_at,cover_image_id,hero_image_id)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`).bind(revisionId, id, draft.title, draft.summary, draft.locale, draft.displayDate,
+        draft.authorId, draft.sourceUrl || null, JSON.stringify(draft.body), now, draft.coverImageId, draft.heroImageId),
       db.prepare("INSERT INTO blog_revision_series(revision_id,series_id) SELECT ?,value FROM json_each(?)")
         .bind(revisionId, JSON.stringify(draft.seriesIds)),
       db.prepare(`INSERT INTO blog_revision_events(revision_id,kind,event_id)

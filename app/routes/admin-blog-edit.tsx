@@ -4,13 +4,15 @@ import type { Route } from "./+types/admin-blog-edit";
 import { AdminShell } from "../modules/activities/AdminShell";
 import { privateHeaders, requireAdminPage } from "../modules/activities/admin.server";
 import { adminApi, errorMessage } from "../modules/activities/admin-client";
-import { blogAdminApi, blogVersion } from "../modules/blog/blog-admin-client";
+import { blogAdminApi, blogVersion, uploadEditorImage } from "../modules/blog/blog-admin-client";
+import { BlogCopyLink } from "../modules/blog/BlogLinks";
 import { BlogEditor, type BlogEditorActions } from "../modules/blog/BlogEditor";
 import { BlogBody } from "../modules/blog/BlogBody";
 import { BlogAssociationPicker } from "../modules/blog/BlogAssociationPicker";
+import { imageTypes } from "../modules/blog/blog-document";
 import type { ImportedBlogBody } from "../modules/blog/blog-html";
-import { getBlogPost, loadAdminBlogOptions, type BlogOptions } from "../modules/blog/blog-repository.server";
-import { blogPostPath, newBlogDraft, type BlogDraft, type BlogPost } from "../modules/blog/blog-schema";
+import { getBlogPost, loadAdminBlogImages, loadAdminBlogOptions, type BlogOptions } from "../modules/blog/blog-repository.server";
+import { blogPostPath, newBlogDraft, type BlogDraft, type BlogImage, type BlogPost } from "../modules/blog/blog-schema";
 import { weChatBlogImportEnabled } from "../../workers/blog-wechat";
 import { cloudflareContext } from "../shared/cloudflare-context";
 import "../modules/blog/blog.css";
@@ -24,21 +26,49 @@ export async function loader({ request, context, params }: Route.LoaderArgs) {
   await requireAdminPage(request, env, ctx);
   const [post, options] = await Promise.all([params.id === "new" ? null : getBlogPost(env.DB, params.id), loadAdminBlogOptions(env)]);
   if (params.id !== "new" && !post) throw data("文章不存在。", { status: 404 });
-  return { post, options, environment: env.APP_ENV, importEnabled: weChatBlogImportEnabled(env), emptyDraft: newBlogDraft() };
+  const leadImages = post ? await loadAdminBlogImages(env.DB, post.draft) : [];
+  return { post, options, leadImages, environment: env.APP_ENV, importEnabled: weChatBlogImportEnabled(env), emptyDraft: newBlogDraft() };
 }
 
 type ImportResponse = { existingId: string } | (ImportedBlogBody & { title: string; summary: string; sourceUrl: string; displayDate: string });
 const labelStatus = (status: string) => status === "published" ? "" : status === "draft" ? " · 草稿" : " · 已下架";
 function toggle<T>(values: T[], value: T) { return values.includes(value) ? values.filter(item => item !== value) : [...values, value]; }
 
-function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
-  initial: BlogPost | null; emptyDraft: BlogDraft; options: BlogOptions; importEnabled: boolean;
+function BlogImageField({ label, empty, image, disabled, onUpload, onRemove, onUseCover }: {
+  label: string; empty: string; image?: BlogImage; disabled: boolean;
+  onUpload: (file: File) => void; onRemove: () => void; onUseCover?: () => void;
+}) {
+  return <fieldset className="blog-image-field" disabled={disabled}>
+    <legend>{label}</legend>
+    <div className="blog-image-field__preview">
+      {image ? <img src={image.url} width={image.width} height={image.height} alt="" /> : <p>{empty}</p>}
+    </div>
+    {image && <p className="blog-image-field__size">{image.width} × {image.height} px</p>}
+    <div className="blog-image-field__actions">
+      <label className="blog-file-action">
+        {image ? "替换图片" : "上传图片"}
+        <input type="file" accept={imageTypes.join(",")} aria-label={`上传${label}`} onChange={event => {
+          const file = event.currentTarget.files?.[0];
+          event.currentTarget.value = "";
+          if (file) onUpload(file);
+        }} />
+      </label>
+      {onUseCover && <button type="button" onClick={onUseCover}>使用列表封面</button>}
+      {image && <button type="button" aria-label={`移除${label}`} onClick={onRemove}>移除</button>}
+    </div>
+  </fieldset>;
+}
+
+function BlogEditForm({ initial, emptyDraft, options, importEnabled, leadImages }: {
+  initial: BlogPost | null; emptyDraft: BlogDraft; options: BlogOptions; importEnabled: boolean; leadImages: BlogImage[];
 }) {
   const navigate = useNavigate();
   const editor = useRef<BlogEditorActions>(null);
   const importMessage = useRef<HTMLParagraphElement>(null);
   const [post, setPost] = useState(initial);
   const [draft, setDraft] = useState(initial?.draft ?? emptyDraft);
+  const [imageOptions, setImageOptions] = useState(() => new Map(leadImages.map(image => [image.id, image])));
+  const [imageError, setImageError] = useState("");
   const [preview, setPreview] = useState(false);
   const [pending, setPending] = useState(0);
   const [operation, setOperation] = useState("");
@@ -51,11 +81,29 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
     if (importFeedback?.failed) importMessage.current?.scrollIntoView({ block: "nearest" });
   }, [importFeedback]);
   const busy = Boolean(operation || pending);
+  const cover = draft.coverImageId ? imageOptions.get(draft.coverImageId) : undefined;
+  const hero = draft.heroImageId ? imageOptions.get(draft.heroImageId) : undefined;
   const eventKeys = draft.events.map(event => event.kind + ":" + event.id);
   const inherited = new Set(options.events.flatMap(event => event.status === "published" && event.seriesId && eventKeys.includes(event.kind + ":" + event.id) ? [event.seriesId] : []));
 
   function update<K extends keyof BlogDraft>(field: K, value: BlogDraft[K]) {
     setDraft(current => ({ ...current, [field]: value }));
+  }
+
+  async function uploadLeadImage(field: "coverImageId" | "heroImageId", file: File) {
+    if (busy) return;
+    setOperation("image");
+    setImageError("");
+    setStatus("");
+    try {
+      const image = await uploadEditorImage(file);
+      setImageOptions(current => new Map(current).set(image.id, image));
+      update(field, image.id);
+    } catch (cause) {
+      setImageError(errorMessage(cause));
+    } finally {
+      setOperation("");
+    }
   }
 
   async function persist(action: "save" | "publish" | "unpublish") {
@@ -126,7 +174,8 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
       <button type="button" disabled={busy} onClick={() => void persist("save")}>保存草稿</button>
       <button type="button" className="event-admin__primary" disabled={busy} onClick={() => void persist("publish")}>{post?.revisionId ? "更新公开版本" : "发布文章"}</button>
       {post?.revisionId && <>
-        <a href={blogPostPath(post.slug)} target="_blank" rel="noreferrer">查看公开版本 ↗</a>
+        <a href={blogPostPath(post.shortId)} target="_blank" rel="noreferrer">查看公开版本 ↗</a>
+        <BlogCopyLink shortId={post.shortId} />
         <button type="button" disabled={busy} onClick={() => setConfirmUnpublish(value => !value)}>下架</button>
       </>}
     </nav>
@@ -135,7 +184,7 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
       <button type="button" disabled={busy} onClick={() => void persist("unpublish")}>确认下架</button>
       <button type="button" onClick={() => setConfirmUnpublish(false)}>取消</button>
     </div>}
-    {(status || (operation && operation !== "import") || pending > 0) && <p role="status" className="blog-admin-note">{pending > 0 ? `正在处理 ${pending} 张图片…` : operation ? "正在保存…" : status}</p>}
+    {(status || (operation && operation !== "import" && operation !== "image") || pending > 0) && <p role="status" className="blog-admin-note">{pending > 0 ? `正在处理 ${pending} 张图片…` : operation ? "正在保存…" : status}</p>}
     {error && <p role="alert" className="blog-admin-error">{error}</p>}
 
     <div className="blog-edit-layout" hidden={preview}>
@@ -162,6 +211,21 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
           {importFeedback && <p ref={importMessage} role={importFeedback.failed ? "alert" : "status"} className={importFeedback.failed ? "blog-admin-error" : "blog-admin-note"}>{importFeedback.message}</p>}
           {duplicate && <p role="status" className="blog-admin-note">这个链接已有文章。<a href={"/admin/blog/" + duplicate}>打开文章</a></p>}
         </fieldset>
+        <section className="blog-edit-images" aria-labelledby="blog-images-title">
+          <h2 id="blog-images-title">封面与头图</h2>
+          <p className="blog-admin-note">建议使用 1920 × 1080 的 16:9 图片。每张最大 10 MB，保留上传原图。</p>
+          <div className="blog-edit-images__fields">
+            <BlogImageField label="列表封面" empty={hero ? "列表使用文章头图" : "列表使用正文首张上传图"}
+              image={cover} disabled={busy} onUpload={file => void uploadLeadImage("coverImageId", file)}
+              onRemove={() => update("coverImageId", null)} />
+            <BlogImageField label="文章头图" empty="未设置头图"
+              image={hero} disabled={busy} onUpload={file => void uploadLeadImage("heroImageId", file)}
+              onRemove={() => update("heroImageId", null)}
+              onUseCover={cover && cover.id !== hero?.id ? () => update("heroImageId", cover.id) : undefined} />
+          </div>
+          {operation === "image" && <p role="status" className="blog-admin-note">正在上传图片…</p>}
+          {imageError && <p role="alert" className="blog-admin-error">{imageError}</p>}
+        </section>
         <h2>正文</h2>
         <p className="blog-admin-note">可在这里写作，也可直接粘贴公众号图文。</p>
         <BlogEditor ref={editor} initial={draft.body} photos={options.photos} sourceUrl={draft.sourceUrl} disabled={Boolean(operation) && operation !== "import"}
@@ -193,6 +257,9 @@ function BlogEditForm({ initial, emptyDraft, options, importEnabled }: {
       <p className="blog-byline"><time dateTime={draft.displayDate}>{draft.displayDate}</time><span>{options.authors.find(author => author.id === draft.authorId)?.displayName}</span></p>
       <h2>{draft.title || "未命名文章"}</h2>
       {draft.summary && <p>{draft.summary}</p>}
+      {hero && <figure className="blog-article__hero">
+        <img src={hero.url} width={hero.width} height={hero.height} alt="" />
+      </figure>}
       <BlogBody body={draft.body} sourceUrl={draft.sourceUrl} locale={draft.locale} preview resolveImage={(kind, id) => {
         if (kind === "photo") return options.photos.find(photo => photo.id === id);
         if (kind === "upload") return { url: blogAdminApi + "/images/" + id, width: 0, height: 0 };

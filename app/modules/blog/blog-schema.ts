@@ -38,6 +38,8 @@ export const blogDraftSchema = z.object({
   locale: blogLocale,
   displayDate: z.iso.date(),
   authorId: key.nullable(),
+  coverImageId: z.uuid().nullable().default(null),
+  heroImageId: z.uuid().nullable().default(null),
   sourceUrl: z.string().trim().max(2048).transform((value, ctx) => {
     if (!value) return "";
     const url = normalizeWeChatUrl(value);
@@ -66,6 +68,7 @@ export interface BlogAuthor {
 export interface BlogPost {
   id: string;
   slug: string;
+  shortId: number;
   version: number;
   revisionId: string | null;
   updatedAt: string;
@@ -73,7 +76,7 @@ export interface BlogPost {
 }
 
 export interface BlogSummary {
-  slug: string;
+  shortId: number;
   title: string;
   summary: string;
   displayDate: string;
@@ -88,15 +91,28 @@ export interface BlogImage {
   height: number;
 }
 
+export interface BlogListingItem extends BlogSummary {
+  cover: BlogImage | null;
+}
+
 export function bangkokDate(now = new Date()): string {
   const parts = new Intl.DateTimeFormat("en", { timeZone: "Asia/Bangkok", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now);
   return ["year", "month", "day"].map(kind => parts.find(part => part.type === kind)!.value).join("-");
 }
 
 export function newBlogDraft(): BlogDraft {
-  return { title: "", summary: "", locale: "zh-CN", displayDate: bangkokDate(), authorId: null, sourceUrl: "", body: emptyBlogDocument, seriesIds: [], events: [], photoIds: [] };
+  return {
+    title: "", summary: "", locale: "zh-CN", displayDate: bangkokDate(), authorId: null,
+    coverImageId: null, heroImageId: null, sourceUrl: "", body: emptyBlogDocument, seriesIds: [], events: [], photoIds: [],
+  };
 }
 
-export function blogPostPath(slug: string): string {
-  return "/blog/" + encodeURIComponent(slug);
+export function blogPostPath(shortId: number): string {
+  return "/b/" + shortId;
+}
+
+export function parseBlogShortId(value: string) {
+  if (!/^[1-9]\d{0,15}$/.test(value)) return null;
+  const shortId = Number(value);
+  return Number.isSafeInteger(shortId) ? shortId : null;
 }

@@ -29,3 +29,5 @@ ADR 保存跨任务仍然有效、影响长期边界或难以回滚的决定。�
 - [ADR 0014](./0014-poster-spectrum-and-local-glob-safeguard.md)：随机／像素色谱排序与本地 glob 安全修补（Accepted）。
 
 - [ADR 0015](./0015-blog-publishing.md)：官网博客、署名与公开译文（Accepted）。
+
+- [ADR 0016](./0016-blog-images-and-permalinks.md)：博客封面、头图与永久短链接（Proposed）。

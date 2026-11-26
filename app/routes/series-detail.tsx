@@ -50,7 +50,7 @@ export default function SeriesDetail({ loaderData }: Route.ComponentProps) {
         {archiveEvents.map(event => <article className="content-card" key={`archive-${event.id}`}>
           <a className="content-card__poster" href={event.articleUrl} target="_blank" rel="noreferrer"><img src={archivePosterImage(event.imagePath)} alt={`${event.title}海报`} width={event.width} height={event.height} loading="lazy" decoding="async" /></a>
           <div className="content-card__body">{event.eventTime && <p className="content-card__date">{event.eventTime}</p>}<h3><a href={event.articleUrl} target="_blank" rel="noreferrer">{event.title}</a></h3><p className="content-card__summary">{event.summary}</p><a href={event.articleUrl} target="_blank" rel="noreferrer">查看活动原文 ↗</a>
-            {blogs.filter(post => post.archiveIds.includes(event.id)).map(post => <p key={post.slug}><a href={blogPostPath(post.slug)}>{post.title}</a></p>)}
+            {blogs.filter(post => post.archiveIds.includes(event.id)).map(post => <p key={post.shortId}><a href={blogPostPath(post.shortId)}>{post.title}</a></p>)}
           </div>
         </article>)}
       </div> : loaderData.archiveAvailable ? <p className="community-series__empty">这个系列的活动正在整理。</p> : null}

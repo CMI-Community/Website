@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { data, isRouteErrorResponse, useRouteError } from "react-router";
 import type { Route } from "./+types/blog-detail";
 import { loadPublicBlog } from "../modules/blog/blog-repository.server";
-import { BlogHeader, BlogByline } from "../modules/blog/BlogLinks";
+import { BlogHeader, BlogByline, BlogCopyLink } from "../modules/blog/BlogLinks";
 import { BlogBody } from "../modules/blog/BlogBody";
-import { blogPostPath, type BlogLocale } from "../modules/blog/blog-schema";
+import { blogPostPath, parseBlogShortId, type BlogLocale } from "../modules/blog/blog-schema";
 import type { TranslatedBlogText } from "../modules/blog/blog-translation";
 import { ContentGallery } from "../modules/community-content/content-gallery";
 import { cloudflareContext } from "../shared/cloudflare-context";
@@ -17,14 +17,26 @@ export function meta({ loaderData }: Route.MetaArgs) {
   return [
     { title: post ? post.title + "｜CMI Community" : "Blog｜CMI Community" },
     { name: "description", content: post?.summary || "CMI Community Blog" },
-    ...(post ? [{ property: "og:type", content: "article" }, { property: "og:title", content: post.title }] : []),
+    ...(post ? [
+      { tagName: "link", rel: "canonical", href: loaderData.canonical },
+      { property: "og:type", content: "article" },
+      { property: "og:title", content: post.title },
+      { property: "og:url", content: loaderData.canonical },
+    ] : []),
+    ...(loaderData?.shareImage && post?.cover ? [
+      { property: "og:image", content: loaderData.shareImage },
+      { property: "og:image:width", content: String(post.cover.width) },
+      { property: "og:image:height", content: String(post.cover.height) },
+    ] : []),
   ];
 }
-export async function loader({ context, params }: Route.LoaderArgs) {
+export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const post = await loadPublicBlog(env, params.slug);
+  const shortId = parseBlogShortId(params.shortId);
+  const post = shortId === null ? null : await loadPublicBlog(env, shortId);
   if (!post) throw data("文章不存在或已下架。", { status: 404 });
-  return { post };
+  const canonical = new URL(blogPostPath(post.shortId), request.url).href;
+  return { post, canonical, shareImage: post.cover ? new URL(post.cover.url, canonical).href : null };
 }
 
 function ArticleView({ post }: { post: NonNullable<Awaited<ReturnType<typeof loadPublicBlog>>> }) {
@@ -53,7 +65,7 @@ function ArticleView({ post }: { post: NonNullable<Awaited<ReturnType<typeof loa
     const timeout = Date.now() + 6 * 60_000;
     try {
       while (Date.now() < timeout) {
-        const response = await fetch("/api/v1" + blogPostPath(post.slug) + "/translation", {
+        const response = await fetch("/api/v1/blog/" + post.shortId + "/translation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ revision: post.revisionId, target }),
@@ -97,11 +109,17 @@ function ArticleView({ post }: { post: NonNullable<Awaited<ReturnType<typeof loa
           <button type="button" disabled={Boolean(progress)} onClick={() => void switchLanguage()}>
             {showTranslation ? (english ? "View original" : "查看原文") : target === "en" ? "English" : "简体中文"}
           </button>
+          <BlogCopyLink shortId={post.shortId} english={english} />
           {showTranslation && <span>{english ? "Automatic translation" : "自动翻译"}</span>}
           {progress && <span role="status">{english ? "Translating" : "正在翻译"}{progress.total > 1 ? ` · ${progress.done}/${progress.total}` : ""}…</span>}
         </div>
         {error && <p className="blog-status" role="alert">{error}</p>}
       </header>
+      {post.hero && <figure className="blog-article__hero">
+        <a href={post.hero.url} target="_blank" rel="noreferrer" aria-label={english ? "Open original lead image" : "查看头图原图"}>
+          <img src={post.hero.url} width={post.hero.width} height={post.hero.height} alt="" fetchPriority="high" decoding="async" />
+        </a>
+      </figure>}
       <BlogBody body={viewing.body} sourceUrl={post.sourceUrl} locale={viewing.locale}
         resolveImage={(kind, id) => kind === "photo" ? photos.get(id) : images.get(id)} />
       {post.sourceUrl && <p className="blog-source"><a href={post.sourceUrl} target="_blank" rel="noreferrer">{english ? "Read the original on WeChat" : "查看公众号原文"} ↗</a></p>}

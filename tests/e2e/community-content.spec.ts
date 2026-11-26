@@ -331,6 +331,17 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     await page.getByLabel("发布日期").fill("2025-01-03");
     await page.getByLabel("文章作者").selectOption({ label: authorName });
     await page.getByLabel("公众号原文网址（可选）").fill(source);
+    const coverFile = Buffer.from(patternPng(1920, 1080, [[23, 81, 65], [223, 206, 172]]));
+    const heroFile = Buffer.from(patternPng(2560, 1440, [[38, 74, 101], [237, 218, 149]]));
+    for (const [label, filename, buffer] of [
+      ["列表封面", "cover.png", coverFile],
+      ["文章头图", "hero.png", heroFile],
+    ] as const) {
+      const upload = page.waitForResponse(response => new URL(response.url()).pathname === "/api/v1/admin/blog/images" && response.request().method() === "POST");
+      await page.getByLabel("上传" + label, { exact: true }).setInputFiles({ name: filename, mimeType: "image/png", buffer });
+      expect((await upload).status()).toBe(201);
+      await expect(page.getByRole("group", { name: label, exact: true }).locator("img")).toBeVisible();
+    }
 
     await page.route("**/api/v1/admin/blog/wechat", route => route.fulfill({
       status: 422, json: { error: { message: "公众号页面暂时无法读取。请复制图文到编辑器。" } },
@@ -364,22 +375,38 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     await page.getByRole("checkbox", { name: alt }).check();
     await page.getByRole("button", { name: "预览文章" }).click();
     await expect(page.getByRole("article", { name: "文章预览" }).locator("figcaption")).toHaveText(["第一张图注", "第二张图注"]);
+    await expect(page.locator(".blog-admin-preview .blog-article__hero img")).toHaveAttribute("width", "2560");
     await page.getByRole("button", { name: "返回编辑" }).click();
 
     let saved = page.waitForResponse(response => new URL(response.url()).pathname === "/api/v1/admin/blog/posts" && response.request().method() === "POST");
     await page.getByRole("button", { name: "保存草稿" }).click();
     expect((await saved).status()).toBe(201);
     post = (await (await saved).json()).post;
-    const publicPath = "/blog/" + encodeURIComponent(post!.slug);
+    const publicPath = "/b/" + post!.shortId;
+    const legacyPath = "/blog/" + encodeURIComponent(post!.slug);
+    const coverPath = "/media/blog/" + post!.shortId + "/" + post!.draft.coverImageId;
+    const heroPath = "/media/blog/" + post!.shortId + "/" + post!.draft.heroImageId;
     await expect(page).toHaveURL(new RegExp("/admin/blog/" + post!.id + "$"));
-    expect((await request.get(publicPath)).status()).toBe(404);
+    for (const path of [publicPath, legacyPath, coverPath, heroPath]) {
+      expect((await request.get(path, { maxRedirects: 0 })).status()).toBe(404);
+    }
 
     const published = page.waitForResponse(response => new URL(response.url()).pathname.endsWith("/publish") && response.request().method() === "POST");
     await page.getByRole("button", { name: "发布文章", exact: true }).click();
     expect((await published).status()).toBe(200);
     post = (await (await published).json()).post;
+    const redirect = await request.get(legacyPath + "?from=legacy", { maxRedirects: 0 });
+    expect(redirect.status()).toBe(308);
+    expect(redirect.headers().location).toBe(publicPath + "?from=legacy");
     await visitor.goto(publicPath);
     await expect(visitor.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    await expect(visitor.locator('link[rel="canonical"]')).toHaveAttribute("href", origin + publicPath);
+    await expect(visitor.locator('meta[property="og:image"]')).toHaveAttribute("content", origin + coverPath);
+    await expect(visitor.locator(".blog-article__hero img")).toHaveAttribute("src", heroPath);
+    await expect(visitor.locator(".blog-article__hero img")).toHaveAttribute("width", "2560");
+    await expect(visitor.getByRole("link", { name: "查看头图原图" })).toHaveAttribute("href", heroPath);
+    expect(await (await request.get(coverPath)).body()).toEqual(coverFile);
+    expect(await (await request.get(heroPath)).body()).toEqual(heroFile);
     await expect(visitor.locator(".blog-byline time")).toHaveText("2025-01-03");
     await expect(visitor.locator(".blog-byline")).toContainText(authorName);
     await expect(visitor.locator("figcaption")).toHaveText(["第一张图注", "第二张图注"]);
@@ -388,11 +415,14 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     const publicImage = await visitor.locator(".blog-prose img").first().getAttribute("src");
     expect(publicImage?.startsWith("/media/blog/")).toBe(true);
     expect((await request.get(publicImage!)).status()).toBe(200);
+    const legacyImage = "/media" + legacyPath + "/" + publicImage!.split("/").at(-1);
+    expect((await request.get(legacyImage)).status()).toBe(200);
     await expect(visitor.getByRole("button", { name: "放大查看：" + alt })).toBeVisible();
 
     const newTitle = "Another synthetic review " + suffix;
     const second = await context.request.post("/api/v1/admin/blog/posts", { headers, data: {
-      ...post!.draft, title: newTitle, locale: "en", displayDate: "2026-10-03", sourceUrl: "",
+      ...post!.draft, title: newTitle, summary: "", locale: "en", displayDate: "2026-10-03", sourceUrl: "",
+      coverImageId: null, heroImageId: null,
       events: [], seriesIds: [], photoIds: [],
     } });
     expect(second.status()).toBe(201);
@@ -401,7 +431,17 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     expect(secondPublication.status()).toBe(200);
     newer = (await secondPublication.json()).post;
     await visitor.goto("/blog");
-    await expect(visitor.locator(".blog-links a").allTextContents()).resolves.toEqual([newTitle, title]);
+    await expect(visitor.locator(".blog-story h2")).toHaveText([newTitle, title]);
+    const firstRow = visitor.getByRole("link", { name: newTitle, exact: true });
+    const secondRow = visitor.getByRole("link", { name: title, exact: true });
+    await expect(firstRow.locator("img")).toHaveAttribute("src", "/media/blog/" + newer!.shortId + "/" + publicImage!.split("/").at(-1));
+    await expect(firstRow).toContainText("合成长文第 1 段");
+    await expect(secondRow).toHaveAttribute("href", publicPath);
+    await expect(secondRow.locator("img")).toHaveAttribute("src", coverPath);
+    await expect(secondRow.locator(".blog-story__picture")).toHaveCSS("aspect-ratio", "16 / 9");
+    const [firstRect, secondRect] = await Promise.all([firstRow.boundingBox(), secondRow.boundingBox()]);
+    expect(secondRect!.width).toBeCloseTo(firstRect!.width);
+    expect(secondRect!.y).toBeGreaterThanOrEqual(firstRect!.y + firstRect!.height);
     const deactivated = await context.request.put("/api/v1/admin/blog/authors/" + post!.draft.authorId, {
       headers: putVersion(1), data: { displayName: authorName, active: false },
     });
@@ -425,6 +465,7 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     });
     await visitor.getByRole("button", { name: "English" }).click();
     await expect(visitor.getByRole("heading", { name: "Synthetic English recap" })).toBeVisible();
+    await expect(visitor.locator(".blog-article__hero img")).toHaveAttribute("src", heroPath);
     await visitor.getByRole("button", { name: "View original" }).click();
     await expect(visitor.getByRole("heading", { name: title, exact: true })).toBeVisible();
 
@@ -435,24 +476,38 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     await expect(visitor.getByRole("link", { name: title, exact: true })).toBeVisible();
 
     await page.getByLabel("文章标题").fill(title + " · 待更新");
+    await page.getByRole("button", { name: "使用列表封面" }).click();
     saved = page.waitForResponse(response => new URL(response.url()).pathname === "/api/v1/admin/blog/posts/" + post!.id && response.request().method() === "PUT");
     await page.getByRole("button", { name: "保存草稿" }).click();
     expect((await saved).status()).toBe(200);
     post = (await (await saved).json()).post;
     await visitor.goto(publicPath);
     await expect(visitor.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    await expect(visitor.locator(".blog-article__hero img")).toHaveAttribute("src", heroPath);
 
     expect((await context.request.patch("/api/v1/admin/photos/" + photo!.id, {
       headers: putVersion(photo!.version), data: { status: "unpublished" },
     })).ok()).toBe(true);
     await visitor.reload();
     await expect(visitor.getByRole("button", { name: "放大查看：" + alt })).toHaveCount(0);
+    const updated = page.waitForResponse(response => response.url().endsWith("/publish") && response.request().method() === "POST");
+    await page.getByRole("button", { name: "更新公开版本" }).click();
+    expect((await updated).status()).toBe(200);
+    post = (await (await updated).json()).post;
+    expect("/b/" + post!.shortId).toBe(publicPath);
+    await visitor.goto(legacyPath);
+    await expect(visitor).toHaveURL(origin + publicPath);
+    await expect(visitor.getByRole("heading", { name: title + " · 待更新", exact: true })).toBeVisible();
+    await expect(visitor.locator(".blog-article__hero img")).toHaveAttribute("src", coverPath);
+    expect((await request.get(heroPath)).status()).toBe(404);
     await page.getByRole("button", { name: "下架", exact: true }).click();
     const withdrawn = page.waitForResponse(response => response.url().endsWith("/unpublish") && response.request().method() === "POST");
     await page.getByRole("button", { name: "确认下架", exact: true }).click();
     expect((await withdrawn).status()).toBe(200);
     post = (await (await withdrawn).json()).post;
     expect((await request.get(publicPath)).status()).toBe(404);
+    expect((await request.get(legacyPath, { maxRedirects: 0 })).status()).toBe(404);
+    expect((await request.get(coverPath)).status()).toBe(404);
     expect((await request.get(publicImage!)).status()).toBe(404);
     await visitor.goto("/series/" + slug);
     await expect(visitor.locator("#series-blog").getByRole("link", { name: title, exact: true })).toHaveCount(0);

@@ -3,23 +3,31 @@ import { getEventSeriesMemberships, listPhotos, listSeries } from "../community-
 import { listEvents } from "../activities/event-repository.server";
 import { listPublicEvents } from "../activities/event-public";
 import { safeBlogLink, walkBlog, type BlogDocument } from "./blog-document";
-import type { BlogAuthor, BlogDraft, BlogEventRef, BlogImage, BlogPost, BlogSummary } from "./blog-schema";
+import type { BlogAuthor, BlogDraft, BlogEventRef, BlogImage, BlogListingItem, BlogPost, BlogSummary } from "./blog-schema";
 import type { CommunityPhoto } from "../community-content/content-schema";
 
 type Environment = Pick<CloudflareEnv, "DB" | "MEDIA">;
 type AuthorRow = Omit<BlogAuthor, "active"> & { active: number };
 type PostRow = Omit<BlogPost, "draft"> & { draftJson: string };
-type ArticleRow = BlogSummary & { id: string; revisionId: string; sourceUrl: string | null; bodyJson: string };
+type ArticleImages = { coverId: string | null; heroId: string | null };
+type ArticleRow = BlogSummary & ArticleImages & { id: string; revisionId: string; sourceUrl: string | null; bodyJson: string };
 export type BlogPhoto = Pick<CommunityPhoto, "id" | "alt" | "url" | "thumbnailUrl" | "width" | "height">;
 
-const POST_SELECT = "SELECT id,slug,version,draft_json AS draftJson,published_revision_id AS revisionId,updated_at AS updatedAt FROM blog_posts";
-const SUMMARY = "p.slug,r.title,r.summary,r.display_date AS displayDate,r.locale,a.display_name AS author";
-const PUBLISHED = "FROM blog_posts p JOIN blog_revisions r ON r.id=p.published_revision_id JOIN blog_authors a ON a.id=r.author_id";
+const POST_SELECT = `SELECT p.id,p.slug,s.short_id AS shortId,p.version,p.draft_json AS draftJson,
+  p.published_revision_id AS revisionId,p.updated_at AS updatedAt
+  FROM blog_posts p JOIN blog_short_links s ON s.post_id=p.id`;
+const SUMMARY = "s.short_id AS shortId,r.title,r.summary,r.display_date AS displayDate,r.locale,a.display_name AS author";
+const LEAD_IMAGES = "r.cover_image_id AS coverId,r.hero_image_id AS heroId";
+const PUBLISHED = `FROM blog_posts p JOIN blog_short_links s ON s.post_id=p.id
+  JOIN blog_revisions r ON r.id=p.published_revision_id JOIN blog_authors a ON a.id=r.author_id`;
 const NEWEST = "ORDER BY r.display_date DESC,r.published_at DESC,p.id";
 const authorRecord = (row: AuthorRow) => ({ ...row, active: row.active === 1 });
-const postRecord = ({ draftJson, ...row }: PostRow): BlogPost => ({ ...row, draft: JSON.parse(draftJson) as BlogDraft });
+function postRecord({ draftJson, ...row }: PostRow): BlogPost {
+  const draft = JSON.parse(draftJson) as BlogDraft;
+  return { ...row, draft: { ...draft, coverImageId: draft.coverImageId ?? null, heroImageId: draft.heroImageId ?? null } };
+}
 export const adminBlogImageUrl = (id: string) => "/api/v1/admin/blog/images/" + encodeURIComponent(id);
-export const publicBlogImageUrl = (slug: string, id: string) => "/media/blog/" + encodeURIComponent(slug) + "/" + encodeURIComponent(id);
+export const publicBlogImageUrl = (reference: number | string, id: string) => "/media/blog/" + encodeURIComponent(reference) + "/" + encodeURIComponent(id);
 
 export async function listBlogAuthors(db: D1Database) {
   const rows = await db.prepare("SELECT id,display_name AS displayName,active,version FROM blog_authors ORDER BY active DESC,display_name,id").all<AuthorRow>();
@@ -32,7 +40,7 @@ export async function getBlogAuthor(db: D1Database, id: string) {
 }
 
 export async function getBlogPost(db: D1Database, id: string) {
-  const row = await db.prepare(POST_SELECT + " WHERE id=?").bind(id).first<PostRow>();
+  const row = await db.prepare(POST_SELECT + " WHERE p.id=?").bind(id).first<PostRow>();
   return row ? postRecord(row) : null;
 }
 
@@ -42,26 +50,62 @@ export async function findBlogSource(db: D1Database, url: string) {
 }
 
 export async function listBlogDrafts(db: D1Database) {
-  const rows = await db.prepare(`SELECT p.id,p.slug,p.version,p.published_revision_id AS revisionId,p.updated_at AS updatedAt,
+  const rows = await db.prepare(`SELECT p.id,s.short_id AS shortId,p.version,p.published_revision_id AS revisionId,p.updated_at AS updatedAt,
     json_extract(p.draft_json,'$.title') AS title,json_extract(p.draft_json,'$.displayDate') AS displayDate,
     a.display_name AS author,
     EXISTS(SELECT 1 FROM blog_revisions r WHERE r.post_id=p.id) AS hasPublication
-    FROM blog_posts p LEFT JOIN blog_authors a ON a.id=json_extract(p.draft_json,'$.authorId')
+    FROM blog_posts p JOIN blog_short_links s ON s.post_id=p.id
+    LEFT JOIN blog_authors a ON a.id=json_extract(p.draft_json,'$.authorId')
     ORDER BY p.updated_at DESC,p.id`).all<{
-    id: string; slug: string; version: number; revisionId: string | null; updatedAt: string;
+    id: string; shortId: number; version: number; revisionId: string | null; updatedAt: string;
     title: string; displayDate: string; author: string | null; hasPublication: number;
   }>();
   return rows.results;
 }
 
-export async function listPublicBlogPosts(db: D1Database, limit: number, offset: number) {
-  return (await db.prepare(`SELECT ${SUMMARY} ${PUBLISHED} ${NEWEST} LIMIT ? OFFSET ?`)
-    .bind(limit, offset).all<BlogSummary>()).results;
+function firstParagraph(body: BlogDocument) {
+  let paragraph = "";
+  walkBlog(body, node => {
+    if (!paragraph && node.type === "paragraph") {
+      paragraph = (node.content ?? []).map(child => child.text ?? " ").join("").replace(/\s+/g, " ").trim();
+    }
+  });
+  const letters = [...paragraph];
+  return letters.length > 170 ? letters.slice(0, 170).join("") + "…" : paragraph;
 }
 
-export async function getPublicBlogRevision(db: D1Database, slug: string) {
-  const row = await db.prepare(`SELECT ${SUMMARY},p.id,r.id AS revisionId,r.source_url AS sourceUrl,r.body_json AS bodyJson
-    ${PUBLISHED} WHERE p.slug=?`).bind(slug).first<ArticleRow>();
+export async function listPublicBlogPosts(db: D1Database, limit: number, offset: number): Promise<BlogListingItem[]> {
+  const { results } = await db.prepare(`SELECT ${SUMMARY}, ${LEAD_IMAGES}, r.id AS revisionId,
+    CASE WHEN r.summary='' OR COALESCE(r.cover_image_id,r.hero_image_id) IS NULL THEN r.body_json END AS bodyJson
+    ${PUBLISHED} ${NEWEST} LIMIT ? OFFSET ?`).bind(limit, offset)
+    .all<BlogSummary & ArticleImages & { revisionId: string; bodyJson: string | null }>();
+  const cards = results.map(({ revisionId, bodyJson, coverId, heroId, ...post }) => {
+    const body = bodyJson ? JSON.parse(bodyJson) as BlogDocument : null;
+    const imageId = coverId ?? heroId ?? (body ? blogImageReferences(body).uploads[0] : undefined);
+    const summary = post.summary || (body ? firstParagraph(body) : "");
+    return { post: { ...post, summary }, revisionId, imageId };
+  });
+  const covers = cards.filter(card => card.imageId);
+  const media = covers.length ? (await db.prepare(`SELECT i.id,i.width,i.height,l.revision_id AS revisionId
+    FROM blog_revision_images l JOIN blog_images i ON i.id=l.image_id
+    WHERE l.revision_id IN (SELECT value FROM json_each(?)) AND i.id IN (SELECT value FROM json_each(?))`)
+    .bind(JSON.stringify(covers.map(card => card.revisionId)), JSON.stringify(covers.map(card => card.imageId)))
+    .all<Omit<BlogImage, "url"> & { revisionId: string }>()).results : [];
+  const images = new Map(media.map(({ revisionId, ...image }) => [revisionId + "/" + image.id, image]));
+  return cards.map(({ post, revisionId, imageId }) => {
+    const image = images.get(revisionId + "/" + imageId);
+    return { ...post, cover: image ? { ...image, url: publicBlogImageUrl(post.shortId, image.id) } : null };
+  });
+}
+
+export async function getPublicBlogShortId(db: D1Database, slug: string) {
+  return db.prepare(`SELECT s.short_id AS shortId ${PUBLISHED} WHERE p.slug=?`).bind(slug).first<number>("shortId");
+}
+
+export async function getPublicBlogRevision(db: D1Database, reference: number | string) {
+  const column = typeof reference === "number" ? "s.short_id" : "p.slug";
+  const row = await db.prepare(`SELECT ${SUMMARY},${LEAD_IMAGES},p.id,r.id AS revisionId,r.source_url AS sourceUrl,r.body_json AS bodyJson
+    ${PUBLISHED} WHERE ${column}=?`).bind(reference).first<ArticleRow>();
   if (!row) return null;
   const { bodyJson, ...article } = row;
   return { ...article, body: JSON.parse(bodyJson) as BlogDocument };
@@ -135,8 +179,16 @@ export async function loadAdminBlogOptions(env: Environment) {
 }
 export type BlogOptions = Awaited<ReturnType<typeof loadAdminBlogOptions>>;
 
-export async function loadPublicBlog(env: Environment, slug: string) {
-  const post = await getPublicBlogRevision(env.DB, slug);
+export async function loadAdminBlogImages(db: D1Database, draft: BlogDraft) {
+  const ids = [draft.coverImageId, draft.heroImageId].filter(id => id !== null);
+  if (!ids.length) return [];
+  const { results } = await db.prepare("SELECT id,width,height FROM blog_images WHERE id IN (SELECT value FROM json_each(?))")
+    .bind(JSON.stringify(ids)).all<Omit<BlogImage, "url">>();
+  return results.map(image => ({ ...image, url: adminBlogImageUrl(image.id) }));
+}
+
+export async function loadPublicBlog(env: Environment, shortId: number) {
+  const post = await getPublicBlogRevision(env.DB, shortId);
   if (!post) return null;
   const { DB: db } = env;
   const revision = post.revisionId;
@@ -182,13 +234,19 @@ export async function loadPublicBlog(env: Environment, slug: string) {
     const photo = photoMap.get(id);
     return photo ? [photo] : [];
   });
+  const images = (imageRows.results as Omit<BlogImage, "url">[]).map(image => ({
+    ...image, url: publicBlogImageUrl(shortId, image.id),
+  }));
+  const imageMap = new Map(images.map(image => [image.id, image]));
   return {
-    slug: post.slug, title: post.title, summary: post.summary, author: post.author, displayDate: post.displayDate,
+    shortId, title: post.title, summary: post.summary, author: post.author, displayDate: post.displayDate,
     locale: post.locale, body: post.body, sourceUrl: post.sourceUrl, revisionId: post.revisionId,
     series: [...series.values()],
     events,
     gallery,
     photos: [...photoMap.values()],
-    images: (imageRows.results as Omit<BlogImage, "url">[]).map(image => ({ ...image, url: publicBlogImageUrl(slug, image.id) })),
+    images,
+    hero: post.heroId ? imageMap.get(post.heroId) ?? null : null,
+    cover: imageMap.get(post.coverId ?? post.heroId ?? imageRefs.uploads[0]) ?? null,
   };
 }
