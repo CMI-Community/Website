@@ -235,7 +235,7 @@ const TEMPLATE = `<!doctype html>
       .brand-label { font-size: 11px; padding-left: 11px; }
       .back { font-size: 11px; }
       .hero { grid-template-columns: 1fr; gap: 19px; padding: 42px 0 34px; }
-      h1 { font-size: 42px; }
+      h1 { font-size: clamp(35px, 10.5vw, 42px); }
       .eyebrow { font-size: 11px; margin-bottom: 16px; }
       .intro { font-size: 14px; max-width: 330px; }
       .section-label { font-size: 10px; }
