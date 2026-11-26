@@ -46,7 +46,7 @@
   color: var(--blog-ink);
   text-decoration: none;
 }
-.blog-story:has(.blog-story__picture) { grid-template-columns: minmax(0, 1.26fr) minmax(0, 1fr); }
+.blog-story:has(.blog-story__picture) { grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr); }
 .blog-story:hover { border-color: #8da393; }
 .blog-story__picture {
   display: block;
@@ -67,18 +67,14 @@
 .blog-story__copy {
   display: grid;
   align-content: center;
-  gap: clamp(9px, 1.4vw, 18px);
+  gap: clamp(9px, 1.1vw, 14px);
   min-width: 0;
-  padding: clamp(19px, 3.4vw, 45px);
+  padding: clamp(19px, 2.6vw, 34px);
   overflow-wrap: anywhere;
 }
 .blog-story__copy h2 {
   margin: 0;
-  font: 650 clamp(1.35rem, 3vw, 2.5rem)/1.25 Georgia, "Noto Serif SC", serif;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font: 650 clamp(1.35rem, 2.7vw, 2.25rem)/1.25 Georgia, "Noto Serif SC", serif;
 }
 .blog-story:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.19em; }
 .blog-story__summary {

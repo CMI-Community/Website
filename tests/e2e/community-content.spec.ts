@@ -270,7 +270,7 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
   const visitor = await browser.newPage({ viewport: page.viewportSize()! });
   const suffix = randomUUID().slice(0, 8);
   const authorName = "合成博客作者 " + suffix;
-  const title = "合成社区回顾 " + suffix;
+  const title = "合成社区回顾——从相识到共同实践的现场记录和下一次工作坊的准备 " + suffix;
   const alt = "合成博客图库 " + suffix;
   const source = "https://mp.weixin.qq.com/s/synthetic-blog-" + suffix;
   const slug = "synthetic-blog-series-" + suffix;
@@ -439,6 +439,7 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     await expect(secondRow).toHaveAttribute("href", publicPath);
     await expect(secondRow.locator("img")).toHaveAttribute("src", coverPath);
     await expect(secondRow.locator(".blog-story__picture")).toHaveCSS("aspect-ratio", "16 / 9");
+    expect(await secondRow.locator("h2").evaluate(heading => heading.scrollHeight <= heading.clientHeight + 1)).toBe(true);
     const [firstRect, secondRect] = await Promise.all([firstRow.boundingBox(), secondRow.boundingBox()]);
     expect(secondRect!.width).toBeCloseTo(firstRect!.width);
     expect(secondRect!.y).toBeGreaterThanOrEqual(firstRect!.y + firstRect!.height);
