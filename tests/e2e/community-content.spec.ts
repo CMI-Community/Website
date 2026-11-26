@@ -439,7 +439,19 @@ test("blog supports bylines, long rich-text paste, related content, revisions an
     await expect(secondRow).toHaveAttribute("href", publicPath);
     await expect(secondRow.locator("img")).toHaveAttribute("src", coverPath);
     await expect(secondRow.locator(".blog-story__picture")).toHaveCSS("aspect-ratio", "16 / 9");
-    expect(await secondRow.locator("h2").evaluate(heading => heading.scrollHeight <= heading.clientHeight + 1)).toBe(true);
+    await secondRow.scrollIntoViewIfNeeded();
+    await visitor.evaluate(() => document.fonts.ready);
+    const fullTitleIsVisible = await secondRow.locator("h2").evaluate(heading => {
+      const text = document.createRange();
+      text.selectNodeContents(heading);
+      const bounds = text.getBoundingClientRect();
+      const card = heading.closest(".blog-story")!.getBoundingClientRect();
+      const style = getComputedStyle(heading);
+      return style.getPropertyValue("-webkit-line-clamp") === "none" && style.overflowY === "visible"
+        && bounds.top >= card.top && bounds.bottom <= card.bottom
+        && bounds.left >= card.left && bounds.right <= card.right;
+    });
+    expect(fullTitleIsVisible).toBe(true);
     const [firstRect, secondRect] = await Promise.all([firstRow.boundingBox(), secondRow.boundingBox()]);
     expect(secondRect!.width).toBeCloseTo(firstRect!.width);
     expect(secondRect!.y).toBeGreaterThanOrEqual(firstRect!.y + firstRect!.height);
