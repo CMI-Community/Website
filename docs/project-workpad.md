@@ -1,6 +1,6 @@
 # CMI 官网 Project Workpad
 
-Last updated: 2026-11-21 22:15 Asia/Bangkok
+Last updated: 2026-11-26 12:46 Asia/Bangkok
 
 这是本项目唯一动态工作台。它只保存可操作的当前状态和链接，不复制 Issue、PR、日志或聊天全文。
 
@@ -8,6 +8,7 @@ Last updated: 2026-11-21 22:15 Asia/Bangkok
 
 - SHIPPED：[正式 Blog](https://cmi.community/blog) 已随 v0.7.0 发布。包含编辑、图文粘贴、独立署名、系列／活动／照片关联及中英全文翻译。[发布与回滚记录](./releases/v0.7.0.md)
 - VERIFIED：正式版本运行 `36c91091851fab3a63d2e52d284dcec3f082f0db`，D1 `0007_add_blog.sql` 已应用，翻译密钥已绑定。三个视口的公开导航、空列表和后台登录入口均通过验收。预发布用三图长文验证双向真实翻译、图片与图注、缓存和下架。
+- CANDIDATE：单列图文横卡、独立封面和头图、永久短地址。通过本地迁移和自动检查，待浏览器与预发布验收。[ADR 0016](./adr/0016-blog-images-and-permalinks.md)
 - PENDING：公众号链接导入留在预发布。两篇真实文章验收通过后再开放，其中一篇需为多图长文。[Issue #65](https://github.com/CMI-Community/Website/issues/65) · [ADR 0015](./adr/0015-blog-publishing.md)
 
 ## Snapshot — 2026-11-18 v0.6.0 正式上线

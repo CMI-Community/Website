@@ -70,12 +70,12 @@ const pending = (done: number, total: number) => json({ done, total }, { status:
 export async function getBlogTranslation(
   request: Request,
   env: CloudflareEnv,
-  slug: string,
+  reference: string | number,
   revision: string,
   target: BlogLocale,
 ) {
   const db = env.DB;
-  const post = await getPublicBlogRevision(db, slug);
+  const post = await getPublicBlogRevision(db, reference);
   if (!post) throw new HttpError(404, "BLOG_NOT_FOUND", "文章暂不可用。");
   if (post.revisionId !== revision) throw new HttpError(409, "BLOG_UPDATED", "文章已更新，刷新页面后可以翻译新版。");
   if (post.locale === target) throw new HttpError(422, "BLOG_LANGUAGE", "请选择译文语言。");
@@ -124,7 +124,7 @@ export async function getBlogTranslation(
       AND EXISTS(SELECT 1 FROM blog_posts WHERE id=? AND published_revision_id=?) RETURNING position`)
     .bind(JSON.stringify(result), revision, target, position, claim, post.id, revision).first();
   if (!saved) {
-    const current = await getPublicBlogRevision(db, slug);
+    const current = await getPublicBlogRevision(db, reference);
     if (!current) throw new HttpError(404, "BLOG_NOT_FOUND", "文章暂不可用。");
     if (current.revisionId !== revision) throw new HttpError(409, "BLOG_UPDATED", "文章已更新，请刷新页面。");
     return pending(byPosition.size, plan.chunks.length);

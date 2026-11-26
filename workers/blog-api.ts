@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { saveBlogAuthor, saveBlogDraft, setBlogPublication } from "../app/modules/blog/blog-service.server";
-import { blogLocale } from "../app/modules/blog/blog-schema";
+import { blogLocale, parseBlogShortId } from "../app/modules/blog/blog-schema";
 import { adminBlogImage, readBlogBytes, uploadBlogImage } from "./blog-media";
 import { importWeChatBlog, importWeChatBlogImage } from "./blog-wechat";
 import { getBlogTranslation } from "./blog-translation";
@@ -40,7 +40,7 @@ export async function handleBlogApi(request: Request, env: CloudflareEnv, ctx: E
       let slug = "";
       try { slug = decodeURIComponent(reader[1]); }
       catch { throw new HttpError(404, "BLOG_NOT_FOUND", "文章暂不可用。"); }
-      return await getBlogTranslation(request, env, slug, input.revision, input.target);
+      return await getBlogTranslation(request, env, parseBlogShortId(slug) ?? slug, input.revision, input.target);
     }
     const [, resource, id, action] = adminPath!;
     const actor = await requireEventAdmin(request, env, ctx);

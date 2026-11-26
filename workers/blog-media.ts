@@ -1,6 +1,7 @@
 import { guardedContentBatch } from "../app/modules/community-content/content-service.server";
 import { blogImageMaxBytes } from "../app/modules/blog/blog-document";
 import { adminBlogImageUrl, publicBlogImageUrl } from "../app/modules/blog/blog-repository.server";
+import { parseBlogShortId } from "../app/modules/blog/blog-schema";
 import { HttpError, methodNotAllowed } from "./lib/http";
 import { inspectImage } from "./event-media";
 import type { EventAdmin } from "./integration-auth";
@@ -104,16 +105,19 @@ export async function handleBlogMedia(request: Request, env: CloudflareEnv): Pro
   const path = new URL(request.url).pathname;
   const match = path.match(/^\/media\/blog\/([^/]{1,700})\/([0-9a-f-]{36})$/);
   if (!match) return null;
-  let slug = "";
+  let segment = "";
   try {
-    slug = decodeURIComponent(match[1]);
+    segment = decodeURIComponent(match[1]);
   } catch {
     return new Response(null, { status: 404 });
   }
   const id = match[2];
-  if (path !== publicBlogImageUrl(slug, id)) return new Response(null, { status: 404 });
+  if (path !== publicBlogImageUrl(segment, id)) return new Response(null, { status: 404 });
+  const reference = parseBlogShortId(segment) ?? segment;
+  const column = typeof reference === "number" ? "s.short_id" : "p.slug";
   const row = await env.DB.prepare(`SELECT i.object_key AS objectKey,i.mime_type AS mimeType
-    FROM blog_posts p JOIN blog_revision_images link ON link.revision_id=p.published_revision_id
-    JOIN blog_images i ON i.id=link.image_id WHERE p.slug=? AND i.id=?`).bind(slug, id).first<MediaRow>();
+    FROM blog_posts p JOIN blog_short_links s ON s.post_id=p.id
+    JOIN blog_revision_images link ON link.revision_id=p.published_revision_id
+    JOIN blog_images i ON i.id=link.image_id WHERE ${column}=? AND i.id=?`).bind(reference, id).first<MediaRow>();
   return readImage(request, env, row);
 }

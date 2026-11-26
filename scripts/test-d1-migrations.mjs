@@ -65,6 +65,7 @@ try {
     "legacy_event_overrides",
     "blog_authors",
     "blog_posts",
+    "blog_short_links",
     "blog_revisions",
     "blog_revision_series",
     "blog_revision_events",
